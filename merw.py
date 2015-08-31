@@ -18,14 +18,12 @@ def cdf(weights):
         result.append(cumsum / total)
     return result
 
-def choice(population, weights):
+def choice(weights):
     # Normalize weights to 1! XXX
-    assert len(population) == len(weights)
     cdf_vals = cdf(weights)
     x = random.random()
-    print x
     idx = bisect.bisect(cdf_vals, x)
-    return population[idx]
+    return idx
 
 
 def calc_S(A):
@@ -39,19 +37,35 @@ def calc_S(A):
 
 def randomly_draw(values, q):
     # q is of course probabilities
-    pass
+    return values[choice(q)]
 
+
+# Calculate probability matix holding S
 A = np.zeros((N_, N_))
-pos = 20
-
 for it in range(N_):
     for jt in range(it-2, it+3):
         if abs(it-jt) == 1 and jt>=0 and jt < N_:
             A[it, jt] = 10;
-
-
-#for it in range(1000):
-
+# Here
 S = calc_S(A)
+
+# Prepare histogram
+score = np.zeros(N_)
+
+# Prepare list of indexes
+values = range(N_)
+
+# Merw starting position set
+pos = 20
+
+# Walk
+for it in range(int(1e6)):
+    score[pos] += 1
+    pos = randomly_draw(values, S[:,pos])
+
+
 plt.imshow(S)
+plt.show()
+
+plt.plot(score,'ko')
 plt.show()
