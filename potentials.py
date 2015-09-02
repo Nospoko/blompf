@@ -36,20 +36,25 @@ class E_potential(object):
     def __init__(self, size):
         self.size = size
         self.prefered = 0
-        self.calc_A()
+
+        # Initialize interaction grid (piano keys)
+        self.scale = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]
+
+        # Based on that generate probability matrix S
 #        self.simple_A()
         self.calc_S()
 
+    def set_scale_shift(self, shift):
+        self.scale = np.roll(self.scale, shift)
+
     def set_prefered(self, prefered):
         self.prefered = prefered
-        self.calc_A()
         self.calc_S()
 
     def they_interact(self, i, j):
-        scale = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]
-        n = len(scale)
+        n = len(self.scale)
 
-        if scale[i%n] == scale[j%n] == 1: # Nice python!
+        if self.scale[i%n] == self.scale[j%n] == 1: # Nice python!
             return True
         # Else
         return False
@@ -97,6 +102,7 @@ class E_potential(object):
         self.A = A
 
     def calc_S(self):
+        self.calc_A()
         S = np.zeros(self.A.shape)
         d, V = lg.eigh(self.A, eigvals = (self.size-1, self.size-1))
         for it in range(self.size):

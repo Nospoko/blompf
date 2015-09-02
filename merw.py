@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from potentials import *
+from merwmidi import make_midi
 
 class Merw(object):
     def __init__(self, size):
@@ -23,6 +24,7 @@ class Merw(object):
 
 if __name__ == '__main__':
 
+    N_ = 80
     # Calculate probability matix holding S
     merw = Merw(N_)
 
@@ -31,6 +33,8 @@ if __name__ == '__main__':
 
     # Prepare list of indexes
     values = range(N_)
+    # Pitches are what we actually calculate
+    pitches = [x + 30 for x in values]
 
     # Merw starting position set
     pos = 33
@@ -40,14 +44,14 @@ if __name__ == '__main__':
 
     # Prepare meta potential for testing
     # Number of iterations
-    N_ = 1250
+    N_ = 250
     def meta_pot(it):
         ret = 70.0 * (0.5 * (1.0 + np.cos(8.*it*np.pi/N_)))
         #print ret
         return ret
 
     for it in range(N_):
-        if (it%50 == 1):
+        if (it%50 == 0):
             print it, '/', N_, 'current position: ', pos
 
         # Histogram
@@ -59,6 +63,11 @@ if __name__ == '__main__':
 
         # Switcheroo
         pos = next_pos
+
+    # Create final pitches vector
+    merw_pitches = [pitches[pos] for pos in positions]
+    # Make midi file with calculated pitches
+    make_midi(merw_pitches)
 
 
     #S = merw.get_S(); plt.imshow(S); plt.show()
