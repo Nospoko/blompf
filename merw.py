@@ -43,7 +43,8 @@ if __name__ == '__main__':
     # Number of iterations
     N_ = 250
     def meta_pot(it):
-        ret = 70.0 * (0.5 * (1.0 + np.cos(2.*it*np.pi/N_)))
+        ret = 70.0 * (0.5 * (1.0 + np.cos(8.*it*np.pi/N_)))
+        print ret
         return ret
 
     for it in range(N_):
