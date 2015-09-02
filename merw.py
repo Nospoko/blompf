@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from potentials import *
 from merwmidi import make_midi
+import random
 
 class Merw(object):
     def __init__(self, size):
@@ -10,6 +11,8 @@ class Merw(object):
         self.pot = E_potential(self.size)
         self.S = self.pot.get_S()
         self.A = self.pot.get_A()
+    def set_scale_shift(self, shift):
+        self.pot.set_scale_shift(shift)
     def set_prefered(self, prefered):
         self.pot.set_prefered(prefered)
     def get_S(self):
@@ -51,14 +54,21 @@ if __name__ == '__main__':
         return ret
 
     for it in range(N_):
-        if (it%50 == 0):
-            print it, '/', N_, 'current position: ', pos
+
 
         # Histogram
         histogram[pos] += 1
 
         positions.append(pos)
         next_pos = merw.get_next_value(pos)
+
+        # Move
+        if (it%20 == 0):
+            shift = random.randint(-5,5)
+            shift = 3
+            merw.set_scale_shift(shift)
+            print it, '/', N_, 'current position: ', pos,\
+                    'changing scale:', shift
         merw.set_prefered(int(meta_pot(it)))
 
         # Switcheroo

@@ -44,6 +44,7 @@ class E_potential(object):
 #        self.simple_A()
         self.calc_S()
 
+    # XXX - set this before self.prefered
     def set_scale_shift(self, shift):
         self.scale = np.roll(self.scale, shift)
 
