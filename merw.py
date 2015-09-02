@@ -27,7 +27,7 @@ if __name__ == '__main__':
     merw = Merw(N_)
 
     # Prepare histogram
-    score = np.zeros(N_)
+    histogram = np.zeros(N_)
 
     # Prepare list of indexes
     values = range(N_)
@@ -37,36 +37,38 @@ if __name__ == '__main__':
     positions = []
 
     # Walk
-    intervals = []
 
     # Prepare meta potential for testing
     # Number of iterations
-    N_ = 250
+    N_ = 1250
     def meta_pot(it):
         ret = 70.0 * (0.5 * (1.0 + np.cos(8.*it*np.pi/N_)))
-        print ret
+        #print ret
         return ret
 
     for it in range(N_):
+        if (it%50 == 1):
+            print it, '/', N_, 'current position: ', pos
+
+        # Histogram
+        histogram[pos] += 1
+
         positions.append(pos)
         next_pos = merw.get_next_value(pos)
         merw.set_prefered(int(meta_pot(it)))
 
-        # Histogram
-        score[pos] += 1
-
-        # Intervals plot
-        intervals.append(abs(next_pos - pos))
-
         # Switcheroo
         pos = next_pos
 
-        if (it%50 == 1):
-            print it, '/', N_
 
+    #S = merw.get_S(); plt.imshow(S); plt.show()
+    S = merw.get_S(); plt.imshow(S); plt.savefig('S.png')
+    plt.clf()
 
-    S = merw.get_S(); plt.imshow(S); plt.show()
-
-    #plt.plot(score,'ko'); plt.show()
-
-    plt.plot(positions, 'ko'); plt.show()
+    #plt.plot(histogram,'ko'); plt.show()
+    plt.plot(histogram,'ko'); plt.savefig('histogram.png')
+    plt.clf()
+#
+#    plt.plot(positions, 'ko'); plt.show()
+    plt.plot(positions, 'ko'); plt.savefig('walk.png')
+    plt.clf()

@@ -5,15 +5,11 @@ import bisect
 import collections
 import scipy.linalg as lg
 
-N_ = 80
-
-
-
 
 # TODO - circular conditions
 # TODO - move A-creation to separate method
 
-
+# Probability helpers
 def cdf(weights):
     total = sum(weights)
     result = []
@@ -31,7 +27,7 @@ def choice(weights):
     return idx
 
 def randomly_draw(values, q):
-    # q is of course probabilities
+    # q is of course a vector with probabilities
     idx = choice(q)
     return values[idx]
 
@@ -55,13 +51,8 @@ class E_potential(object):
 
         if scale[i%n] == scale[j%n] == 1: # Nice python!
             return True
-
         # Else
         return False
-
-    def merw_pot(self, i, prefered = 0):
-        ret = 1. - ((i-prefered)/float(self.size))**2
-        return ret
 
     def get_potential(self):
         # Show potential 
@@ -85,26 +76,31 @@ class E_potential(object):
                         A[it,jt] = 1
         self.A = A
 
+    def merw_pot(self, i, prefered = 0):
+        ret = 1. - ((i-prefered)/float(self.size))**2
+        return ret
+
     def calc_A(self):
-        A = np.random.random((self.size, self.size))/1e3
-        A = np.zeros(A.shape)
+        #A = np.random.random((self.size, self.size))/1e3
+        A = np.zeros((self.size, self.size))
         noise = 1e-4
         k = 4
         for it in range(self.size):
-            for jt in range(it-k, it+k+1): # Wtf python
+            for jt in range(it-k, it+k+1): # wtf python
                 if jt >= 0 and jt < self.size:
                     if self.they_interact(it,jt):
-                        A[it, jt] = 5
-                        A[it, jt] *= self.merw_pot(it, self.prefered)
+                        A[it, jt] = 1
+                        if not self.prefered == 0:
+                            A[it, jt] *= self.merw_pot(it, self.prefered)
                     else:
                         A[it, jt] += noise
         self.A = A
 
     def calc_S(self):
         S = np.zeros(self.A.shape)
-        d, V = lg.eigh(self.A, eigvals = (N_-1, N_-1))
-        for it in range(N_):
-            for jt in range(N_):
+        d, V = lg.eigh(self.A, eigvals = (self.size-1, self.size-1))
+        for it in range(self.size):
+            for jt in range(self.size):
                 if V[jt] == 0:
                     print 'this should never happen'
                     S[it,jt] = 0.
