@@ -53,6 +53,8 @@ class E_potential(object):
     def set_scale_shift(self, shift):
         """ Set it """
         self.scale = np.roll(self.scale, shift)
+        print self.scale
+        self.calc_S()
 
     def set_prefered(self, prefered):
         """ You want it """

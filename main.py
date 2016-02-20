@@ -27,6 +27,7 @@ if __name__ == '__main__':
 
     # First orbit 50
     # walker.set_prefered(50)
+    walker.set_scale_shift(2)
 
     for it in range(nof_steps):
         # Histogram
@@ -35,18 +36,10 @@ if __name__ == '__main__':
         positions.append(pos)
         next_pos = walker.get_next_value(pos)
 
-        # Move
-        if (it%20 == 0 and False):
-            shift = np.random.randint(-5,5)
-            shift = 3
-            walker.set_scale_shift(shift)
-            print it, '/', nof_steps, 'current position: ', pos,\
-                    'changing scale:', shift
 
-        if (it == nof_steps / 2):
-            print "Testing some dumb method at iteration", it
-            # Change orbit
-            # walker.set_prefered(10)
+        if it%2000 == 0:
+            debug = "Iteration: {}\nPosition: {}"
+            print debug.format(it, pos)
 
         # Move, actually
         pos = next_pos
@@ -56,7 +49,7 @@ if __name__ == '__main__':
     # Make midi file with calculated pitches
     # mm.make_midi(walker_pitches)
 
-    plt.plot(histogram,'ko')
+    plt.bar(pitches, histogram, color = 'k', alpha = 0.5)
     plt.show()
 
     # plt.plot(positions, 'ko')
