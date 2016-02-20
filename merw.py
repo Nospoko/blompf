@@ -4,15 +4,17 @@ from merwmidi import make_midi
 import random
 
 class Merw(object):
-    """ Most generic walker """
+    """ Most generic walker, perfect for pitch control """
     def __init__(self, size):
         """ quo vadis """
         self.size = size
         self.values = range(self.size)
 
         # FIXME this must have been such a grand idea
-        # now crap
+        # now crap, at least pls rename this TODO
         self.pot = pt.E_potential(self.size)
+
+        # These are cool
         self.S = self.pot.get_S()
         self.A = self.pot.get_A()
 

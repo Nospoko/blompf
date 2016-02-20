@@ -39,7 +39,6 @@ if __name__ == '__main__':
     # Shift C -> E
     e_walker.set_scale_shift(4)
 
-
     for it in range(nof_steps):
         # Histogram
         histogram[pos] += 1
@@ -50,7 +49,7 @@ if __name__ == '__main__':
         next_pos = walker.get_next_value(pos)
         e_next_pos = e_walker.get_next_value(e_pos)
 
-
+        # pyDebug() <<
         if it%2000 == 0:
             debug = "Iteration: {}\nPosition: {}"
             print debug.format(it, pos)
@@ -59,6 +58,7 @@ if __name__ == '__main__':
         pos = next_pos
         e_pos = e_next_pos
 
+    # TODO rediscover this
     # Create final pitches vector
     # walker_pitches = [pitches[pos] for pos in positions]
     # Make midi file with calculated pitches
@@ -68,5 +68,6 @@ if __name__ == '__main__':
     plt.bar(pitches, e_histogram, color = 'c', alpha = 0.5)
     plt.show()
 
-    # plt.plot(positions, 'ko')
-    # plt.show()
+    plt.plot(positions, 'ko', alpha = 0.7)
+    plt.plot(e_positions, 'co', alpha = 0.7)
+    plt.show()
