@@ -95,7 +95,7 @@ class E_potential(object):
                         A[it,jt] = 1
         self.A = A
 
-    # FIXME WTF
+    # FIXME ? maybe store this hashed
     def merw_pot(self, i, prefered = 0):
         """ wtf """
         ret = 1. - ((i-prefered)/float(self.size))**2
@@ -112,6 +112,7 @@ class E_potential(object):
                 if jt >= 0 and jt < self.size:
                     if self.they_interact(it,jt):
                         A[it, jt] = 1
+                        # Ja pierdole co to kurwa jest
                         if not self.prefered == 0:
                             A[it, jt] *= self.merw_pot(it, self.prefered)
                     else:
@@ -131,5 +132,4 @@ class E_potential(object):
                 else:
                     S[it,jt] = V[it]/V[jt] * self.A[it,jt]/d
         self.S = S
-
 
