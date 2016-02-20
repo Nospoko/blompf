@@ -4,9 +4,7 @@ import bisect
 import collections
 import scipy.linalg as lg
 
-# TODO - circular conditions
-# TODO - move A-creation to separate method
-
+# TODO utils maybe
 def cdf(weights):
     """ Cumulative distribution function """
     # Normalization, container, iterator
@@ -49,11 +47,10 @@ class E_potential(object):
 #        self.simple_A()
         self.calc_S()
 
-    # XXX - set this before self.prefered
     def set_scale_shift(self, shift):
         """ Set it """
         self.scale = np.roll(self.scale, shift)
-        print self.scale
+        # Updates
         self.calc_S()
 
     def set_prefered(self, prefered):
@@ -97,20 +94,19 @@ class E_potential(object):
                         A[it,jt] = 1
         self.A = A
 
-    # FIXME ? maybe store this hashed
     def merw_pot(self, i, prefered = 0):
-        """ wtf """
+        """ This could be cleaner, but works """
         ret = 1. - ((i-prefered)/float(self.size))**2
         return ret
 
     def calc_A(self):
         """ dafuq """
-        #A = np.random.random((self.size, self.size))/1e3
         A = np.zeros((self.size, self.size))
         noise = 1e-4
         k = 4
         for it in range(self.size):
             for jt in range(it-k, it+k+1): # wtf python
+                # FIXME circular conditions go here
                 if jt >= 0 and jt < self.size:
                     if self.they_interact(it,jt):
                         A[it, jt] = 1
