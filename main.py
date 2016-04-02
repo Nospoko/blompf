@@ -5,18 +5,27 @@ import merw as mw
 
 if __name__ == '__main__':
     """ what up """
+    # How many steps will walker walk
+    nof_steps = 2500
+
+    # TODO New interface:
+    # hands = create_hands()
+    # for _ in range(nof_steps):
+    #     for finger in hands:
+    #         finger.play(c_time)
+    #         c_time += dt
+    # notes = hands.get_notes()
+    # create_midi(notes)
+
     # How many positions can walker occupy
     nof_spots = 80
-
-    # How many steps will walker walk
-    nof_steps = 25000
 
     # Handles probabilities and potentials
     # TODO Some grander container for multiple 
     # walkers is desired, preferably some 
-    # Walker with walkers in rhythm?
-    walker = mw.Merw(nof_spots)
-    e_walker = mw.Merw(nof_spots)
+    # Merw with walkers in rhythm?
+    walker = mw.Walker(nof_spots)
+    e_walker = mw.Walker(nof_spots)
 
     # Does research
     histogram = np.zeros(nof_spots)
@@ -33,10 +42,11 @@ if __name__ == '__main__':
     e_positions = []
 
     # First orbit 50
-    # walker.set_prefered(50)
+    walker.set_prefered(50)
     walker.set_scale_shift(0)
 
     # Shift C -> E
+    e_walker.set_prefered(50)
     e_walker.set_scale_shift(4)
 
     for it in range(nof_steps):
@@ -69,5 +79,7 @@ if __name__ == '__main__':
     plt.show()
 
     plt.plot(positions, 'ko', alpha = 0.7)
+    plt.plot(positions, 'k--', alpha = 0.4)
     plt.plot(e_positions, 'co', alpha = 0.7)
+    plt.plot(e_positions, 'c--', alpha = 0.4)
     plt.show()

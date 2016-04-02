@@ -3,7 +3,16 @@ import potentials as pt
 from merwmidi import make_midi
 import random
 
-class Merw(object):
+class Fingers(object):
+    """ Container for multiple walkers """
+    def __init__(self):
+        """ yo """
+        self.walkers = []
+
+        for _ in range(4):
+            self.walkers.append(Walker(80));
+
+class Walker(object):
     """ Most generic walker, perfect for pitch control """
     def __init__(self, size):
         """ quo vadis """
@@ -34,12 +43,16 @@ class Merw(object):
         """ yup """
         return self.pot.get_A()
 
-    # FIXME this seems crap
+    # TODO get rid of this in favor of some
+    # kind of time-progressing mechanism
     def get_next_value(self, current_id):
         """ Takes a next merw step """
         # idx - previous index
         S = self.pot.get_S()
 
-        out = pt.randomly_draw(self.values, S[:, current_id])
+        # Where can one walk from here
+        probabilities = S[:, current_id]
+        out = pt.randomly_draw(self.values, probabilities)
+
         return out
 

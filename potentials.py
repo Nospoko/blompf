@@ -96,7 +96,7 @@ class E_potential(object):
 
     def merw_pot(self, i, prefered = 0):
         """ This could be cleaner, but works """
-        ret = 1. - ((i-prefered)/float(self.size))**2
+        ret = 1. - ((i-prefered)/float(self.size))**4
         return ret
 
     def calc_A(self):
@@ -121,6 +121,8 @@ class E_potential(object):
         """ is this """
         self.calc_A()
         S = np.zeros(self.A.shape)
+
+        # Palic, sadzic, diagonalizowac
         d, V = lg.eigh(self.A, eigvals = (self.size-1, self.size-1))
         for it in range(self.size):
             for jt in range(self.size):
