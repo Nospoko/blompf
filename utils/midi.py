@@ -47,15 +47,18 @@ def show_piano_roll(notes):
         # Volume dependant color
         roll[note_it, start_id:end_id] = 127.0 / note[3]
 
-    plt.imshow(roll, aspect=4)
+    plt.imshow(roll, aspect=4, origin='lower')
     plt.show()
 
 def test():
     """ Example usage """
-    pitches = [60 + 2 * it for it in range(20)]
-    times   = [0 + 0.5 * it for it in range(20)]
-    durations = [0.5 for _ in range(20)]
-    volumes = [40 + 3 * it for it in range(20)]
+    nof_notes = 100
+    cosy_fun = lambda jt: np.cos(2*jt) * np.cos(5*jt)
+    picz_fun = lambda it: np.floor(30.0 * cosy_fun(4.0 * it/nof_notes))
+    pitches = [80 + picz_fun(it) for it in range(nof_notes)]
+    times   = [0 + 0.5 * it for it in range(nof_notes)]
+    durations = [0.5 for _ in range(nof_notes)]
+    volumes = [40 + 0.3 * it for it in range(nof_notes)]
 
     # Create note array
     notes = np.array([pitches, times, durations, volumes]).transpose()
@@ -63,4 +66,5 @@ def test():
     # Change to file
     matrix_to_midi(notes, 'yo.mid')
 
-    return notes
+    # Show roll
+    show_piano_roll(notes)
