@@ -2,15 +2,7 @@ from potentials import *
 import potentials as pt
 from merwmidi import make_midi
 import random
-
-class Fingers(object):
-    """ Container for multiple walkers """
-    def __init__(self):
-        """ yo """
-        self.walkers = []
-
-        for _ in range(4):
-            self.walkers.append(Walker(80));
+import numpy as np
 
 class Walker(object):
     """ Most generic walker, perfect for pitch control """
@@ -55,4 +47,3 @@ class Walker(object):
         out = pt.randomly_draw(self.values, probabilities)
 
         return out
-

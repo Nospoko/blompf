@@ -4,7 +4,7 @@ from midiutil.MidiFile import MIDIFile
 
 def matrix_to_midi(notes, filename = 'dupa.mid'):
     """ Simplify midi generation
-        notes format: PITCH|START|DURATION|VOLUME """
+        note format: PITCH|START|DURATION|VOLUME """
     # Midi file with one track
     mf = MIDIFile(1)
 
@@ -37,7 +37,7 @@ def show_piano_roll(notes):
     roll = np.zeros((nof_rows, nof_samples))
 
     for note in notes:
-        # Pitch - 3 ::: index 
+        # Pitch - 30 ::: index 
         note_it = note[0] - 30
 
         # Time ids
