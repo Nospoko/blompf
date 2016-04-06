@@ -45,10 +45,11 @@ class Finger(object):
 
 class ExampleFinger(Finger):
     """ Exemplary class exploring finger possibilites """
-    def __init__(self):
+    def __init__(self, something = 0):
         """ le Constructor """
         # Init parent class
         Finger.__init__(self)
+        self.first = something
 
     def is_it_now(self, timetick):
         """ Time is tick """
@@ -59,7 +60,7 @@ class ExampleFinger(Finger):
     def next_pitch(self, timetick):
         """ Choose note frequency """
         # Dupa
-        out = 80 + 20 * np.cos(7.0 * timetick / 200)
+        out = self.first + 20 * np.cos(7.0 * timetick / 200)
         return out
 
     def next_duration(self, timetick):
@@ -80,3 +81,33 @@ class ExampleFinger(Finger):
         else:
             volume = 80 + 10 * np.random.random()
         return volume
+
+class MerwFinger(Finger):
+    """ Properly improvising finger """
+    def __init__(self):
+        """ yonstructor """
+        Finger.__init__(self)
+        print 'szalom'
+
+    def is_it_now(self, timetick):
+        """ merw way of the rhythm """
+        pass
+
+    def next_pitch(self, timetick):
+        """ melody """
+        # pitchmerw.set_something_depending_on_the(timetick)
+        # return pitchmerw.get_next()
+        pass
+
+    def next_volume(self, timetick):
+        """ velocity """
+        # volumerw.set_whatever(timetick)
+        # return volumerw.get_next()
+        pass
+
+    def next_duration(self, timetick):
+        """ Note length in ticks """
+        # duration_merw.set_potentials(timetick)
+        # return duration_merw.get_next()
+        pass
+
