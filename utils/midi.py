@@ -2,6 +2,8 @@ from matplotlib import pyplot as plt
 import numpy as np
 from midiutil.MidiFile import MIDIFile
 
+# TODO make transition from ticks to seconds possible
+
 def matrix_to_midi(notes, filename = 'dupa.mid'):
     """ Simplify midi generation
         note format: PITCH|START|DURATION|VOLUME """
@@ -28,7 +30,11 @@ def show_piano_roll(notes):
     # Number of avaiable pitches 
     nof_rows = 101
 
-    # Get max time (time of start + duration)
+    # FIXME this require the last note in the list to be the last in time
+    # and that might not be guaranteed for more than one finger playing
+    # So try to sort by time
+    notes.sort(key=lambda x: x[1]+x[2])
+    # Get max time (time of start + duration)::of the last note
     total_time = notes[-1][1] + notes[-1][2]
 
     # Get number of samples
@@ -47,7 +53,7 @@ def show_piano_roll(notes):
         # Volume dependant color
         roll[note_it, start_id:end_id] = 127.0 / note[3]
 
-    plt.imshow(roll, aspect=4, origin='lower')
+    plt.imshow(roll, aspect=nof_samples/nof_rows, origin='lower')
     plt.show()
 
 def test():

@@ -6,71 +6,77 @@ class Finger(object):
         """ yo """
         self.notes = []
 
+    def clear(self):
+        """ Remove all previously played notes """
+        self.notes = []
+
     def get_notes(self):
         """ Return pieciolinia """
         return self.notes
 
-    def play(self, time):
+    def play(self, timetick):
         """ Hits a note when time is right """
-        if self.is_it_now(time):
-            self.make_note()
+        if self.is_it_now(timetick):
+            self.make_note(timetick)
         else:
             pass
 
-    def make_note(self):
+    def make_note(self, timetick):
         """ Generates a new note played by this finger """
-        # All of those must be implemented
-        pitch       = self.next_pitch()
         # TODO consider expressing time in ticks (int)
-        time        = self.next_time()
-        duration    = self.next_duration()
-        volume      = self.next_volume()
+        note_start  = timetick
+        # All of those must be implemented
+        pitch       = self.next_pitch(timetick)
+        duration    = self.next_duration(timetick)
+        volume      = self.next_volume(timetick)
 
-        self.notes.append([pitch, time, duration, volume])
+        self.notes.append([pitch, note_start, duration, volume])
 
-    def is_it_now(self, time):
+    def is_it_now(self, timetick):
         """ Rhytm depends on this function """
         # TODO this is fake
         return np.random.random() > 0.5
 
-    def next_pitch(self):
+    def next_pitch(self, timetick):
         """ Choose note """
         pitch = self.pitch_walker.get_next()
 
         return pitch
 
 class ExampleFinger(Finger):
-    """ Example class exploring finger possibilites """
+    """ Exemplary class exploring finger possibilites """
     def __init__(self):
+        """ le Constructor """
         # Init parent class
         Finger.__init__(self)
 
-    def is_it_now(self, time):
+    def is_it_now(self, timetick):
         """ Time is tick """
         # Play a note every 8 ticks
-        itis = time % 8 is 0
+        itis = timetick % 8 is 0
         return itis
 
-    def next_pitch(self):
+    def next_pitch(self, timetick):
         """ Choose note frequency """
         # Dupa
-        return 70
+        out = 80 + 20 * np.cos(7.0 * timetick / 200)
+        return out
 
-    def next_duration(self):
+    def next_duration(self, timetick):
         """ Choose note length """
         # Here it is always 4 tick long
-        duration = 4
+        if timetick % 24 is 0:
+            duration = 8
+        else:
+            duration = 4
+
         return duration
 
-    def next_volume(self):
+    def next_volume(self, timetick):
         """ Choose volume """
         # Whatever here
-        volume = 80 * 20 * np.random.random()
+        if timetick % 24 is 0:
+            volume = 120
+        else:
+            volume = 80 + 10 * np.random.random()
         return volume
-
-    def next_time(self):
-        """ This is tricky """
-        # TODO implement me
-        return 0.0
-
-
