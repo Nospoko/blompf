@@ -3,6 +3,7 @@ import random
 import bisect
 import collections
 import scipy.linalg as lg
+from matplotlib import pyplot as plt
 
 # TODO utils maybe
 def cdf(weights):
@@ -28,9 +29,9 @@ def choice(normalized_weights):
     idx = bisect.bisect(cdf_vals, x)
     return idx
 
-def randomly_draw(values, q):
+def randomly_draw(values, probabilities):
     """ Changes probability into reality """
-    idx = choice(q)
+    idx = choice(probabilities)
     return values[idx]
 
 class E_potential(object):

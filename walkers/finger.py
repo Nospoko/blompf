@@ -1,4 +1,5 @@
 import numpy as np
+from walkers import merw as wm
 
 class Finger(object):
     """ Abstracts a separate human finger's piano abilities """
@@ -87,6 +88,8 @@ class MerwFinger(Finger):
     def __init__(self):
         """ yonstructor """
         Finger.__init__(self)
+        # TODO Init merwish walkers
+        # self.volume_walker = wm.VolumeWalker()
         print 'szalom'
 
     def is_it_now(self, timetick):
@@ -99,10 +102,15 @@ class MerwFinger(Finger):
         # return pitchmerw.get_next()
         pass
 
+    # TODO This should be the simplest
     def next_volume(self, timetick):
         """ velocity """
-        # volumerw.set_whatever(timetick)
-        # return volumerw.get_next()
+        # Updates probabilities
+        # self.volume_walker.set_time(timetick)
+
+        # Makes a step
+        # vol = self.volume_walker.get_next()
+        # return vol
         pass
 
     def next_duration(self, timetick):

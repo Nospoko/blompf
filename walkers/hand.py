@@ -1,15 +1,11 @@
 from walkers import finger as wf
 
-class ExampleHand(object):
+class Hand(object):
     """ Wrapper for multiple fingers """
     def __init__(self):
         """ el creador """
         # Init finger container
         self.fingers = []
-
-        # Add 5 fingers
-        for start in [60 + 5*it for it in range(5)]:
-            self.fingers.append(wf.ExampleFinger(start))
 
     def play(self, timetick):
         """ Progress notes """
@@ -25,3 +21,14 @@ class ExampleHand(object):
                 notes.append(note)
 
         return notes
+
+class ExampleHand(Hand):
+    """ Wrapper for multiple fingers """
+    def __init__(self):
+        """ el creador """
+        # Init parent
+        Hand.__init__(self)
+
+        # Add 5 fingers
+        for start in [60 + 5*it for it in range(5)]:
+            self.fingers.append(wf.ExampleFinger(start))

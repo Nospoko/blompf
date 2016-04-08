@@ -2,17 +2,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 from utils import midi as um
 from walkers import finger as wf
+from walkers import hand as wh
 
 if __name__ == '__main__':
     """ what up """
     # How many steps will walker walk
     nof_steps = 250
-    finger = wf.ExampleFinger()
+    hand = wh.ExampleHand()
 
     for tick in range(nof_steps):
-        finger.play(tick)
+        hand.play(tick)
 
-    um.show_piano_roll(finger.get_notes())
+    um.show_piano_roll(hand.get_notes())
 
     # TODO New interface:
     # hands = create_hands()
