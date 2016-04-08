@@ -1,7 +1,7 @@
 import numpy as np
-from matplotlib import pyplot as plt
 import scipy.linalg as lg
 from utils import probability as up
+from matplotlib import pyplot as plt
 
 class Merwer(object):
     """ Most abstract maximal enthropy random walker """
@@ -32,8 +32,8 @@ class Merwer(object):
     def make_A(self):
         """ Prepare A-matrix """
         A = np.zeros((self.size, self.size))
-        # Length of a 
-        max_dist = 1
+        # Length of a possible jump
+        max_dist = 5
         for it in range(self.size):
             for jt in range(it - max_dist, it + max_dist + 1):
                 if jt >= 0 and jt < self.size:
@@ -80,18 +80,18 @@ class Merwer(object):
         # Return value
         return self.values[self.current_id]
 
-    def update_S(self):
-        """ Re-do the S matrix """
-        if self.S_update_needed:
-            self.make_A()
-            self.make_S()
-
-    # FIXME this is not most abstract
+    # FIXME those are not most abstract
     def set_interaction_grid(self, grid):
         """ This defines possible transitions """
         # Something like:
         # grid = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1] * 8
         self.interaction_grid = grid
+
+    def update_S(self):
+        """ Re-do the S matrix """
+        if self.S_update_needed:
+            self.make_A()
+            self.make_S()
 
     def set_emotional_parameter(self, happy):
         """ This shall grow """
@@ -99,7 +99,43 @@ class Merwer(object):
 
 class VolumeWalker(Merwer):
     """ Simplest neeeded implementation of mer walker """
-    def __init__(self, values, first_id):
+    def __init__(self, first_id):
         """ fin: rakentaja """
+        # Possible midi volumes
+        values = range(128)
         # Construct parent
         Merwer.__init__(self, values, first_id)
+
+# TODO Add some atracting mechanism causing merw to 
+# walk in some desired direction
+class BiasedWalker(Merwer):
+    """ Walker atracted to some value """
+    def __init__(self, first_id):
+        """ Konstrutkor """
+        values = range(128)
+        self.bias = int(len(values)/2)
+        Merwer.__init__(self, values, first_id)
+
+    def set_bias(self, prefered):
+        """ Sets prefered value """
+        self.bias = prefered
+
+        # Update probabilities
+        self.make_S()
+
+    def A_it_jt(self, it):
+        """ Aij definition (symmetric) """
+        out = 1 - 1.0 * abs(self.bias - it)/self.size
+
+        return out
+
+    def make_A(self):
+        """ Special atraction matrix """
+        A = np.zeros((self.size, self.size))
+
+        max_dist = 5
+        for it in range(self.size):
+            for jt in range(it - max_dist, it + max_dist + 1):
+                if jt >= 0 and jt < self.size:
+                    A[it, jt] = self.A_it_jt(it)
+        self.A = A
