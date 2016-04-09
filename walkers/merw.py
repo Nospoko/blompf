@@ -106,26 +106,35 @@ class VolumeWalker(Merwer):
         # Construct parent
         Merwer.__init__(self, values, first_id)
 
-# TODO Add some atracting mechanism causing merw to 
-# walk in some desired direction
 class BiasedWalker(Merwer):
     """ Walker atracted to some value """
     def __init__(self, first_id):
         """ Konstrutkor """
         values = range(128)
+
+        # By default set bias on the middle value
         self.bias = int(len(values)/2)
+        # With minimal attraction
+        self.bias_power = 0.1
         Merwer.__init__(self, values, first_id)
 
-    def set_bias(self, prefered):
+    def set_bias(self, prefered, howmuch):
         """ Sets prefered value """
-        self.bias = prefered
+        self.bias       = prefered
+        self.bias_power = howmuch
 
         # Update probabilities
+        # self.S_update_needed = True
         self.make_S()
 
-    def A_it_jt(self, it):
-        """ Aij definition (symmetric) """
-        out = 1 - 1.0 * abs(self.bias - it)/self.size
+    def A_it_jt(self, it, jt = 0):
+        """ Aij definition (symmetric - does it need to be?) """
+        # FIXME some analytical research could be fruitful here
+        pdf = up.cauchy_pdf(self.bias, self.bias_power)
+        out =  1.0 + pdf(it)
+
+        # Early (working) version
+        # out = 1.0 - (1.0 * abs(self.bias - it)/self.size)
 
         return out
 
@@ -133,9 +142,16 @@ class BiasedWalker(Merwer):
         """ Special atraction matrix """
         A = np.zeros((self.size, self.size))
 
-        max_dist = 5
+        max_dist = 3
         for it in range(self.size):
             for jt in range(it - max_dist, it + max_dist + 1):
                 if jt >= 0 and jt < self.size:
-                    A[it, jt] = self.A_it_jt(it)
+                    A[it, jt] = self.A_it_jt(it, jt)
         self.A = A
+
+    def show_bias(self):
+        """ Plot atractor """
+        x = np.linspace(min(self.values), max(self.values), 1001)
+        y = self.A_it_jt(x)
+        plt.plot(x, y)
+        plt.show()

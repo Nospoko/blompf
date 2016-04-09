@@ -89,18 +89,20 @@ class MerwFinger(Finger):
         """ yonstructor """
         Finger.__init__(self)
         # TODO Init merwish walkers
-        # self.volume_walker = wm.VolumeWalker()
-        print 'szalom'
+        self.volume_walker  = wm.BiasedWalker(80)
+        # FIXME some id-value fuckup
+        self.pitch_walker   = wm.BiasedWalker(60)
 
     def is_it_now(self, timetick):
         """ merw way of the rhythm """
-        pass
+        return timetick % 16 is 0
 
     def next_pitch(self, timetick):
         """ melody """
         # pitchmerw.set_something_depending_on_the(timetick)
         # return pitchmerw.get_next()
-        pass
+        picz = self.pitch_walker.next_value()
+        return picz
 
     # TODO This should be the simplest
     def next_volume(self, timetick):
@@ -109,13 +111,12 @@ class MerwFinger(Finger):
         # self.volume_walker.set_time(timetick)
 
         # Makes a step
-        # vol = self.volume_walker.get_next()
-        # return vol
-        pass
+        vol = self.volume_walker.next_value()
+        return vol
 
     def next_duration(self, timetick):
         """ Note length in ticks """
         # duration_merw.set_potentials(timetick)
         # return duration_merw.get_next()
-        pass
+        return 4
 

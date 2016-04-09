@@ -28,7 +28,7 @@ def matrix_to_midi(notes, filename = 'dupa.mid'):
 def show_piano_roll(notes):
     """ Another properly named function """
     # Number of avaiable pitches 
-    nof_rows = 101
+    nof_rows = 128
 
     # FIXME this require the last note in the list to be the last in time
     # and that might not be guaranteed for more than one finger playing
@@ -43,8 +43,9 @@ def show_piano_roll(notes):
     roll = np.zeros((nof_rows, nof_samples))
 
     for note in notes:
+        # FIXME no kurwa co to za fuszera
         # Pitch - 30 ::: index 
-        note_it = note[0] - 30
+        note_it = note[0] - 0
 
         # Time ids
         start_id = note[1] / dt

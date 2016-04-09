@@ -29,3 +29,12 @@ def randomly_draw(values, probabilities):
     idx = choice(probabilities)
     return values[idx]
 
+def cauchy_pdf(x0, gamma):
+    """ Create probability density function """
+    def pdf(x):
+        part_a = ((x - x0) / gamma)**2
+        part_b = (1.0 + part_a)
+
+        return 1.0 / part_b
+
+    return pdf
