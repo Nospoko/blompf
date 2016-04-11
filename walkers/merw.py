@@ -110,20 +110,18 @@ class BiasedWalker(Merwer):
     """ Walker atracted to some value """
     def __init__(self, values, first_id):
         """ Konstrutkor """
-        # By default set bias on the middle value
-        self.bias = first_id
-        # With minimal attraction
-        self.bias_power = 0.1
+        # By default set bias to NO BIAS
+        self.bias = -1
 
+        # TODO fiddle with that also
         self.max_dist = 3
 
         # Init parent
         Merwer.__init__(self, values, first_id)
 
-    def set_bias(self, prefered, howmuch):
-        """ Sets prefered value """
+    def set_bias(self, prefered):
+        """ Sets prefered value, lower than 0 is NO BIAS """
         self.bias       = prefered
-        self.bias_power = howmuch
 
         # Update probabilities
         # self.S_update_needed = True
@@ -132,11 +130,13 @@ class BiasedWalker(Merwer):
     def A_it_jt(self, it, jt = 0):
         """ Aij definition (symmetric - does it need to be?) """
         # FIXME some analytical research could be fruitful here
-        pdf = up.cauchy_pdf(self.bias, self.bias_power)
-        out = 1.0 + pdf(it)
+        # pdf = up.cauchy_pdf(self.bias, self.bias_power)
+        # out = 1.0 + pdf(it)
 
         # Early (working) version
         # out = 1.0 - (1.0 * abs(self.bias - it)/self.size)
+        pdf = up.tomek_pdf(self.bias)
+        out = pdf(it)
 
         return out
 

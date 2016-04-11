@@ -38,3 +38,18 @@ def cauchy_pdf(x0, gamma):
         return 1.0 / part_b
 
     return pdf
+
+def tomek_pdf(x0):
+    """ Creates pdf of my design """
+    gamma = 5
+    def pdf(x):
+        if x0 < 0:
+            return 1
+        else:
+            cauchy = cauchy_pdf(x0, gamma)
+            part_a = 0.1 + np.sqrt(gamma)/10.0
+            part_b = cauchy(x)
+
+            return part_a + part_b
+
+    return pdf

@@ -6,13 +6,13 @@ from walkers import merw as wm
 def test_biased():
     """ Perform some tests to see if BiasedWalker works as expected """
     # Declare test's intensity
-    nof_steps = 5000
+    nof_steps = 10000
 
     # Start from 40 / 127
     walker = wm.BiasedWalker(range(100), 40)
 
     # Increase bias_power linearly
-    bias_power = lambda x: 0.1 + 30.0 * x / nof_steps
+    bias_power = lambda x: 1 + 9 * x / nof_steps
 
     # Change prefered value as well
     bias_value = lambda x: 60 + 40.0 * np.cos(12 * np.pi * x/nof_steps)
@@ -24,13 +24,13 @@ def test_biased():
 
     for tick in range(nof_steps):
         # Change bias in larger steps
-        if tick % 2000 is 0:
+        if tick % 1000 is 0:
             bias_switch = not bias_switch
             print bias_switch, ' is the state of switch'
             if bias_switch:
-                walker.set_bias(bias, 30)
+                walker.set_bias(bias_value(tick), 5)
             else:
-                walker.set_bias(bias, 0.1)
+                walker.set_bias(bias, 0)
             # walker.set_bias(bias, bias_power(tick))
 
         # qDebug() <<

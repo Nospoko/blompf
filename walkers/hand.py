@@ -1,3 +1,4 @@
+import numpy as np
 from walkers import finger as wf
 from utils import midi as um
 
@@ -38,5 +39,13 @@ class ExampleHand(Hand):
         for start in [40 + 5*it for it in range(5)]:
             self.fingers.append(wf.MerwFinger(start))
 
-        for it, finger in enumerate(self.fingers):
-            finger.pitch_walker.set_bias(30 + 10 * it, 0.1 + 2 * it)
+    def twist_fingers(self):
+        """ Randomly set some prefered pitch values """
+        # TODO Do the pitches correctly!
+        for finger in self.fingers:
+            if np.random.random() < 0.5:
+                finger.set_prefered_pitch(-1)
+            else:
+                new_picz = 20 + np.floor(60.0 * np.random.random())
+                finger.set_prefered_pitch(new_picz)
+
