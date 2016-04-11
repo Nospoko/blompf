@@ -108,14 +108,16 @@ class VolumeWalker(Merwer):
 
 class BiasedWalker(Merwer):
     """ Walker atracted to some value """
-    def __init__(self, first_id):
+    def __init__(self, values, first_id):
         """ Konstrutkor """
-        values = range(128)
-
         # By default set bias on the middle value
-        self.bias = int(len(values)/2)
+        self.bias = first_id
         # With minimal attraction
         self.bias_power = 0.1
+
+        self.max_dist = 3
+
+        # Init parent
         Merwer.__init__(self, values, first_id)
 
     def set_bias(self, prefered, howmuch):
@@ -131,7 +133,7 @@ class BiasedWalker(Merwer):
         """ Aij definition (symmetric - does it need to be?) """
         # FIXME some analytical research could be fruitful here
         pdf = up.cauchy_pdf(self.bias, self.bias_power)
-        out =  1.0 + pdf(it)
+        out = 1.0 + pdf(it)
 
         # Early (working) version
         # out = 1.0 - (1.0 * abs(self.bias - it)/self.size)
@@ -142,7 +144,8 @@ class BiasedWalker(Merwer):
         """ Special atraction matrix """
         A = np.zeros((self.size, self.size))
 
-        max_dist = 3
+        # TODO This param should be manipulated!
+        max_dist = self.max_dist
         for it in range(self.size):
             for jt in range(it - max_dist, it + max_dist + 1):
                 if jt >= 0 and jt < self.size:
@@ -151,7 +154,28 @@ class BiasedWalker(Merwer):
 
     def show_bias(self):
         """ Plot atractor """
-        x = np.linspace(min(self.values), max(self.values), 1001)
+        x = np.linspace(min(self.id_space), max(self.id_space), 1001)
         y = self.A_it_jt(x)
         plt.plot(x, y)
         plt.show()
+
+class TimeWalker(BiasedWalker):
+    """ Rhytm lives here """
+    def __init__(self, first_id):
+        """ nope """
+        # Possible note values are always powers of 2
+        # This is in ticks unit
+        values = [2**it for it in range(8)]
+
+        # Count ticks to the next hit
+        self.ticks_left = 0
+
+        # Init parent
+        BiasedWalker.__init__(self, values, first_id)
+
+    def is_it_now(self):
+        """ wat """
+        if self.ticks_left is 0:
+            return True
+        else:
+            self.ticks_left -= 1

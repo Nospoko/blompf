@@ -1,4 +1,5 @@
 import numpy as np
+from utils import midi as um
 from walkers import merw as wm
 
 class Finger(object):
@@ -14,6 +15,10 @@ class Finger(object):
     def get_notes(self):
         """ Return pieciolinia """
         return self.notes
+
+    def show_piano_roll(self):
+        """ Show pieciolinia """
+        um.show_piano_roll(self.notes)
 
     def play(self, timetick):
         """ Hits a note when time is right """
@@ -85,17 +90,28 @@ class ExampleFinger(Finger):
 
 class MerwFinger(Finger):
     """ Properly improvising finger """
-    def __init__(self):
+    def __init__(self, first_picz):
         """ yonstructor """
         Finger.__init__(self)
-        # TODO Init merwish walkers
-        self.volume_walker  = wm.BiasedWalker(80)
+        # Init merwish walkers
+        self.volume_walker  = wm.BiasedWalker(range(128), 80)
         # FIXME some id-value fuckup
-        self.pitch_walker   = wm.BiasedWalker(60)
+        self.pitch_walker   = wm.BiasedWalker(range(80), first_picz)
+        # TODO This has to be some more complex creature
+        # self.time_walker    = wm.TimeWalker()
+
+    def next_duration(self, timetick):
+        """ Note length (value) in ticks """
+        # dur = self.time_walker.next_value()
+        # duration_merw.set_potentials(timetick)
+        # return duration_merw.get_next()
+        return 4
 
     def is_it_now(self, timetick):
         """ merw way of the rhythm """
-        return timetick % 16 is 0
+        # itis = self.time_walker.play_now(timetick)
+        itis = timetick % 16 is 0 or timetick % 27 is 0
+        return itis
 
     def next_pitch(self, timetick):
         """ melody """
@@ -113,10 +129,4 @@ class MerwFinger(Finger):
         # Makes a step
         vol = self.volume_walker.next_value()
         return vol
-
-    def next_duration(self, timetick):
-        """ Note length in ticks """
-        # duration_merw.set_potentials(timetick)
-        # return duration_merw.get_next()
-        return 4
 
