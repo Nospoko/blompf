@@ -148,6 +148,19 @@ class BiasedWalker(Merwer):
         plt.plot(x, y)
         plt.show()
 
+class VolumeWalker(BiasedWalker):
+    """ Volume dedicated """
+    def __init__(self, first_vol):
+        """ el Creador """
+        # MIDI volume goes 0::127
+        values      = range(128)
+        first_id    = first_vol
+        BiasedWalker.__init__(self, values, first_id)
+
+    def set_volume(self, vol):
+        """ simple """
+        self.set_bias(vol)
+
 class PitchWalker(BiasedWalker):
     """ Specialised for harmony manipulations """
     def __init__(self, first_pitch):

@@ -94,6 +94,7 @@ class MerwFinger(Finger):
         """ yonstructor """
         Finger.__init__(self)
         # Init merwish walkers
+        # TODO Make volume walker
         self.volume_walker  = wm.BiasedWalker(range(128), 80)
         # FIXME some id-value fuckup
         self.pitch_walker   = wm.PitchWalker(first_picz)
