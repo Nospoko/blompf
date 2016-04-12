@@ -96,7 +96,7 @@ class MerwFinger(Finger):
         # Init merwish walkers
         self.volume_walker  = wm.BiasedWalker(range(128), 80)
         # FIXME some id-value fuckup
-        self.pitch_walker   = wm.BiasedWalker(range(80), first_picz)
+        self.pitch_walker   = wm.PitchWalker(first_picz)
         # TODO This has to be some more complex creature
         # self.time_walker    = wm.TimeWalker()
 

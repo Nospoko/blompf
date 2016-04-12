@@ -12,6 +12,9 @@ class Merwer(object):
         self.values     = values
         self.size       = len(self.values)
 
+        # TODO fiddle with that also
+        self.max_dist = 3
+
         # This is the walking element
         self.current_id = first_id
 
@@ -27,18 +30,25 @@ class Merwer(object):
 
         # FIXME those are not defects!
         # Prepare merw 'defects' (no defects by default)
-        self.interaction_grid = np.ones_like(self.values)
+        # self.interaction_grid = np.ones_like(self.values)
 
     def make_A(self):
         """ Prepare A-matrix """
         A = np.zeros((self.size, self.size))
-        # Length of a possible jump
-        max_dist = 5
+
+        # TODO This param should be manipulated!
+        max_dist = self.max_dist
+
+        # Create interaction matrix A
         for it in range(self.size):
             for jt in range(it - max_dist, it + max_dist + 1):
                 if jt >= 0 and jt < self.size:
-                    A[it, jt] = 1
+                    A[it, jt] = self.A_it_jt(it, jt)
         self.A = A
+
+    def A_it_jt(self, it, jt = 0):
+        """ This definec merw-interactions """
+        return 1
 
     def make_S(self):
         """ And that other one """
@@ -50,7 +60,8 @@ class Merwer(object):
         for it in range(self.size):
             for jt in range(self.size):
                 if V[jt] == 0:
-                    print 'this should never happen'
+                    # I don't know why this was here
+                    # print 'this should never happen'
                     S[it,jt] = 0.
                 else:
                     S[it,jt] = V[it]/V[jt] * self.A[it,jt]/d
@@ -87,12 +98,6 @@ class Merwer(object):
         # grid = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1] * 8
         self.interaction_grid = grid
 
-    def update_S(self):
-        """ Re-do the S matrix """
-        if self.S_update_needed:
-            self.make_A()
-            self.make_S()
-
     def set_emotional_parameter(self, happy):
         """ This shall grow """
         pass
@@ -113,9 +118,6 @@ class BiasedWalker(Merwer):
         # By default set bias to NO BIAS
         self.bias = -1
 
-        # TODO fiddle with that also
-        self.max_dist = 3
-
         # Init parent
         Merwer.__init__(self, values, first_id)
 
@@ -124,7 +126,6 @@ class BiasedWalker(Merwer):
         self.bias       = prefered
 
         # Update probabilities
-        # self.S_update_needed = True
         self.make_S()
 
     def A_it_jt(self, it, jt = 0):
@@ -140,24 +141,42 @@ class BiasedWalker(Merwer):
 
         return out
 
-    def make_A(self):
-        """ Special atraction matrix """
-        A = np.zeros((self.size, self.size))
-
-        # TODO This param should be manipulated!
-        max_dist = self.max_dist
-        for it in range(self.size):
-            for jt in range(it - max_dist, it + max_dist + 1):
-                if jt >= 0 and jt < self.size:
-                    A[it, jt] = self.A_it_jt(it, jt)
-        self.A = A
-
     def show_bias(self):
         """ Plot atractor """
         x = np.linspace(min(self.id_space), max(self.id_space), 1001)
         y = self.A_it_jt(x)
         plt.plot(x, y)
         plt.show()
+
+class PitchWalker(BiasedWalker):
+    """ Specialised for harmony manipulations """
+    def __init__(self, first_pitch):
+        """ el Creador, first pitch should lay on the scale? """
+        # MIDI note numbers for typical 8-octave keybord go 21::108
+        values = range(21, 109)
+        # TODO some try - except for value error might be useful
+        first_id = values.index(first_pitch)
+        self.interaction_grid = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]
+        BiasedWalker.__init__(self, values, first_id)
+
+    def shift_scale(self, shift):
+        """ This is importando """
+        self.interaction_grid = np.roll(self.interaction_grid, shift)
+        self.make_S()
+
+    def A_it_jt(self, it, jt = 0):
+        """ Pitch oriented A matrix definition """
+        # Find on-scale positions of the iterators
+        nit = it % len(self.interaction_grid)
+        njt = jt % len(self.interaction_grid)
+
+        # Only ones on interaction grid can play together
+        if self.interaction_grid[nit] == self.interaction_grid[njt] == 1:
+            pdf = up.tomek_pdf(self.bias)
+            return pdf(it)
+        else:
+            # TODO Why is this necessary?
+            return 0.001
 
 class TimeWalker(BiasedWalker):
     """ Rhytm lives here """

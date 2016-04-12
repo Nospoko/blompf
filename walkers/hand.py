@@ -46,6 +46,6 @@ class ExampleHand(Hand):
             if np.random.random() < 0.5:
                 finger.set_prefered_pitch(-1)
             else:
-                new_picz = 20 + np.floor(60.0 * np.random.random())
+                new_picz = 20 + np.floor(80.0 * np.random.random())
                 finger.set_prefered_pitch(new_picz)
 

@@ -37,8 +37,9 @@ def show_piano_roll(notes):
     # Get max time (time of start + duration)::of the last note
     total_time = notes[-1][1] + notes[-1][2]
 
+    # FIXME this does not scale properly for longer runs
     # Get number of samples
-    dt = 2**-4
+    dt = 2**-1
     nof_samples = total_time / dt + 1
     roll = np.zeros((nof_rows, nof_samples))
 
