@@ -66,6 +66,10 @@ class Merwer(object):
                     S[it,jt] = V[it]/V[jt] * self.A[it,jt]/d
         self.S = S
 
+    def get_histogram(self):
+        """ Research helper """
+        return self.id_space, self.histogram
+
     def show_histogram(self):
         """ Pretty please keep plots pretty """
         plt.bar(self.values, self.histogram, color = 'k', alpha = 0.5)
@@ -100,15 +104,6 @@ class Merwer(object):
     def set_emotional_parameter(self, happy):
         """ This shall grow """
         pass
-
-class VolumeWalker(Merwer):
-    """ Simplest neeeded implementation of mer walker """
-    def __init__(self, first_id):
-        """ fin: rakentaja """
-        # Possible midi volumes
-        values = range(128)
-        # Construct parent
-        Merwer.__init__(self, values, first_id)
 
 class BiasedWalker(Merwer):
     """ Walker atracted to some value """

@@ -1,6 +1,7 @@
 import numpy as np
 from utils import midi as um
 from walkers import merw as wm
+from matplotlib import pyplot as plt
 
 class Finger(object):
     """ Abstracts a separate human finger's piano abilities """
@@ -109,6 +110,7 @@ class MerwFinger(Finger):
         self.volume_walker  = wm.VolumeWalker(first_vol)
         # FIXME some id-value fuckup
         self.pitch_walker   = wm.PitchWalker(first_picz)
+
         # TODO This has to be some more complex creature
         self.time_walker = wm.TimeWalker(4)
 
@@ -137,3 +139,25 @@ class MerwFinger(Finger):
     def set_prefered_pitch(self, picz):
         """ sets the prefered pitch, bitch, -1 turn off """
         self.pitch_walker.set_bias(picz)
+
+    def show_histograms(self):
+        """ Show histograms from all of the random walkers """
+        v_vals, v_hist = self.volume_walker.get_histogram()
+        # One row, Three columns, first plot
+        plt.subplot(131)
+        plt.title('volume')
+        plt.bar(v_vals, v_hist, color='k', alpha=0.5)
+
+        p_ids, p_hist = self.pitch_walker.get_histogram()
+        # second plot
+        plt.subplot(132)
+        plt.title('pitch')
+        plt.bar(p_ids, p_hist, color='c', alpha=0.5)
+
+        t_ids, t_hist = self.time_walker.get_histogram()
+        # third
+        plt.subplot(133)
+        plt.title('durations (log)')
+        plt.bar(t_ids, t_hist, color='r', alpha=0.5)
+
+        plt.show()
