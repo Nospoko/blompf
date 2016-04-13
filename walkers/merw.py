@@ -191,7 +191,7 @@ class TimeWalker(BiasedWalker):
         """ nope """
         # Possible note values are always powers of 2
         # This is in ticks unit
-        values = [2**it for it in range(9)]
+        values = [2**it for it in range(1,9)]
 
         # Init parent
         BiasedWalker.__init__(self, values, first_id)

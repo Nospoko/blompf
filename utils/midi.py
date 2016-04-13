@@ -1,5 +1,5 @@
-from matplotlib import pyplot as plt
 import numpy as np
+from matplotlib import pyplot as plt
 from midiutil.MidiFile import MIDIFile
 
 # TODO make transition from ticks to seconds possible
@@ -15,11 +15,18 @@ def matrix_to_midi(notes, filename = 'dupa.mid'):
     mf.addTrackName(track, time, 'merw track')
 
     # Default
+    # FIXME tempo -- time relation is not well defined
     mf.addTempo(track, time, 120)
     channel = 0
 
+    time_per_tick = 2**-4
+
     for note in notes:
-        mf.addNote(track, channel, note[0], note[1], note[2], note[3])
+        pitch = note[0]
+        start = note[1] * time_per_tick
+        stop  = note[2] * time_per_tick
+        vol   = note[3]
+        mf.addNote(track, channel, pitch, start, stop, vol)
 
     # Save as file
     with open(filename, 'wb') as fout:
@@ -39,7 +46,7 @@ def show_piano_roll(notes):
 
     # FIXME this does not scale properly for longer runs
     # Get number of samples
-    dt = 2**-1
+    dt = 2**0
     nof_samples = total_time / dt + 1
     roll = np.zeros((nof_rows, nof_samples))
 

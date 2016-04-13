@@ -8,16 +8,19 @@ from walkers import merw as wm
 if __name__ == '__main__':
     """ what up """
     # How many steps will walker walk
-    nof_steps = 4000
+    nof_steps = 2500
 
     hand = wh.ExampleHand()
 
     for tick in range(nof_steps):
+        print tick
         if tick % 500 is 0:
             hand.twist_fingers()
         hand.play(tick)
 
     um.show_piano_roll(hand.get_notes())
+
+    um.matrix_to_midi(hand.get_notes())
 
     # TODO New interface:
     # hands = create_hands()

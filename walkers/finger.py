@@ -48,6 +48,11 @@ class Finger(object):
 
     def is_it_now(self, timetick):
         """ Rhytm depends on this function """
+        # TODO another walker could be in control of that
+        # Forced hit every so often
+        if timetick % 128 is 0:
+            return True
+
         if self.ticks_left is 0:
             return True
         else:
@@ -142,11 +147,11 @@ class MerwFinger(Finger):
 
     def show_histograms(self):
         """ Show histograms from all of the random walkers """
-        v_vals, v_hist = self.volume_walker.get_histogram()
+        v_ids, v_hist = self.volume_walker.get_histogram()
         # One row, Three columns, first plot
         plt.subplot(131)
         plt.title('volume')
-        plt.bar(v_vals, v_hist, color='k', alpha=0.5)
+        plt.bar(v_ids, v_hist, color='k', alpha=0.5)
 
         p_ids, p_hist = self.pitch_walker.get_histogram()
         # second plot
