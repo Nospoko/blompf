@@ -27,7 +27,6 @@ class Merwer(object):
 
         # Initialize probability matrices
         self.make_S()
-
         # FIXME those are not defects!
         # Prepare merw 'defects' (no defects by default)
         # self.interaction_grid = np.ones_like(self.values)
@@ -197,17 +196,8 @@ class TimeWalker(BiasedWalker):
         """ nope """
         # Possible note values are always powers of 2
         # This is in ticks unit
-        values = [2**it for it in range(8)]
-
-        # Count ticks to the next hit
-        self.ticks_left = 0
+        values = [2**it for it in range(9)]
 
         # Init parent
         BiasedWalker.__init__(self, values, first_id)
 
-    def is_it_now(self):
-        """ wat """
-        if self.ticks_left is 0:
-            return True
-        else:
-            self.ticks_left -= 1

@@ -6,7 +6,11 @@ class Finger(object):
     """ Abstracts a separate human finger's piano abilities """
     def __init__(self):
         """ yo """
+        # Init note container
         self.notes = []
+
+        # Start with a note
+        self.ticks_left = 0
 
     def clear(self):
         """ Remove all previously played notes """
@@ -29,19 +33,25 @@ class Finger(object):
 
     def make_note(self, timetick):
         """ Generates a new note played by this finger """
-        # TODO consider expressing time in ticks (int)
         note_start  = timetick
         # All of those must be implemented
         pitch       = self.next_pitch(timetick)
         duration    = self.next_duration(timetick)
         volume      = self.next_volume(timetick)
 
+        # Create note
         self.notes.append([pitch, note_start, duration, volume])
+
+        # Reset cunter
+        self.ticks_left = duration
 
     def is_it_now(self, timetick):
         """ Rhytm depends on this function """
-        # TODO this is fake
-        return np.random.random() > 0.5
+        if self.ticks_left is 0:
+            return True
+        else:
+            self.ticks_left -= 1
+            return False
 
     def next_pitch(self, timetick):
         """ Choose note """
@@ -95,24 +105,17 @@ class MerwFinger(Finger):
         Finger.__init__(self)
         # Init merwish walkers
         # TODO Make volume walker
-        self.volume_walker  = wm.BiasedWalker(range(128), 80)
+        first_vol           = 80
+        self.volume_walker  = wm.VolumeWalker(first_vol)
         # FIXME some id-value fuckup
         self.pitch_walker   = wm.PitchWalker(first_picz)
         # TODO This has to be some more complex creature
-        # self.time_walker    = wm.TimeWalker()
+        self.time_walker = wm.TimeWalker(4)
 
     def next_duration(self, timetick):
         """ Note length (value) in ticks """
-        # dur = self.time_walker.next_value()
-        # duration_merw.set_potentials(timetick)
-        # return duration_merw.get_next()
-        return 4
-
-    def is_it_now(self, timetick):
-        """ merw way of the rhythm """
-        # itis = self.time_walker.play_now(timetick)
-        itis = timetick % 16 is 0 or timetick % 27 is 0
-        return itis
+        dur = self.time_walker.next_value()
+        return dur
 
     def next_pitch(self, timetick):
         """ melody """
