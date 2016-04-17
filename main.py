@@ -5,17 +5,16 @@ from walkers import finger as wf
 from walkers import hand as wh
 from walkers import merw as wm
 
-if __name__ == '__main__':
-    """ what up """
+def main():
+    """ python main.py """
     # How many steps will walker walk
-    nof_steps = 2500
+    nof_steps = 2000
 
     hand = wh.ExampleHand()
 
     for tick in range(nof_steps):
-        print tick
-        if tick % 500 is 0:
-            hand.twist_fingers()
+        if tick % 200 is 0:
+            print tick
         hand.play(tick)
 
     um.show_piano_roll(hand.get_notes())
@@ -30,3 +29,9 @@ if __name__ == '__main__':
     #         finger.play(c_time)
     # notes = hands.get_notes()
     # create_midi(notes)
+
+    return hand
+
+if __name__ == '__main__':
+    """ what up """
+    hand = main()

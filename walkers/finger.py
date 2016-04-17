@@ -46,12 +46,19 @@ class Finger(object):
         # Reset cunter
         self.ticks_left = duration
 
+    def hitme(self):
+        """ Force this finger to play as soon """
+        self.ticks_left = 0
+
     def is_it_now(self, timetick):
         """ Rhytm depends on this function """
         # TODO another walker could be in control of that
         # Forced hit every so often
-        if timetick % 128 is 0:
-            return True
+        # if self.up_time_walker.now(timetick):
+        #     self.ticks_left = 0
+
+        # if timetick % 42 is 0:
+        #     self.ticks_left = 0
 
         if self.ticks_left is 0:
             return True
@@ -152,12 +159,14 @@ class MerwFinger(Finger):
         plt.subplot(131)
         plt.title('volume')
         plt.bar(v_ids, v_hist, color='k', alpha=0.5)
+        plt.xlim([0,128])
 
         p_ids, p_hist = self.pitch_walker.get_histogram()
         # second plot
         plt.subplot(132)
         plt.title('pitch')
         plt.bar(p_ids, p_hist, color='c', alpha=0.5)
+        plt.xlim([0,128])
 
         t_ids, t_hist = self.time_walker.get_histogram()
         # third

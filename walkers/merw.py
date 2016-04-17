@@ -13,7 +13,7 @@ class Merwer(object):
         self.size       = len(self.values)
 
         # TODO fiddle with that also
-        self.max_dist = 3
+        self.max_dist = 2
 
         # This is the walking element
         self.current_id = first_id
@@ -65,6 +65,13 @@ class Merwer(object):
                 else:
                     S[it,jt] = V[it]/V[jt] * self.A[it,jt]/d
         self.S = S
+
+    def set_max_step(self, howfar):
+        """ Length of a maximal jump """
+        self.max_dist = howfar
+
+        # Rebuild
+        self.make_S()
 
     def get_histogram(self):
         """ Research helper """
@@ -163,8 +170,22 @@ class PitchWalker(BiasedWalker):
         values = range(21, 109)
         # TODO some try - except for value error might be useful
         first_id = values.index(first_pitch)
-        self.interaction_grid = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]
+
+        # Major
+        self.major_grid = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]
+        self.minor_grid = [1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0]
+        self.interaction_grid = self.major_grid
         BiasedWalker.__init__(self, values, first_id)
+
+    def set_scale_major(self, is_major):
+        """ Argument is bool, False for minor """
+        if is_major:
+            self.interaction_grid = self.major_grid
+        else:
+            self.interaction_grid = self.minor_grid
+
+        # Update probabilities
+        self.make_S()
 
     def shift_scale(self, shift):
         """ This is importando """
@@ -196,3 +217,19 @@ class TimeWalker(BiasedWalker):
         # Init parent
         BiasedWalker.__init__(self, values, first_id)
 
+        # No sudden time changes
+        self.set_max_step(1)
+
+class UpTimeWalker(BiasedWalker):
+    """ Rhytm lives here """
+    def __init__(self, first_id):
+        """ nope """
+        # Possible note values are always powers of 2
+        # This is in ticks unit
+        values = [24*it for it in range(7)]
+
+        # Init parent
+        BiasedWalker.__init__(self, values, first_id)
+
+        # No sudden time changes
+        self.set_max_step(1)
