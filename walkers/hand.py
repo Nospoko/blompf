@@ -6,7 +6,7 @@ from utils import midi as um
 class Hand(object):
     """ Wrapper for multiple fingers """
     def __init__(self):
-        """ el creador """
+        """ el Creador """
         # Init finger container
         self.fingers = []
 
@@ -53,10 +53,12 @@ class ExampleHand(Hand):
         """ Whatever the wheather """
         if self.uptime_ticks_left is 0:
             # Play chord
-            print 'boom at', timetick
+            howmany = 0
             for fin in self.fingers:
                 if np.random.random() < 0.81:
                     fin.hitme()
+                    howmany += 1
+            print 'boom at', timetick, 'with {} fingers'.format(howmany)
 
             # Some other tricks
             self.twist_fingers()
@@ -70,14 +72,14 @@ class ExampleHand(Hand):
         """ Randomly set some prefered pitch values """
         # 
         if np.random.random() < 0.5:
-            go_major = np.random.random > 0.5
+            go_major = np.random.random() > 0.5
             print 'changin scale majority to', go_major
             for finger in self.fingers:
                 finger.pitch_walker.set_scale_major(go_major)
 
         # TODO Do the pitches correctly!
         for finger in self.fingers:
-            finger.pitch_walker.shift_scale(5)
+            finger.pitch_walker.shift_scale(4)
             if np.random.random() < 0.2:
                 finger.set_prefered_pitch(-1)
             else:

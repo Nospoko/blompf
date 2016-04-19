@@ -43,8 +43,8 @@ class Finger(object):
         # Create note
         self.notes.append([pitch, note_start, duration, volume])
 
-        # Reset cunter
-        self.ticks_left = duration
+        # Reset cunter (-1 acounts for something FIXME)
+        self.ticks_left = duration - 1
 
     def hitme(self):
         """ Force this finger to play as soon """
