@@ -138,7 +138,6 @@ class MerwFinger(Finger):
         picz = self.pitch_walker.next_value()
         return picz
 
-    # TODO This should be the simplest
     def next_volume(self, timetick):
         """ velocity """
         # Updates probabilities
@@ -151,6 +150,17 @@ class MerwFinger(Finger):
     def set_prefered_pitch(self, picz):
         """ sets the prefered pitch, bitch, -1 turn off """
         self.pitch_walker.set_bias(picz)
+
+    def set_prefered_speed(self, slowfastnone):
+        """ Sets how often notes are hit, arguments should be +1, 0, -1 """
+        if slowfastnone == 1:
+            bias = 6
+        if slowfastnone == -1:
+            bias = 1
+        if slowfastnone == 0:
+            bias = -1
+
+        self.time_walker.set_bias(bias)
 
     def show_histograms(self):
         """ Show histograms from all of the random walkers """

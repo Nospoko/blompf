@@ -46,7 +46,7 @@ class ExampleHand(Hand):
         self.uptime_ticks_left = 0
 
         # Add 5 fingers
-        for start in [30 + 7 * it for it in range(5)]:
+        for start in [30 + 11 * it for it in range(5)]:
             self.fingers.append(wf.MerwFinger(start))
 
     def special_tasks(self, timetick):
@@ -60,11 +60,18 @@ class ExampleHand(Hand):
                     howmany += 1
             print 'boom at', timetick, 'with {} fingers'.format(howmany)
 
+            # Shuffle speed
+            speeds = [-1, 0, +1]
+            speed = np.random.choice(speeds)
+            print 'changin speed to:', speed
+            for fin in self.fingers:
+                fin.set_prefered_speed(-1)
+
             # Some other tricks
             self.twist_fingers()
 
             # Reset cunter
-            self.uptime_ticks_left = self.uptime_walker.next_value()
+            self.uptime_ticks_left = self.uptime_walker.next_value() -1
         else:
             self.uptime_ticks_left -= 1
 
@@ -78,8 +85,16 @@ class ExampleHand(Hand):
                 finger.pitch_walker.set_scale_major(go_major)
 
         # TODO Do the pitches correctly!
+        if np.random.random() < 0.4:
+            shift = 3
+        else:
+            shift = -5
+        print 'scale shift:' , shift
         for finger in self.fingers:
-            finger.pitch_walker.shift_scale(4)
+            # Change scale in each finger
+            finger.pitch_walker.shift_scale(-5)
+
+            # And prefered value
             if np.random.random() < 0.2:
                 finger.set_prefered_pitch(-1)
             else:
