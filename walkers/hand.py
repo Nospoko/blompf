@@ -58,7 +58,7 @@ class ExampleHand(Hand):
             # Play chord
             howmany = 0
             for fin in self.fingers:
-                if np.random.random() < 0.91:
+                if np.random.random() < 0.81:
                     fin.hitme()
                     howmany += 1
             print 'boom at', timetick, 'with {} fingers'.format(howmany)
@@ -70,13 +70,21 @@ class ExampleHand(Hand):
             self.speed_histo.append(speed)
 
             for fin in self.fingers:
-                fin.set_prefered_speed(speed)
+                if np.random.random() < 0.81:
+                    fin.set_prefered_speed(speed)
 
             # Shift scale 3 up or 5 down
-            if np.random.random() < 0.5:
+            shift_factor = np.random.random()
+            if shift_factor < 0.2:
                 shift = 3
-            else:
+            elif shift_factor < 0.4:
                 shift = -5
+            elif shift_factor < 0.6:
+                shift = -3
+            elif shift_factor < 0.8:
+                shift = + 5
+            else:
+                shift = -4
 
             self.scale_histo.append(shift)
             print 'scale shift:', shift
