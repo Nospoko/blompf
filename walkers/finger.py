@@ -117,7 +117,6 @@ class MerwFinger(Finger):
         """ yonstructor """
         Finger.__init__(self)
         # Init merwish walkers
-        # TODO Make volume walker
         first_vol           = 80
         self.volume_walker  = wm.VolumeWalker(first_vol)
         # FIXME some id-value fuckup
@@ -153,8 +152,9 @@ class MerwFinger(Finger):
 
     def set_prefered_speed(self, slowfastnone):
         """ Sets how often notes are hit, arguments should be +1, 0, -1 """
+        # FIXME this is esoteric as fuck
         if slowfastnone == 1:
-            bias = 6
+            bias = 7
         if slowfastnone == -1:
             bias = 1
         if slowfastnone == 0:

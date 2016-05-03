@@ -226,7 +226,7 @@ class UpTimeWalker(BiasedWalker):
         """ nope """
         # Possible note values are always powers of 2
         # This is in ticks unit
-        values = [16*it for it in range(7)]
+        values = [2**it for it in range(3, 10)]
 
         # Init parent
         BiasedWalker.__init__(self, values, first_id)

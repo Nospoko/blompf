@@ -42,12 +42,15 @@ class ExampleHand(Hand):
         # Init parent
         Hand.__init__(self)
 
-        self.uptime_walker = wm.UpTimeWalker(4)
+        self.uptime_walker = wm.UpTimeWalker(2)
         self.uptime_ticks_left = 0
 
         # Add 5 fingers
         for start in [30 + 11 * it for it in range(5)]:
             self.fingers.append(wf.MerwFinger(start))
+
+        self.speed_histo = []
+        self.scale_histo = []
 
     def special_tasks(self, timetick):
         """ Whatever the wheather """
@@ -55,7 +58,7 @@ class ExampleHand(Hand):
             # Play chord
             howmany = 0
             for fin in self.fingers:
-                if np.random.random() < 0.81:
+                if np.random.random() < 0.91:
                     fin.hitme()
                     howmany += 1
             print 'boom at', timetick, 'with {} fingers'.format(howmany)
@@ -64,8 +67,30 @@ class ExampleHand(Hand):
             speeds = [-1, 0, +1]
             speed = np.random.choice(speeds)
             print 'changin speed to:', speed
+            self.speed_histo.append(speed)
+
             for fin in self.fingers:
-                fin.set_prefered_speed(-1)
+                fin.set_prefered_speed(speed)
+
+            # Shift scale 3 up or 5 down
+            if np.random.random() < 0.5:
+                shift = 3
+            else:
+                shift = -5
+
+            self.scale_histo.append(shift)
+            print 'scale shift:', shift
+            for finger in self.fingers:
+                # Change scale in each finger
+                finger.pitch_walker.shift_scale(shift)
+
+                # And prefered value
+                if np.random.random() < 0.2:
+                    finger.set_prefered_pitch(-1)
+                else:
+                    new_picz = 30 + np.floor(80.0 * np.random.random())
+                    # print 'set new picz:', new_picz
+                    finger.set_prefered_pitch(new_picz)
 
             # Some other tricks
             self.twist_fingers()
@@ -78,27 +103,9 @@ class ExampleHand(Hand):
     def twist_fingers(self):
         """ Randomly set some prefered pitch values """
         # 
-        if np.random.random() < 0.5:
+        if np.random.random() < 0.0:
             go_major = np.random.random() > 0.5
             print 'changin scale majority to', go_major
             for finger in self.fingers:
                 finger.pitch_walker.set_scale_major(go_major)
-
-        # TODO Do the pitches correctly!
-        if np.random.random() < 0.4:
-            shift = 3
-        else:
-            shift = -5
-        print 'scale shift:' , shift
-        for finger in self.fingers:
-            # Change scale in each finger
-            finger.pitch_walker.shift_scale(-5)
-
-            # And prefered value
-            if np.random.random() < 0.2:
-                finger.set_prefered_pitch(-1)
-            else:
-                new_picz = 30 + np.floor(80.0 * np.random.random())
-                print 'set new picz:', new_picz
-                finger.set_prefered_pitch(new_picz)
 
