@@ -195,8 +195,10 @@ class PitchWalker(BiasedWalker):
     def A_it_jt(self, it, jt = 0):
         """ Pitch oriented A matrix definition """
         # Find on-scale positions of the iterators
-        nit = it % len(self.interaction_grid)
-        njt = jt % len(self.interaction_grid)
+        # FIXME How to make sure we start w C-maj?
+        fix = -3
+        nit = it % len(self.interaction_grid) + fix
+        njt = jt % len(self.interaction_grid) + fix
 
         # Only ones on interaction grid can play together
         if self.interaction_grid[nit] == self.interaction_grid[njt] == 1:
@@ -226,7 +228,7 @@ class UpTimeWalker(BiasedWalker):
         """ nope """
         # Possible note values are always powers of 2
         # This is in ticks unit
-        values = [8 + 2**it for it in range(3, 9)]
+        values = [16 + 2**it for it in range(4, 8)]
 
         # Init parent
         BiasedWalker.__init__(self, values, first_id)

@@ -8,7 +8,7 @@ from walkers import merw as wm
 def main():
     """ python main.py """
     # How many steps will walker walk
-    nof_steps = 3500
+    nof_steps = 500
 
     hand = wh.ExampleHand()
 

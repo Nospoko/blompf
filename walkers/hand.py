@@ -46,7 +46,7 @@ class ExampleHand(Hand):
         self.uptime_ticks_left = 0
 
         # Add 5 fingers
-        for start in [30 + 11 * it for it in range(5)]:
+        for start in [36 + 12 * it for it in range(5)]:
             self.fingers.append(wf.MerwFinger(start))
 
         self.speed_histo = []
@@ -93,7 +93,7 @@ class ExampleHand(Hand):
             new_volumes = []
             for finger in self.fingers:
                 # Change scale in each finger
-                finger.pitch_walker.shift_scale(shift)
+                # finger.pitch_walker.shift_scale(shift)
 
                 # And prefered pitch value
                 if np.random.random() < 0.2:
