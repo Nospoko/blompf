@@ -61,10 +61,10 @@ class ExampleHand(Hand):
                 if np.random.random() < 0.81:
                     fin.hitme()
                     howmany += 1
-            print 'boom at', timetick, 'with {} fingers'.format(howmany)
+            print 'chord at', timetick, 'with {} fingers'.format(howmany)
 
-            # Shuffle speed
-            speeds = [-1, 0, +1]
+            # Shuffle speed (-1 as fast is set to be mre likely)
+            speeds = [-1, -1, 0, +1]
             speed = np.random.choice(speeds)
             print 'changin speed to:', speed
             self.speed_histo.append(speed)
@@ -78,27 +78,44 @@ class ExampleHand(Hand):
             if shift_factor < 0.2:
                 shift = 3
             elif shift_factor < 0.4:
-                shift = -5
+                shift = 5
             elif shift_factor < 0.6:
-                shift = -3
+                shift = 7
             elif shift_factor < 0.8:
-                shift = + 5
+                shift = 9
             else:
-                shift = -4
+                shift = -2
 
             self.scale_histo.append(shift)
             print 'scale shift:', shift
+
+            new_piczes = []
+            new_volumes = []
             for finger in self.fingers:
                 # Change scale in each finger
                 finger.pitch_walker.shift_scale(shift)
 
-                # And prefered value
+                # And prefered pitch value
                 if np.random.random() < 0.2:
                     finger.set_prefered_pitch(-1)
+                    new_piczes.append(-1)
                 else:
-                    new_picz = 30 + np.floor(80.0 * np.random.random())
+                    # TODO some meta-preference would be nice
+                    new_picz = 0 + np.floor(90.0 * np.random.random())
                     # print 'set new picz:', new_picz
                     finger.set_prefered_pitch(new_picz)
+                    new_piczes.append(new_picz)
+
+                if np.random.random() < 0.6:
+                    finger.set_prefered_volume(-1)
+                    new_volumes.append(-1)
+                else:
+                    new_vol = 30 + np.floor(80 * np.random.random())
+                    finger.set_prefered_volume(new_vol)
+                    new_volumes.append(new_vol)
+
+            print 'new piczes:', new_piczes
+            print 'new volumes:', new_volumes
 
             # Some other tricks
             self.twist_fingers()
@@ -110,7 +127,7 @@ class ExampleHand(Hand):
 
     def twist_fingers(self):
         """ Randomly set some prefered pitch values """
-        # 
+        # This is not happening
         if np.random.random() < 0.0:
             go_major = np.random.random() > 0.5
             print 'changin scale majority to', go_major

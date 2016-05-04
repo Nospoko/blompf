@@ -171,7 +171,7 @@ class PitchWalker(BiasedWalker):
         # TODO some try - except for value error might be useful
         first_id = values.index(first_pitch)
 
-        # Major
+        # Major           [C, -, D, -, E, F, -, G, -, A, -, H]
         self.major_grid = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]
         self.minor_grid = [1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0]
         self.interaction_grid = self.major_grid
@@ -226,10 +226,10 @@ class UpTimeWalker(BiasedWalker):
         """ nope """
         # Possible note values are always powers of 2
         # This is in ticks unit
-        values = [32 + 2**it for it in range(3, 8)]
+        values = [8 + 2**it for it in range(3, 9)]
 
         # Init parent
         BiasedWalker.__init__(self, values, first_id)
 
-        # No sudden time changes
-        self.set_max_step(1)
+        # No (very) sudden time changes
+        self.set_max_step(3)

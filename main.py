@@ -8,7 +8,7 @@ from walkers import merw as wm
 def main():
     """ python main.py """
     # How many steps will walker walk
-    nof_steps = 2000
+    nof_steps = 3500
 
     hand = wh.ExampleHand()
 
@@ -16,7 +16,7 @@ def main():
         hand.play(tick)
 
         if tick % 200 is 0:
-            print tick
+            print 'main loop is now at tick:', tick
 
     um.show_piano_roll(hand.get_notes())
 

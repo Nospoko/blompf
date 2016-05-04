@@ -48,6 +48,8 @@ class Finger(object):
 
     def hitme(self):
         """ Force this finger to play as soon """
+        if len(self.notes) > 0:
+            self.notes[-1][2] -= self.ticks_left
         self.ticks_left = 0
 
     def is_it_now(self, timetick):
@@ -161,6 +163,10 @@ class MerwFinger(Finger):
             bias = -1
 
         self.time_walker.set_bias(bias)
+
+    def set_prefered_volume(self, vol):
+        """ forte, piano """
+        self.volume_walker.set_bias(vol)
 
     def show_histograms(self):
         """ Show histograms from all of the random walkers """
