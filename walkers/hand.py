@@ -58,6 +58,9 @@ class ExampleHand(Hand):
         # Add special tasks
         # (chords, scale changes, and other power-ups)
 
+        # Assumes we start ad C-maj/A-min scale
+        self.scale_notes = [[60, 0, 4, 100]]
+
         self.speed_histo = []
         self.scale_histo = []
 
@@ -94,6 +97,11 @@ class ExampleHand(Hand):
                 shift = 3
             else:
                 shift = -7
+
+            # Move scale value from previous one
+            # FIXME uncertain about the sign here
+            scale_pitch = self.scale_notes[-1][0] - shift
+            self.scale_notes.append([scale_pitch, timetick, 4, 100])
 
             self.scale_histo.append(shift)
             print 'scale shift:', shift

@@ -22,6 +22,7 @@ def main():
     um.show_piano_roll(hand.get_notes())
 
     um.matrix_to_midi(hand.get_notes())
+    um.matrix_to_midi(hand.scale_notes, filename = 'scales.mid')
 
     return hand
 

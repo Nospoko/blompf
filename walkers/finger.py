@@ -156,10 +156,13 @@ class MerwFinger(Finger):
     def set_prefered_speed(self, slowfastnone):
         """ Sets how often notes are hit, arguments should be +1, 0, -1 """
         # FIXME this is esoteric as fuck
+        # Slow
         if slowfastnone == 1:
             bias = 7
+        # Fast
         if slowfastnone == -1:
             bias = 1
+        # Neither
         if slowfastnone == 0:
             bias = -1
 
