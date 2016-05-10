@@ -15,6 +15,7 @@ class Finger(object):
 
     def clear(self):
         """ Remove all previously played notes """
+        # FIXME histogram doesn't get cleared
         self.notes = []
 
     def get_notes(self):
@@ -48,6 +49,7 @@ class Finger(object):
 
     def hitme(self):
         """ Force this finger to play as soon """
+        # Last note should in that case end earlier than expected
         if len(self.notes) > 0:
             self.notes[-1][2] -= self.ticks_left
         self.ticks_left = 0
@@ -123,8 +125,7 @@ class MerwFinger(Finger):
         self.volume_walker  = wm.VolumeWalker(first_vol)
         # FIXME some id-value fuckup
         self.pitch_walker   = wm.PitchWalker(first_picz)
-
-        # TODO This has to be some more complex creature
+        # Note length are powers of 2 only
         self.time_walker = wm.TimeWalker(4)
 
     def next_duration(self, timetick):
@@ -191,3 +192,4 @@ class MerwFinger(Finger):
         plt.bar(t_ids, t_hist, color='r', alpha=0.5)
 
         plt.show()
+

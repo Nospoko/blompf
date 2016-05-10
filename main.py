@@ -1,14 +1,15 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from utils import midi as um
-from walkers import finger as wf
 from walkers import hand as wh
 from walkers import merw as wm
+import matplotlib.pyplot as plt
+from walkers import finger as wf
 
 def main():
     """ python main.py """
     # How many steps will walker walk
-    nof_steps = 500
+    # 2k ~ 60s
+    nof_steps = 1500
 
     hand = wh.ExampleHand()
 

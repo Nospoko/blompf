@@ -46,7 +46,7 @@ class Merwer(object):
         self.A = A
 
     def A_it_jt(self, it, jt = 0):
-        """ This definec merw-interactions """
+        """ This defines merw-interactions """
         return 1
 
     def make_S(self):
@@ -149,6 +149,25 @@ class BiasedWalker(Merwer):
         plt.plot(x, y)
         plt.show()
 
+class PotentialWalker(Merwer):
+    """ Walker with properly defined merw-potential """
+    def __init__(self, values, first_id):
+        """ This constructs """
+        Merwer.__init__(self, values, first_id)
+
+    def A_it_jt(self, it, jt = 0):
+        """ Interaction matrix including potential as defined by jd """
+        dist = abs(it - jt)
+        if dist == 2:
+            return 1
+        if dist == 1:
+            return 1
+        elif dist == 0:
+            out = 2 - 2.*(1.*(it - 5 )/len(self.values) )**2
+            return out
+        else:
+            return 0
+
 class VolumeWalker(BiasedWalker):
     """ Volume dedicated """
     def __init__(self, first_vol):
@@ -173,6 +192,7 @@ class PitchWalker(BiasedWalker):
 
         # Major           [C, -, D, -, E, F, -, G, -, A, -, H]
         self.major_grid = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]
+        # Minor
         self.minor_grid = [1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0]
         self.interaction_grid = self.major_grid
         BiasedWalker.__init__(self, values, first_id)
@@ -222,13 +242,18 @@ class TimeWalker(BiasedWalker):
         # No sudden time changes
         self.set_max_step(1)
 
+# TODO This should be a abstract walker with time values 
+# related to musical measures (larger scale than single notes)
 class UpTimeWalker(BiasedWalker):
     """ Rhytm lives here """
     def __init__(self, first_id):
         """ nope """
+        # FIXME This walker differes only by values from
+        # the other TimeWalker, ergo it's obsolete
+
         # Possible note values are always powers of 2
         # This is in ticks unit
-        values = [16 + 2**it for it in range(4, 8)]
+        values = [32 + 12*it for it in range(3, 8)]
 
         # Init parent
         BiasedWalker.__init__(self, values, first_id)
