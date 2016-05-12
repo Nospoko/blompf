@@ -59,10 +59,14 @@ class ExampleHand(Hand):
         # (chords, scale changes, and other power-ups)
 
         # Assumes we start ad C-maj/A-min scale
-        self.scale_notes = [[60, 0, 4, 100]]
+        self.scale_notes = [[62, 0, 40, 100]]
 
         self.speed_histo = []
         self.scale_histo = []
+
+    def get_scale_notes(self):
+        """ Return notes coresponding to the changes of scale """
+        return self.scale_notes
 
     def special_tasks(self, timetick):
         """ Whatever the wheather """
@@ -76,7 +80,7 @@ class ExampleHand(Hand):
             print 'chord at', timetick, 'with {} fingers'.format(howmany)
 
             # Shuffle speed (-1 as fast is set to be mre likely)
-            speeds = [-1, 0, +1]
+            speeds = [-1, -1, -1, 0, +1]
             speed = np.random.choice(speeds)
             print 'changin speed to:', speed
             self.speed_histo.append(speed)
@@ -88,20 +92,27 @@ class ExampleHand(Hand):
             # Shift scale 3 up or 5 down
             shift_factor = np.random.random()
             if shift_factor < 0.2:
-                shift = 3
+                shift = 7
             elif shift_factor < 0.4:
                 shift = 5
             elif shift_factor < 0.6:
                 shift = 5
             elif shift_factor < 0.8:
-                shift = 3
+                shift = 7
             else:
                 shift = -7
 
             # Move scale value from previous one
             # FIXME uncertain about the sign here
             scale_pitch = self.scale_notes[-1][0] - shift
-            self.scale_notes.append([scale_pitch, timetick, 4, 100])
+
+            # Prevent going off the keyboard
+            if scale_pitch < 60:
+                scale_pitch += 12
+            elif scale_pitch >= 72:
+                scale_pitch -= 12
+
+            self.scale_notes.append([scale_pitch, timetick, 40, 100])
 
             self.scale_histo.append(shift)
             print 'scale shift:', shift
@@ -110,7 +121,7 @@ class ExampleHand(Hand):
             new_volumes = []
             for finger in self.fingers:
                 # Change scale in each finger
-                finger.pitch_walker.shift_scale(shift)
+                # finger.pitch_walker.shift_scale(shift)
 
                 # And prefered pitch value
                 if np.random.random() < 0.2:

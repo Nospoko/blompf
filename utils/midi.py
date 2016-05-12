@@ -53,7 +53,7 @@ def show_piano_roll(notes):
     for note in notes:
         # FIXME no kurwa co to za fuszera
         # Pitch - 30 ::: index 
-        note_it = note[0] - 0
+        note_it = note[0]
 
         # Time ids
         start_id = note[1] / dt

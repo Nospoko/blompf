@@ -216,7 +216,8 @@ class PitchWalker(BiasedWalker):
         """ Pitch oriented A matrix definition """
         # Find on-scale positions of the iterators
         # FIXME How to make sure we start w C-maj?
-        fix = -3
+        # +/- 2 is required still
+        fix = -3 - 2
         nit = it % len(self.interaction_grid) + fix
         njt = jt % len(self.interaction_grid) + fix
 
