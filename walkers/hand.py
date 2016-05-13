@@ -49,17 +49,17 @@ class ExampleHand(Hand):
         Hand.__init__(self)
 
         self.uptime_walker = wm.UpTimeWalker(2)
-        self.uptime_ticks_left = 0
+        self.uptime_ticks_left = 32
 
         # Add 5 fingers
-        for start in [36 + 12 * it for it in range(5)]:
+        for start in [48 + 12 * it for it in range(5)]:
             self.fingers.append(wf.MerwFinger(start))
 
         # Add special tasks
         # (chords, scale changes, and other power-ups)
 
         # Assumes we start ad C-maj/A-min scale
-        self.scale_notes = [[62, 0, 40, 100]]
+        self.scale_notes = [[60, 0, 40, 100]]
 
         self.speed_histo = []
         self.scale_histo = []
@@ -111,11 +111,7 @@ class ExampleHand(Hand):
                 scale_pitch += 12
             elif scale_pitch >= 72:
                 scale_pitch -= 12
-
             self.scale_notes.append([scale_pitch, timetick, 40, 100])
-
-            self.scale_histo.append(shift)
-            print 'scale shift:', shift
 
             new_piczes = []
             new_volumes = []

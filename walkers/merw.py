@@ -192,20 +192,8 @@ class PitchWalker(BiasedWalker):
 
         # Major           [C, -, D, -, E, F, -, G, -, A, -, H]
         self.major_grid = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]
-        # Minor
-        self.minor_grid = [1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0]
         self.interaction_grid = self.major_grid
         BiasedWalker.__init__(self, values, first_id)
-
-    def set_scale_major(self, is_major):
-        """ Argument is bool, False for minor """
-        if is_major:
-            self.interaction_grid = self.major_grid
-        else:
-            self.interaction_grid = self.minor_grid
-
-        # Update probabilities
-        self.make_S()
 
     def shift_scale(self, shift):
         """ This is importando """
@@ -215,11 +203,12 @@ class PitchWalker(BiasedWalker):
     def A_it_jt(self, it, jt = 0):
         """ Pitch oriented A matrix definition """
         # Find on-scale positions of the iterators
-        # FIXME How to make sure we start w C-maj?
-        # +/- 2 is required still
-        fix = -3 - 2
-        nit = it % len(self.interaction_grid) + fix
-        njt = jt % len(self.interaction_grid) + fix
+        vit = self.values[it]
+        vjt = self.values[jt]
+
+        # Modulo octave
+        nit = vit % len(self.interaction_grid)
+        njt = vjt % len(self.interaction_grid)
 
         # Only ones on interaction grid can play together
         if self.interaction_grid[nit] == self.interaction_grid[njt] == 1:
@@ -227,7 +216,7 @@ class PitchWalker(BiasedWalker):
             return pdf(it)
         else:
             # TODO Why is this necessary?
-            return 0.001
+            return 0.000000001
 
 class TimeWalker(BiasedWalker):
     """ Rhytm lives here """
