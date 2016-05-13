@@ -104,7 +104,7 @@ class ExampleHand(Hand):
 
             # Move scale value from previous one
             # FIXME uncertain about the sign here
-            scale_pitch = self.scale_notes[-1][0] - shift
+            scale_pitch = self.scale_notes[-1][0] + shift
 
             # Prevent going off the keyboard
             if scale_pitch < 60:
@@ -117,7 +117,7 @@ class ExampleHand(Hand):
             new_volumes = []
             for finger in self.fingers:
                 # Change scale in each finger
-                # finger.pitch_walker.shift_scale(shift)
+                finger.pitch_walker.shift_scale(shift)
 
                 # And prefered pitch value
                 if np.random.random() < 0.2:
