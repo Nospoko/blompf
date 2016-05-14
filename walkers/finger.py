@@ -13,6 +13,8 @@ class Finger(object):
         # Start with a note
         self.ticks_left = 0
 
+        print 'finger was created'
+
     def clear(self):
         """ Remove all previously played notes """
         # FIXME histogram doesn't get cleared

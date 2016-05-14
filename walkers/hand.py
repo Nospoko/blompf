@@ -8,9 +8,12 @@ class Hand(object):
     def __init__(self):
         """ el Creador """
         # Init finger container
-        self.fingers = []
+        self.fingers        = []
         # Meta-walkers container as well
-        self.specials = []
+        # Those are different object so we need a dict to differentiate
+        # (Altough currently this feature is not used)
+        # Each of the meta walkers must have a .play(timetick) method
+        self.meta_walkers   = {}
 
     def get_notes(self):
         """ Concetanated notes from each finger """
@@ -39,7 +42,8 @@ class Hand(object):
 
     def special_tasks(self, timestick):
         """ All kinds of things """
-        pass
+        for walker in self.meta_walkers.itervalues():
+            walker.play(timetick)
 
 class ExampleHand(Hand):
     """ Wrapper for multiple fingers """
@@ -48,18 +52,32 @@ class ExampleHand(Hand):
         # Init parent
         Hand.__init__(self)
 
+        # FIXME this is shit
         self.uptime_walker = wm.UpTimeWalker(2)
         self.uptime_ticks_left = 32
 
         # Add 5 fingers
-        for start in [48 + 12 * it for it in range(5)]:
-            self.fingers.append(wf.MerwFinger(start))
+        for start in [50 + 12 * it for it in range(5)]:
+            finger = wf.MerwFinger(start)
+            # Go to D-maj
+            finger.pitch_walker.shift_scale(2)
+            self.fingers.append(finger)
+
+        # TODO Is this what you want
+        # Each should have its own TimeWalker
+        # We also might want to move it to the abstract parent
+        chord_walker = wm.ChordWalker(self.fingers)
+        self.meta_walkers.update({'chord' : chord_walker})
+        # scale_walker = wm.ScaleWalker(self.fingers)
+        # self.meta_walkers.update({'scale' : scale_walker})
+        # speed_walker = wm.SpeedWalker(self.fingers)
+        # self.meta_walkers.update({'speed' : speed_walker})
 
         # Add special tasks
         # (chords, scale changes, and other power-ups)
 
         # Assumes we start ad C-maj/A-min scale
-        self.scale_notes = [[60, 0, 40, 100]]
+        self.scale_notes = [[62, 0, 40, 100]]
 
         self.speed_histo = []
         self.scale_histo = []
@@ -70,11 +88,14 @@ class ExampleHand(Hand):
 
     def special_tasks(self, timetick):
         """ Whatever the wheather """
+        # FIXME this here for tmp
+        for walker in self.meta_walkers.itervalues():
+            walker.play(timetick)
         if self.uptime_ticks_left is 0:
             # Play chord
             howmany = 0
             for fin in self.fingers:
-                if np.random.random() < 0.81:
+                if np.random.random() < 0.71:
                     fin.hitme()
                     howmany += 1
             print 'chord at', timetick, 'with {} fingers'.format(howmany)
@@ -92,15 +113,15 @@ class ExampleHand(Hand):
             # Shift scale 3 up or 5 down
             shift_factor = np.random.random()
             if shift_factor < 0.2:
-                shift = 7
+                shift = 5
             elif shift_factor < 0.4:
-                shift = 5
+                shift = 3
             elif shift_factor < 0.6:
-                shift = 5
+                shift = -5
             elif shift_factor < 0.8:
-                shift = 7
+                shift = -5
             else:
-                shift = -7
+                shift = -3
 
             # Move scale value from previous one
             # FIXME uncertain about the sign here
@@ -120,7 +141,7 @@ class ExampleHand(Hand):
                 finger.pitch_walker.shift_scale(shift)
 
                 # And prefered pitch value
-                if np.random.random() < 0.2:
+                if np.random.random() < 0.15:
                     finger.set_prefered_pitch(-1)
                     new_piczes.append(-1)
                 else:

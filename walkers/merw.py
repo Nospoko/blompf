@@ -216,7 +216,7 @@ class PitchWalker(BiasedWalker):
             return pdf(it)
         else:
             # TODO Why is this necessary?
-            return 0.000000001
+            return 0.00000000001
 
 class TimeWalker(BiasedWalker):
     """ Rhytm lives here """
@@ -243,10 +243,30 @@ class UpTimeWalker(BiasedWalker):
 
         # Possible note values are always powers of 2
         # This is in ticks unit
-        values = [32 + 12*it for it in range(3, 8)]
+        values = [8 + 4*it for it in range(2, 6)]
 
         # Init parent
         BiasedWalker.__init__(self, values, first_id)
 
         # No (very) sudden time changes
         self.set_max_step(3)
+
+# Everything below probably deserves its own file
+class ChordWalker(object):
+    """ This forces all of the hands fingers to hit a chord """
+    def __init__(self, fingers):
+        """ Reference to the finger list is obligatory here """
+        self.fingers = fingers
+        # TODO Real timewalker is needed here, fuck
+        self.ticks_left = 10
+
+    def play(self, timetick):
+        """ Do your job """
+        if self.ticks_left == 0:
+            howmany = 0
+            for finger in self.fingers:
+                if np.random.random() < 0.71:
+                    finger.hitme()
+                    howmany += 1
+
+            print 'Chord at {} with {} fingers'.format(timetick, howmany)

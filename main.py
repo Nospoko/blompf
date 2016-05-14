@@ -6,11 +6,11 @@ from walkers import merw as wm
 import matplotlib.pyplot as plt
 from walkers import finger as wf
 
-def main():
+def main(prefix = ''):
     """ python main.py """
     # How many steps will walker walk
     # 2k ~ 60s
-    nof_steps = 1500
+    nof_steps = 512
 
     hand = wh.ExampleHand()
 
@@ -20,18 +20,21 @@ def main():
         if tick % 200 is 0:
             print 'main loop is now at tick:', tick
 
-    um.show_piano_roll(hand.get_notes())
+    # Show full piano-roll
+    # um.show_piano_roll(hand.get_notes())
 
-    um.matrix_to_midi(hand.get_notes())
-    print 'Notes saved'
+    midipath = 'scores/'
 
-    # FIXME some midi writing fuckup (not my fault)
-    um.show_piano_roll(hand.get_scale_notes())
-    # print 'Time waited'
+    handfile = midipath + prefix + 'hand.mid'
+    um.matrix_to_midi(hand.get_notes(), handfile)
+    print 'Notes saved to: ', handfile
 
-    print 'Number of scale shifts:', len(hand.get_scale_notes())
-    um.matrix_to_midi(hand.get_scale_notes(), 'scales.mid')
-    print 'Scales saved'
+    # Show key-only piano-roll
+    # um.show_piano_roll(hand.get_scale_notes())
+
+    scalefile = midipath + prefix + 'scales.mid'
+    um.matrix_to_midi(hand.get_scale_notes(), scalefile)
+    print 'Scales saved to: ', scalefile
 
     return hand
 
