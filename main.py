@@ -10,7 +10,7 @@ def main(prefix = ''):
     """ python main.py """
     # How many steps will walker walk
     # 2k ~ 60s
-    nof_steps = 512
+    nof_steps = 2*512
 
     hand = wh.ExampleHand()
 
@@ -29,20 +29,21 @@ def main(prefix = ''):
     um.matrix_to_midi(hand.get_notes(), handfile)
     print 'Notes saved to: ', handfile
 
-    # Show key-only piano-roll
-    # um.show_piano_roll(hand.get_scale_notes())
-
-    scalefile = midipath + prefix + 'scales.mid'
-    um.matrix_to_midi(hand.get_scale_notes(), scalefile)
-    print 'Scales saved to: ', scalefile
-
     # Show chord-only piano-roll
     chord_notes = hand.meta_walkers['chord'].get_notes()
-    um.show_piano_roll(chord_notes)
+    # um.show_piano_roll(chord_notes)
 
     chordfile = midipath + prefix + 'chords.mid'
     um.matrix_to_midi(chord_notes, chordfile)
     print 'Chords saved to: ', chordfile
+
+    # Show key-only piano-roll
+    scale_notes = hand.meta_walkers['scale'].get_notes()
+    # um.show_piano_roll(scale_notes)
+
+    scalefile = midipath + prefix + 'scales.mid'
+    um.matrix_to_midi(scale_notes, scalefile)
+    print 'Scales saved to: ', scalefile
 
     return hand
 

@@ -57,7 +57,7 @@ class ExampleHand(Hand):
         self.uptime_ticks_left = 32
 
         # Add 5 fingers
-        for start in [50 + 12 * it for it in range(5)]:
+        for start in [48 + 12 * it for it in range(5)]:
             finger = wf.MerwFinger(start)
             # Go to D-maj
             finger.pitch_walker.shift_scale(2)
@@ -68,23 +68,12 @@ class ExampleHand(Hand):
         # We also might want to move it to the abstract parent
         chord_walker = wm.ChordWalker(self.fingers)
         self.meta_walkers.update({'chord' : chord_walker})
-        # scale_walker = wm.ScaleWalker(self.fingers)
-        # self.meta_walkers.update({'scale' : scale_walker})
+        scale_walker = wm.ScaleWalker(self.fingers)
+        self.meta_walkers.update({'scale' : scale_walker})
         # speed_walker = wm.SpeedWalker(self.fingers)
         # self.meta_walkers.update({'speed' : speed_walker})
 
-        # Add special tasks
-        # (chords, scale changes, and other power-ups)
-
-        # Assumes we start ad C-maj/A-min scale
-        self.scale_notes = [[62, 0, 40, 100]]
-
         self.speed_histo = []
-        self.scale_histo = []
-
-    def get_scale_notes(self):
-        """ Return notes coresponding to the changes of scale """
-        return self.scale_notes
 
     def special_tasks(self, timetick):
         """ Whatever the wheather """
@@ -100,37 +89,7 @@ class ExampleHand(Hand):
             self.speed_histo.append(speed)
 
             for fin in self.fingers:
-                if np.random.random() < 1.81:
-                    fin.set_prefered_speed(speed)
-
-            # Shift scale 3 up or 5 down
-            shift_factor = np.random.random()
-            if shift_factor < 0.2:
-                shift = 5
-            elif shift_factor < 0.4:
-                shift = 3
-            elif shift_factor < 0.6:
-                shift = -5
-            elif shift_factor < 0.8:
-                shift = -5
-            else:
-                shift = -3
-
-            # Move scale value from previous one
-            # FIXME uncertain about the sign here
-            scale_pitch = self.scale_notes[-1][0] + shift
-
-            # Prevent going off the keyboard
-            if scale_pitch < 60:
-                scale_pitch += 12
-            elif scale_pitch >= 72:
-                scale_pitch -= 12
-            self.scale_notes.append([scale_pitch, timetick, 40, 100])
-
-            # Set new scales
-            for finger in self.fingers:
-                # in each finger
-                finger.pitch_walker.shift_scale(shift)
+                fin.set_prefered_speed(speed)
 
             # Shuffle volumes
             new_volumes = []
@@ -145,7 +104,6 @@ class ExampleHand(Hand):
 
             print 'new volumes:', new_volumes
 
-
             # Shuffle piczes
             new_piczes = []
             for finger in self.fingers:
@@ -155,7 +113,7 @@ class ExampleHand(Hand):
                     new_piczes.append(-1)
                 else:
                     # TODO some meta-preference would be nice
-                    new_picz = 0 + np.floor(90.0 * np.random.random())
+                    new_picz = 0 + np.floor(100.0 * np.random.random())
                     # print 'set new picz:', new_picz
                     finger.set_prefered_pitch(new_picz)
                     new_piczes.append(new_picz)

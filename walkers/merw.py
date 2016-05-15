@@ -243,7 +243,7 @@ class UpTimeWalker(BiasedWalker):
 
         # Possible note values are always powers of 2
         # This is in ticks unit
-        values = [8 + 4*it for it in range(2, 6)]
+        values = [8 + 8*it for it in range(3, 7)]
 
         # Init parent
         BiasedWalker.__init__(self, values, first_id)
@@ -261,7 +261,8 @@ class HandWalker(object):
         self.fingers = fingers
 
         self.time_walker = TimeWalker(3)
-        self.ticks_left = self.time_walker.next_value()
+        # Starts with a chord
+        self.ticks_left = 0
 
         # We want to get MIDI files out of this as well
         self.notes = []
@@ -318,12 +319,63 @@ class ChordWalker(HandWalker):
                     # Forces finger to play at this timetick
                     finger.hitme()
                     howmany += 1
-            print 'Chord at {} with {} fingers'.format(timetick, howmany)
+            print 'Chord at {} with {} fingers | time {}'\
+                    .format(timetick, howmany, timetick)
 
-            # Takie note
+            # Take note
             self.notes.append([60, timetick, 16, 80])
 
             # Reset cunter
             self.ticks_left = duration - 1
         else:
             pass
+
+# TODO this should control the interaction grid
+class ScaleWalker(HandWalker):
+    """ This is used to control the scale hand is playing on """
+    def __init__(self, fingers):
+        """ el Creador """
+        HandWalker.__init__(self, fingers)
+
+        # Do not start with a scale change
+        self.ticks_left = self.next_duration(0)
+
+        # But keep track from the beginning
+        self.notes.append([60, 0, 40, 100])
+
+    def play(self, timetick):
+        """ ayayay """
+        if self.is_it_now(timetick):
+            # How long till the next chord strucks
+            duration = self.next_duration(timetick)
+
+            # Shift scale 
+            if np.random.random() < 0.5:
+                shift = 5
+            else:
+                shift = 7
+
+            # Move scale value from previous one
+            scale_pitch = self.notes[-1][0] + shift
+
+            # Prevent going off the keyboard
+            if scale_pitch < 60:
+                scale_pitch += 12
+            elif scale_pitch >= 72:
+                scale_pitch -= 12
+
+            self.notes.append([scale_pitch, timetick, 40, 100])
+
+            print 'Moving scale to {} | time = {}'\
+                    .format(scale_pitch, timetick)
+
+            # Set new scales
+            for finger in self.fingers:
+                # in each finger
+                finger.pitch_walker.shift_scale(shift)
+
+            # Reset cunter
+            self.ticks_left = duration - 1
+        else:
+            pass
+
