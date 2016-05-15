@@ -253,17 +253,17 @@ class UpTimeWalker(BiasedWalker):
 
 # Everything below probably deserves its own file
 # And this could probably be something abstract
-class ChordWalker(object):
-    """ This forces all of the hands fingers to hit a chord """
+class HandWalker(object):
+    """ Abstract class for walkers of the hand """
     def __init__(self, fingers):
         """ Reference to the finger list is obligatory here """
+        # TODO add/remove fingers?
         self.fingers = fingers
-        # TODO Real timewalker is needed here, fuck
-        self.ticks_left = 16
 
         self.time_walker = TimeWalker(3)
+        self.ticks_left = self.time_walker.next_value()
 
-        # We need to know later when chords happend
+        # We want to get MIDI files out of this as well
         self.notes = []
 
     def next_duration(self, timetick):
@@ -276,8 +276,34 @@ class ChordWalker(object):
         if self.ticks_left == 0:
             return True
         else:
+            # Iterate
             self.ticks_left -= 1
             return False
+
+    def get_notes(self):
+        """ Returns notes showing activity of this walker """
+        # range(-1) is empty list
+        for it in range(len(self.notes)-1):
+            new_dur = self.notes[it+1][1] - self.notes[it][1]-1
+            self.notes[it][2] = new_dur
+
+        return self.notes
+
+    def play(self, timetick):
+        """ This should be overriden """
+        # Keep this kind of logic in your walkers:
+        if self.is_it_now(timetick):
+            self.ticks_left -= 1
+            dur = self.next_duration()
+            self.ticks_left = dur - 1
+        else:
+            pass
+
+class ChordWalker(HandWalker):
+    """ This forces all of the hands fingers to hit a chord """
+    def __init__(self, fingers):
+        """ yo """
+        HandWalker.__init__(self, fingers)
 
     def play(self, timetick):
         """ Do your job """
@@ -287,13 +313,15 @@ class ChordWalker(object):
 
             howmany = 0
             for finger in self.fingers:
+                # TODO This should be a parameter
                 if np.random.random() < 0.71:
+                    # Forces finger to play at this timetick
                     finger.hitme()
                     howmany += 1
             print 'Chord at {} with {} fingers'.format(timetick, howmany)
 
             # Takie note
-            self.notes.append([60, timetick, 4, 80])
+            self.notes.append([60, timetick, 16, 80])
 
             # Reset cunter
             self.ticks_left = duration - 1

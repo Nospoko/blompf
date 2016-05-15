@@ -91,15 +91,8 @@ class ExampleHand(Hand):
         # FIXME this here for tmp
         for walker in self.meta_walkers.itervalues():
             walker.play(timetick)
-        if self.uptime_ticks_left is 0:
-            # Play chord
-            # howmany = 0
-            # for fin in self.fingers:
-            #     if np.random.random() < 0.71:
-            #         fin.hitme()
-            #         howmany += 1
-            # print 'chord at', timetick, 'with {} fingers'.format(howmany)
 
+        if self.uptime_ticks_left is 0:
             # Shuffle speed (-1 as fast is set to be mre likely)
             speeds = [-1, -1, -1, 0, +1]
             speed = np.random.choice(speeds)
@@ -134,12 +127,28 @@ class ExampleHand(Hand):
                 scale_pitch -= 12
             self.scale_notes.append([scale_pitch, timetick, 40, 100])
 
-            new_piczes = []
-            new_volumes = []
+            # Set new scales
             for finger in self.fingers:
-                # Change scale in each finger
+                # in each finger
                 finger.pitch_walker.shift_scale(shift)
 
+            # Shuffle volumes
+            new_volumes = []
+            for finger in self.fingers:
+                if np.random.random() < 0.6:
+                    finger.set_prefered_volume(-1)
+                    new_volumes.append(-1)
+                else:
+                    new_vol = 30 + np.floor(80 * np.random.random())
+                    finger.set_prefered_volume(new_vol)
+                    new_volumes.append(new_vol)
+
+            print 'new volumes:', new_volumes
+
+
+            # Shuffle piczes
+            new_piczes = []
+            for finger in self.fingers:
                 # And prefered pitch value
                 if np.random.random() < 0.15:
                     finger.set_prefered_pitch(-1)
@@ -151,16 +160,7 @@ class ExampleHand(Hand):
                     finger.set_prefered_pitch(new_picz)
                     new_piczes.append(new_picz)
 
-                if np.random.random() < 0.6:
-                    finger.set_prefered_volume(-1)
-                    new_volumes.append(-1)
-                else:
-                    new_vol = 30 + np.floor(80 * np.random.random())
-                    finger.set_prefered_volume(new_vol)
-                    new_volumes.append(new_vol)
-
             print 'new piczes:', new_piczes
-            print 'new volumes:', new_volumes
 
             # Reset cunter
             self.uptime_ticks_left = self.uptime_walker.next_value() -1
