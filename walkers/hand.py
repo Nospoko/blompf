@@ -93,12 +93,12 @@ class ExampleHand(Hand):
             walker.play(timetick)
         if self.uptime_ticks_left is 0:
             # Play chord
-            howmany = 0
-            for fin in self.fingers:
-                if np.random.random() < 0.71:
-                    fin.hitme()
-                    howmany += 1
-            print 'chord at', timetick, 'with {} fingers'.format(howmany)
+            # howmany = 0
+            # for fin in self.fingers:
+            #     if np.random.random() < 0.71:
+            #         fin.hitme()
+            #         howmany += 1
+            # print 'chord at', timetick, 'with {} fingers'.format(howmany)
 
             # Shuffle speed (-1 as fast is set to be mre likely)
             speeds = [-1, -1, -1, 0, +1]

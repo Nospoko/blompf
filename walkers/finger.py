@@ -137,17 +137,11 @@ class MerwFinger(Finger):
 
     def next_pitch(self, timetick):
         """ melody """
-        # pitchmerw.set_something_depending_on_the(timetick)
-        # return pitchmerw.get_next()
         picz = self.pitch_walker.next_value()
         return picz
 
     def next_volume(self, timetick):
         """ velocity """
-        # Updates probabilities
-        # self.volume_walker.set_time(timetick)
-
-        # Makes a step
         vol = self.volume_walker.next_value()
         return vol
 

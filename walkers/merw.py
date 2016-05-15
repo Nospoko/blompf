@@ -252,21 +252,50 @@ class UpTimeWalker(BiasedWalker):
         self.set_max_step(3)
 
 # Everything below probably deserves its own file
+# And this could probably be something abstract
 class ChordWalker(object):
     """ This forces all of the hands fingers to hit a chord """
     def __init__(self, fingers):
         """ Reference to the finger list is obligatory here """
         self.fingers = fingers
         # TODO Real timewalker is needed here, fuck
-        self.ticks_left = 10
+        self.ticks_left = 16
+
+        self.time_walker = TimeWalker(3)
+
+        # We need to know later when chords happend
+        self.notes = []
+
+    def next_duration(self, timetick):
+        """ Wtf """
+        dur = self.time_walker.next_value()
+        return dur
+
+    def is_it_now(self, timetick):
+        """ Timekeeping """
+        if self.ticks_left == 0:
+            return True
+        else:
+            self.ticks_left -= 1
+            return False
 
     def play(self, timetick):
         """ Do your job """
-        if self.ticks_left == 0:
+        if self.is_it_now(timetick):
+            # How long till the next chord strucks
+            duration = self.next_duration(timetick)
+
             howmany = 0
             for finger in self.fingers:
                 if np.random.random() < 0.71:
                     finger.hitme()
                     howmany += 1
-
             print 'Chord at {} with {} fingers'.format(timetick, howmany)
+
+            # Takie note
+            self.notes.append([60, timetick, 4, 80])
+
+            # Reset cunter
+            self.ticks_left = duration - 1
+        else:
+            pass
