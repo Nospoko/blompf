@@ -338,7 +338,7 @@ class ScaleWalker(HandWalker):
 
         # TODO Make it a thing
         # Add some twist:
-        self.time_walker.values = [40 + 10 * it for it in range(10)]
+        # self.time_walker.values = [40 + 10 * it for it in range(10)]
 
         # Do not start with a scale change
         self.ticks_left = self.next_duration(0)
@@ -361,10 +361,12 @@ class ScaleWalker(HandWalker):
             duration = self.next_duration(timetick)
 
             # Maybe Shift scale 
-            if np.random.random() < 0.2:
-                shift = 5
-            else:
-                shift = -3
+            shift = 0
+            if np.random.random() < 0.3:
+                if np.random.random() < 0.2:
+                    shift = 5
+                else:
+                    shift = -3
 
             # Cumulate shift
             self.shift += shift
@@ -383,16 +385,21 @@ class ScaleWalker(HandWalker):
             print 'Moving scale by {} | time = {}'\
                     .format(self.shift, timetick)
 
+            # Maybe for each finger separateley?
             # Set new scales
             rndm = np.random.random()
             if rndm < 0.2:
                 scale = np.roll(self.domin_grid, self.shift)
+                print 'Dominanta!'
             elif rndm < 0.4:
                 scale = np.roll(self.tonic_grid, self.shift)
+                print 'Tonika!'
             elif rndm < 0.6:
                 scale = np.roll(self.subdo_grid, self.shift)
+                print 'Subdominanta!'
             else:
                 scale = np.roll(self.c_maj_grid, self.shift)
+                print 'Wszystko!'
 
             for finger in self.fingers:
                 # in each finger

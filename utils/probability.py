@@ -27,6 +27,10 @@ def choice(normalized_weights):
 def randomly_draw(values, probabilities):
     """ Changes probability into reality """
     idx = choice(probabilities)
+
+    if idx >= len(values):
+        print 'WTF about to fuckup'
+        print ids, values, probabilities
     return values[idx]
 
 def cauchy_pdf(x0, gamma):
