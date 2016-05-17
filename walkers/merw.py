@@ -363,10 +363,8 @@ class ScaleWalker(HandWalker):
             # Maybe Shift scale 
             shift = 0
             if np.random.random() < 0.3:
-                if np.random.random() < 0.2:
-                    shift = 5
-                else:
-                    shift = -3
+                shifts = range(10)
+                shift = np.random.choice(shifts)
 
             # Cumulate shift
             self.shift += shift

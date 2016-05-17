@@ -59,8 +59,6 @@ class ExampleHand(Hand):
         # Add 5 fingers
         for start in [48 + 12 * it for it in range(5)]:
             finger = wf.MerwFinger(start)
-            # Go to D-maj
-            finger.pitch_walker.shift_scale(2)
             self.fingers.append(finger)
 
         # TODO Is this what you want
@@ -98,7 +96,7 @@ class ExampleHand(Hand):
                     finger.set_prefered_volume(-1)
                     new_volumes.append(-1)
                 else:
-                    new_vol = 30 + np.floor(80 * np.random.random())
+                    new_vol = 10 + np.floor(110 * np.random.random())
                     finger.set_prefered_volume(new_vol)
                     new_volumes.append(new_vol)
 
@@ -106,6 +104,13 @@ class ExampleHand(Hand):
 
             # Shuffle piczes
             new_piczes = []
+
+            # Make them go sometimes low or sometimes high
+            if np.random.random() < 0.5:
+                low = 0
+            else:
+                low = 40
+
             for finger in self.fingers:
                 # And prefered pitch value
                 if np.random.random() < 0.15:
@@ -113,8 +118,8 @@ class ExampleHand(Hand):
                     new_piczes.append(-1)
                 else:
                     # TODO some meta-preference would be nice
-                    # 88 is number of keys on our keyboard
-                    new_picz = 0 + np.floor(88.0 * np.random.random())
+                    # 88 is the number of keys on our keyboard
+                    new_picz = low + np.floor(48.0 * np.random.random())
                     # print 'set new picz:', new_picz
                     finger.set_prefered_pitch(new_picz)
                     new_piczes.append(new_picz)
@@ -125,3 +130,7 @@ class ExampleHand(Hand):
             self.uptime_ticks_left = self.uptime_walker.next_value() -1
         else:
             self.uptime_ticks_left -= 1
+
+    def get_scale_notes(self):
+        """ Notes of the scale """
+        return self.meta_walkers['scale'].get_notes()

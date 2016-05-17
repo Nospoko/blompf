@@ -123,7 +123,7 @@ class MerwFinger(Finger):
         """ yonstructor """
         Finger.__init__(self)
         # Init merwish walkers
-        first_vol           = 80
+        first_vol           = 70
         self.volume_walker  = wm.VolumeWalker(first_vol)
         # FIXME some id-value fuckup
         self.pitch_walker   = wm.PitchWalker(first_picz)

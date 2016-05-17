@@ -20,7 +20,7 @@ def choice(normalized_weights):
     """ Returns id of randomly chosen weight """
     cdf_vals = cdf(normalized_weights)
     x = np.random.random()
-    # Seems important
+    # Seems important (can fuck things up though on the right edge)
     idx = bs.bisect(cdf_vals, x)
     return idx
 
@@ -29,8 +29,9 @@ def randomly_draw(values, probabilities):
     idx = choice(probabilities)
 
     if idx >= len(values):
-        print 'WTF about to fuckup'
-        print ids, values, probabilities
+        idx = len(values)-1
+        idx = 0
+        print 'halp | randomly_draw()'
     return values[idx]
 
 def cauchy_pdf(x0, gamma):
