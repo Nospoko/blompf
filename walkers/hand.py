@@ -113,7 +113,8 @@ class ExampleHand(Hand):
                     new_piczes.append(-1)
                 else:
                     # TODO some meta-preference would be nice
-                    new_picz = 0 + np.floor(100.0 * np.random.random())
+                    # 88 is number of keys on our keyboard
+                    new_picz = 0 + np.floor(88.0 * np.random.random())
                     # print 'set new picz:', new_picz
                     finger.set_prefered_pitch(new_picz)
                     new_piczes.append(new_picz)

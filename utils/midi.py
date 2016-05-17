@@ -12,7 +12,7 @@ def matrix_to_midi(notes, filename = 'matrix.mid'):
 
     track = 0
     time = 0
-    mf.addTrackName(track, time, filename[:-4])
+    mf.addTrackName(track, time, filename[6:-4])
 
     # Default
     # FIXME tempo -- time relation is not well defined
@@ -51,7 +51,6 @@ def show_piano_roll(notes):
     roll = np.zeros((nof_rows, nof_samples))
 
     for note in notes:
-        # FIXME no kurwa co to za fuszera
         # Pitch - 30 ::: index 
         note_it = note[0]
 

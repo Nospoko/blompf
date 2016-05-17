@@ -27,9 +27,6 @@ class Merwer(object):
 
         # Initialize probability matrices
         self.make_S()
-        # FIXME those are not defects!
-        # Prepare merw 'defects' (no defects by default)
-        # self.interaction_grid = np.ones_like(self.values)
 
     def make_A(self):
         """ Prepare A-matrix """
@@ -107,10 +104,6 @@ class Merwer(object):
         # Something like:
         # grid = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1] * 8
         self.interaction_grid = grid
-
-    def set_emotional_parameter(self, happy):
-        """ This shall grow """
-        pass
 
 class BiasedWalker(Merwer):
     """ Walker atracted to some value """
@@ -194,6 +187,12 @@ class PitchWalker(BiasedWalker):
         self.major_grid = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]
         self.interaction_grid = self.major_grid
         BiasedWalker.__init__(self, values, first_id)
+
+        self.set_max_step(4)
+
+    def set_scale(self, grid):
+        """ Avaiable notes are defined by this 1/0 grid """
+        self.interaction_grid = grid
 
     def shift_scale(self, shift):
         """ This is importando """
@@ -337,9 +336,21 @@ class ScaleWalker(HandWalker):
         """ el Creador """
         HandWalker.__init__(self, fingers)
 
+        # TODO Make it a thing
+        # Add some twist:
+        self.time_walker.values = [40 + 10 * it for it in range(10)]
+
         # Do not start with a scale change
         self.ticks_left = self.next_duration(0)
 
+        self.shift = 0
+        # Major           [C, -, D, -, E, F, -, G, -, A, -, H]
+        self.c_maj_grid = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]
+        self.tonic_grid = [1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0]
+        self.subdo_grid = [1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0]
+        self.domin_grid = [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1]
+
+        # FIXME This should not be hard-coded in here
         # But keep track from the beginning
         self.notes.append([60, 0, 40, 100])
 
@@ -349,11 +360,14 @@ class ScaleWalker(HandWalker):
             # How long till the next chord strucks
             duration = self.next_duration(timetick)
 
-            # Shift scale 
-            if np.random.random() < 0.5:
+            # Maybe Shift scale 
+            if np.random.random() < 0.2:
                 shift = 5
             else:
-                shift = 7
+                shift = -3
+
+            # Cumulate shift
+            self.shift += shift
 
             # Move scale value from previous one
             scale_pitch = self.notes[-1][0] + shift
@@ -366,13 +380,23 @@ class ScaleWalker(HandWalker):
 
             self.notes.append([scale_pitch, timetick, 40, 100])
 
-            print 'Moving scale to {} | time = {}'\
-                    .format(scale_pitch, timetick)
+            print 'Moving scale by {} | time = {}'\
+                    .format(self.shift, timetick)
 
             # Set new scales
+            rndm = np.random.random()
+            if rndm < 0.2:
+                scale = np.roll(self.domin_grid, self.shift)
+            elif rndm < 0.4:
+                scale = np.roll(self.tonic_grid, self.shift)
+            elif rndm < 0.6:
+                scale = np.roll(self.subdo_grid, self.shift)
+            else:
+                scale = np.roll(self.c_maj_grid, self.shift)
+
             for finger in self.fingers:
                 # in each finger
-                finger.pitch_walker.shift_scale(shift)
+                finger.set_scale(scale)
 
             # Reset cunter
             self.ticks_left = duration - 1

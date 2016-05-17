@@ -145,6 +145,10 @@ class MerwFinger(Finger):
         vol = self.volume_walker.next_value()
         return vol
 
+    def set_scale(self, scale):
+        """ Sets the scale grid """
+        self.pitch_walker.set_scale(scale)
+
     def set_prefered_pitch(self, picz):
         """ sets the prefered pitch, bitch, -1 turn off """
         self.pitch_walker.set_bias(picz)
