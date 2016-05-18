@@ -59,6 +59,8 @@ class ExampleHand(Hand):
         # Add 5 fingers
         for start in [48 + 12 * it for it in range(5)]:
             finger = wf.MerwFinger(start)
+            # This might allow chord only walks over the whole piano
+            finger.pitch_walker.set_max_step(5)
             self.fingers.append(finger)
 
         # TODO Is this what you want
@@ -81,7 +83,7 @@ class ExampleHand(Hand):
 
         if self.uptime_ticks_left is 0:
             # Shuffle speed (-1 as fast is set to be mre likely)
-            speeds = [-1, -1, -1, 0, +1]
+            speeds = [-1, 0, 0, +1]
             speed = np.random.choice(speeds)
             print 'changin speed to:', speed
             self.speed_histo.append(speed)
@@ -106,7 +108,7 @@ class ExampleHand(Hand):
             new_piczes = []
 
             # Make them go sometimes low or sometimes high
-            if np.random.random() < 0.5:
+            if np.random.random() < 0.8:
                 low = 0
             else:
                 low = 40

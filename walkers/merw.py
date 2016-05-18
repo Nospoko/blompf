@@ -193,7 +193,10 @@ class PitchWalker(BiasedWalker):
     def set_scale(self, grid):
         """ Avaiable notes are defined by this 1/0 grid """
         self.interaction_grid = grid
+        # UPDATE NEEDED KURWA
+        self.make_S()
 
+    # OBSOLETE ?
     def shift_scale(self, shift):
         """ This is importando """
         self.interaction_grid = np.roll(self.interaction_grid, shift)
@@ -284,7 +287,7 @@ class HandWalker(object):
         """ Returns notes showing activity of this walker """
         # range(-1) is empty list
         for it in range(len(self.notes)-1):
-            new_dur = self.notes[it+1][1] - self.notes[it][1]-1
+            new_dur = self.notes[it+1][1] - self.notes[it][1]-0
             self.notes[it][2] = new_dur
 
         return self.notes
