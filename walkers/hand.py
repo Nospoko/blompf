@@ -108,7 +108,8 @@ class ExampleHand(Hand):
             new_piczes = []
 
             # Make them go sometimes low or sometimes high
-            if np.random.random() < 0.8:
+            # TODO comprehend this into a 3-state up/down/off
+            if np.random.random() < 0.7:
                 low = 0
             else:
                 low = 40
@@ -121,7 +122,7 @@ class ExampleHand(Hand):
                 else:
                     # TODO some meta-preference would be nice
                     # 88 is the number of keys on our keyboard
-                    new_picz = low + np.floor(48.0 * np.random.random())
+                    new_picz = 0 + np.floor(88.0 * np.random.random())
                     # print 'set new picz:', new_picz
                     finger.set_prefered_pitch(new_picz)
                     new_piczes.append(new_picz)

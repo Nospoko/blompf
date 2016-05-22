@@ -360,13 +360,13 @@ class ScaleWalker(HandWalker):
     def play(self, timetick):
         """ ayayay """
         if self.is_it_now(timetick):
-            # How long till the next chord strucks
+            # How long till the next scale change
             duration = self.next_duration(timetick)
 
             # Maybe Shift scale 
             shift = 0
             if np.random.random() < 0.3:
-                shifts = range(10)
+                shifts = range(4)
                 shift = np.random.choice(shifts)
 
             # Cumulate shift

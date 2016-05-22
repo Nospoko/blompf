@@ -1,4 +1,5 @@
 import time
+import string
 import numpy as np
 from utils import midi as um
 from walkers import hand as wh
@@ -6,11 +7,18 @@ from walkers import merw as wm
 import matplotlib.pyplot as plt
 from walkers import finger as wf
 
-def main(prefix = ''):
+def main():
     """ python main.py """
+    # Prepare random two-letter prefix
+    low = string.ascii_lowercase
+    prefix = "".join(list(np.random.choice(list(low), 2)))
+    prefix += '_'
+
+    print 'Generated prefix: ', prefix
+
     # How many steps will walker walk
     # 2k ~ 60s
-    nof_steps = 8*512
+    nof_steps = 10*512
 
     hand = wh.ExampleHand()
 
