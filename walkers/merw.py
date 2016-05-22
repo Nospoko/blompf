@@ -332,7 +332,6 @@ class ChordWalker(HandWalker):
         else:
             pass
 
-# TODO this should control the interaction grid
 class ScaleWalker(HandWalker):
     """ This is used to control the scale hand is playing on """
     def __init__(self, fingers):
@@ -352,6 +351,9 @@ class ScaleWalker(HandWalker):
         self.tonic_grid = [1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0]
         self.subdo_grid = [1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0]
         self.domin_grid = [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1]
+        self.third_grid = [0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1]
+        self.weird_grid = [0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0]
+        self._grid_cunter = 0
 
         # FIXME This should not be hard-coded in here
         # But keep track from the beginning
@@ -365,8 +367,9 @@ class ScaleWalker(HandWalker):
 
             # Maybe Shift scale 
             shift = 0
-            if np.random.random() < 0.3:
-                shifts = range(4)
+            if np.random.random() < 0.2:
+                # range(4)
+                shifts = [0, 1, 2, 3]
                 shift = np.random.choice(shifts)
 
             # Cumulate shift
@@ -388,19 +391,47 @@ class ScaleWalker(HandWalker):
 
             # Maybe for each finger separateley?
             # Set new scales
-            rndm = np.random.random()
-            if rndm < 0.2:
-                scale = np.roll(self.domin_grid, self.shift)
-                print 'Dominanta!'
-            elif rndm < 0.4:
-                scale = np.roll(self.tonic_grid, self.shift)
-                print 'Tonika!'
-            elif rndm < 0.6:
-                scale = np.roll(self.subdo_grid, self.shift)
-                print 'Subdominanta!'
+            # Randomistically
+            if True:
+                rndm = np.random.random()
+                if rndm < 0.2:
+                    scale = np.roll(self.domin_grid, self.shift)
+                    print '---> Dominanta!'
+                elif rndm < 0.4:
+                    scale = np.roll(self.tonic_grid, self.shift)
+                    print '---> Tonika!'
+                elif rndm < 0.6:
+                    scale = np.roll(self.subdo_grid, self.shift)
+                    print '---> Subdominanta!'
+                elif rndm < 0.7:
+                    scale = np.roll(self.third_grid, self.shift)
+                    print '---> Ten trzeci'
+                elif rndm < 0.9:
+                    scale = np.roll(self.weird_grid, self.shift)
+                    print '---> Dafuq chord'
+                else:
+                    scale = np.roll(self.c_maj_grid, self.shift)
+                    print '---> Wszystko!'
             else:
-                scale = np.roll(self.c_maj_grid, self.shift)
-                print 'Wszystko!'
+                # Deterministically
+                which = self._grid_cunter % 5
+                self._grid_cunter += 1
+                if which is 0:
+                    scale = np.roll(self.tonic_grid, self.shift)
+                    print 'Deterministic tonic'
+                elif which is 1:
+                    scale = np.roll(self.subdo_grid, self.shift)
+                    print 'Subdominanta!'
+                elif which is 2:
+                    scale = np.roll(self.domin_grid, self.shift)
+                    print 'Dominanta!'
+                # elif which is 3:
+                #     scale = np.roll(self.third_grid, self.shift)
+                #     print 'Ten trzeci'
+                else:
+                    scale = np.roll(self.c_maj_grid, self.shift)
+                    print 'Wszystko!'
+
 
             for finger in self.fingers:
                 # in each finger

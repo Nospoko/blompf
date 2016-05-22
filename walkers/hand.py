@@ -56,8 +56,10 @@ class ExampleHand(Hand):
         self.uptime_walker = wm.UpTimeWalker(2)
         self.uptime_ticks_left = 32
 
-        # Add 5 fingers
-        for start in [48 + 12 * it for it in range(5)]:
+        # Add 5 fingers [C E G c c]
+        # Those are the zero-notes from which we jump
+        # onto the first ones
+        for start in [50, 43, 48, 36]:
             finger = wf.MerwFinger(start)
             # This might allow chord only walks over the whole piano
             finger.pitch_walker.set_max_step(5)
@@ -68,6 +70,11 @@ class ExampleHand(Hand):
         # We also might want to move it to the abstract parent
         chord_walker = wm.ChordWalker(self.fingers)
         self.meta_walkers.update({'chord' : chord_walker})
+
+        # b_chord_walker = wm.ChordWalker(self.fingers)
+        # b_chord_walker.time_walker.values = [32+8*it for it in range(6)]
+        # self.meta_walkers.update({'chord_b' : b_chord_walker})
+
         scale_walker = wm.ScaleWalker(self.fingers)
         self.meta_walkers.update({'scale' : scale_walker})
         # speed_walker = wm.SpeedWalker(self.fingers)
@@ -122,7 +129,7 @@ class ExampleHand(Hand):
                 else:
                     # TODO some meta-preference would be nice
                     # 88 is the number of keys on our keyboard
-                    new_picz = 0 + np.floor(88.0 * np.random.random())
+                    new_picz = 0 + np.floor(40.0 * np.random.random())
                     # print 'set new picz:', new_picz
                     finger.set_prefered_pitch(new_picz)
                     new_piczes.append(new_picz)
