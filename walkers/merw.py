@@ -170,6 +170,9 @@ class VolumeWalker(BiasedWalker):
         first_id    = first_vol
         BiasedWalker.__init__(self, values, first_id)
 
+        # By default allow more distinct volume changes
+        self.set_max_step(8)
+
     def set_volume(self, vol):
         """ simple """
         self.set_bias(vol)
@@ -317,7 +320,7 @@ class ChordWalker(HandWalker):
             howmany = 0
             for finger in self.fingers:
                 # TODO This should be a parameter
-                if np.random.random() < 0.71:
+                if np.random.random() < 0.81:
                     # Forces finger to play at this timetick
                     finger.hitme()
                     howmany += 1
@@ -367,10 +370,11 @@ class ScaleWalker(HandWalker):
 
             # Maybe Shift scale 
             shift = 0
-            if np.random.random() < 0.2:
+            if np.random.random() < 0.02:
                 # range(4)
                 shifts = [0, 1, 2, 3]
                 shift = np.random.choice(shifts)
+                print 'SCALE CHANGE | --- ', shift
 
             # Cumulate shift
             self.shift += shift
@@ -386,35 +390,26 @@ class ScaleWalker(HandWalker):
 
             self.notes.append([scale_pitch, timetick, 40, 100])
 
-            print 'Moving scale by {} | time = {}'\
-                    .format(self.shift, timetick)
-
             # Maybe for each finger separateley?
             # Set new scales
             # Randomistically
-            if True:
+            if not True:
                 rndm = np.random.random()
-                if rndm < 0.2:
+                if rndm < 0.25:
                     scale = np.roll(self.domin_grid, self.shift)
                     print '---> Dominanta!'
-                elif rndm < 0.4:
+                elif rndm < 0.5:
                     scale = np.roll(self.tonic_grid, self.shift)
                     print '---> Tonika!'
-                elif rndm < 0.6:
+                elif rndm < 0.75:
                     scale = np.roll(self.subdo_grid, self.shift)
                     print '---> Subdominanta!'
-                elif rndm < 0.7:
-                    scale = np.roll(self.third_grid, self.shift)
-                    print '---> Ten trzeci'
-                elif rndm < 0.9:
-                    scale = np.roll(self.weird_grid, self.shift)
-                    print '---> Dafuq chord'
                 else:
                     scale = np.roll(self.c_maj_grid, self.shift)
                     print '---> Wszystko!'
             else:
                 # Deterministically
-                which = self._grid_cunter % 5
+                which = self._grid_cunter % 4
                 self._grid_cunter += 1
                 if which is 0:
                     scale = np.roll(self.tonic_grid, self.shift)
@@ -429,8 +424,8 @@ class ScaleWalker(HandWalker):
                 #     scale = np.roll(self.third_grid, self.shift)
                 #     print 'Ten trzeci'
                 else:
-                    scale = np.roll(self.c_maj_grid, self.shift)
-                    print 'Wszystko!'
+                    scale = np.roll(self.tonic_grid, self.shift)
+                    print 'Tonic!'
 
 
             for finger in self.fingers:

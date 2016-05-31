@@ -1,4 +1,5 @@
 import time
+import pickle
 import string
 import numpy as np
 from utils import midi as um
@@ -18,7 +19,7 @@ def main():
 
     # How many steps will walker walk
     # 2k ~ 60s
-    nof_steps = 4*512
+    nof_steps = 2*512
 
     hand = wh.ExampleHand()
 
@@ -52,6 +53,11 @@ def main():
     scalefile = midipath + prefix + 'scales.mid'
     um.matrix_to_midi(scale_notes, scalefile)
     print 'Scales saved to: ', scalefile
+
+    savepath = prefix + 'yo.pickle'
+    with open(savepath, 'wb') as fout:
+        pickle.dump(hand.get_notes(), fout)
+    print ' Hand notes array saved to: ', savepath
 
     return hand
 

@@ -59,10 +59,10 @@ class ExampleHand(Hand):
         # Add 5 fingers [C E G c c]
         # Those are the zero-notes from which we jump
         # onto the first ones
-        for start in [50, 43, 48, 36]:
+        for start in [50, 43, 48, 36, 62]:
             finger = wf.MerwFinger(start)
             # This might allow chord only walks over the whole piano
-            finger.pitch_walker.set_max_step(5)
+            finger.pitch_walker.set_max_step(4)
             self.fingers.append(finger)
 
         # TODO Is this what you want
@@ -90,7 +90,7 @@ class ExampleHand(Hand):
 
         if self.uptime_ticks_left is 0:
             # Shuffle speed (-1 as fast is set to be mre likely)
-            speeds = [-1, 0, 0, +1]
+            speeds = [-1, -1, 0, +1]
             speed = np.random.choice(speeds)
             print 'changin speed to:', speed
             self.speed_histo.append(speed)
@@ -101,15 +101,15 @@ class ExampleHand(Hand):
             # Shuffle volumes
             new_volumes = []
             for finger in self.fingers:
-                if np.random.random() < 0.6:
+                if np.random.random() < 0.3:
                     finger.set_prefered_volume(-1)
                     new_volumes.append(-1)
                 else:
-                    new_vol = 10 + np.floor(110 * np.random.random())
+                    new_vol = 30 + np.floor(80 * np.random.random())
                     finger.set_prefered_volume(new_vol)
                     new_volumes.append(new_vol)
 
-            print 'new volumes:', new_volumes
+            print 'Volumes:', new_volumes
 
             # Shuffle piczes
             new_piczes = []
@@ -129,7 +129,7 @@ class ExampleHand(Hand):
                 else:
                     # TODO some meta-preference would be nice
                     # 88 is the number of keys on our keyboard
-                    new_picz = 0 + np.floor(40.0 * np.random.random())
+                    new_picz = 0 + np.floor(88.0 * np.random.random())
                     # print 'set new picz:', new_picz
                     finger.set_prefered_pitch(new_picz)
                     new_piczes.append(new_picz)

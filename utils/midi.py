@@ -12,7 +12,7 @@ def matrix_to_midi(notes, filename = 'matrix.mid'):
 
     track = 0
     time = 0
-    mf.addTrackName(track, time, filename[6:-4])
+    mf.addTrackName(track, time, filename[7:-4])
 
     # Default
     # FIXME tempo -- time relation is not well defined
