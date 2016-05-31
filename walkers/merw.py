@@ -257,7 +257,6 @@ class UpTimeWalker(BiasedWalker):
         self.set_max_step(3)
 
 # Everything below probably deserves its own file
-# And this could probably be something abstract
 class HandWalker(object):
     """ Abstract class for walkers of the hand """
     def __init__(self, fingers):
@@ -370,7 +369,7 @@ class ScaleWalker(HandWalker):
 
             # Maybe Shift scale 
             shift = 0
-            if np.random.random() < 0.02:
+            if np.random.random() < 0.42:
                 # range(4)
                 shifts = [0, 1, 2, 3]
                 shift = np.random.choice(shifts)

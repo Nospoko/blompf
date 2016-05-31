@@ -59,10 +59,10 @@ class ExampleHand(Hand):
         # Add 5 fingers [C E G c c]
         # Those are the zero-notes from which we jump
         # onto the first ones
-        for start in [50, 43, 48, 36, 62]:
+        for start in [50, 43, 48, 67, 62]:
             finger = wf.MerwFinger(start)
             # This might allow chord only walks over the whole piano
-            finger.pitch_walker.set_max_step(4)
+            finger.pitch_walker.set_max_step(5)
             self.fingers.append(finger)
 
         # TODO Is this what you want
@@ -71,9 +71,10 @@ class ExampleHand(Hand):
         chord_walker = wm.ChordWalker(self.fingers)
         self.meta_walkers.update({'chord' : chord_walker})
 
-        # b_chord_walker = wm.ChordWalker(self.fingers)
+        # Chord walking duet
+        b_chord_walker = wm.ChordWalker(self.fingers)
         # b_chord_walker.time_walker.values = [32+8*it for it in range(6)]
-        # self.meta_walkers.update({'chord_b' : b_chord_walker})
+        self.meta_walkers.update({'chord_b' : b_chord_walker})
 
         scale_walker = wm.ScaleWalker(self.fingers)
         self.meta_walkers.update({'scale' : scale_walker})
@@ -92,7 +93,7 @@ class ExampleHand(Hand):
             # Shuffle speed (-1 as fast is set to be mre likely)
             speeds = [-1, -1, 0, +1]
             speed = np.random.choice(speeds)
-            print 'changin speed to:', speed
+            print 'SPEED +++ |', speed
             self.speed_histo.append(speed)
 
             for fin in self.fingers:
@@ -105,7 +106,7 @@ class ExampleHand(Hand):
                     finger.set_prefered_volume(-1)
                     new_volumes.append(-1)
                 else:
-                    new_vol = 30 + np.floor(80 * np.random.random())
+                    new_vol = 50 + np.floor(70 * np.random.random())
                     finger.set_prefered_volume(new_vol)
                     new_volumes.append(new_vol)
 
