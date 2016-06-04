@@ -231,6 +231,9 @@ class TimeWalker(BiasedWalker):
         # This is in ticks unit
         values = [2**it for it in range(1,9)]
 
+        # TODO is this good
+        values[0] = 8
+
         # Init parent
         BiasedWalker.__init__(self, values, first_id)
 
@@ -308,6 +311,7 @@ class ChordWalker(HandWalker):
     """ This forces all of the hands fingers to hit a chord """
     def __init__(self, fingers):
         """ yo """
+        # TODO This seems unnecessary
         HandWalker.__init__(self, fingers)
 
     def play(self, timetick):
@@ -323,7 +327,7 @@ class ChordWalker(HandWalker):
                     # Forces finger to play at this timetick
                     finger.hitme()
                     howmany += 1
-            print 'Chord at {} with {} fingers | time {}'\
+            print 'ooo Chord at {} with {} fingers | time {}'\
                     .format(timetick, howmany, timetick)
 
             # Take note
@@ -340,6 +344,7 @@ class ScaleWalker(HandWalker):
         """ el Creador """
         HandWalker.__init__(self, fingers)
 
+        self.time_walker.current_id += 3
         # TODO Make it a thing
         # Add some twist:
         # self.time_walker.values = [40 + 10 * it for it in range(10)]
@@ -371,9 +376,9 @@ class ScaleWalker(HandWalker):
             shift = 0
             if np.random.random() < 0.42:
                 # range(4)
-                shifts = [0, 1, 2, 3]
+                shifts = range(5)
                 shift = np.random.choice(shifts)
-                print 'SCALE CHANGE | --- ', shift
+                print '--- SCALE CHANGE | ', shift
 
             # Cumulate shift
             self.shift += shift
@@ -392,17 +397,20 @@ class ScaleWalker(HandWalker):
             # Maybe for each finger separateley?
             # Set new scales
             # Randomistically
-            if not True:
+            if True:
                 rndm = np.random.random()
                 if rndm < 0.25:
                     scale = np.roll(self.domin_grid, self.shift)
                     print '---> Dominanta!'
-                elif rndm < 0.5:
+                elif rndm < 0.3:
                     scale = np.roll(self.tonic_grid, self.shift)
                     print '---> Tonika!'
-                elif rndm < 0.75:
+                elif rndm < 0.5:
                     scale = np.roll(self.subdo_grid, self.shift)
                     print '---> Subdominanta!'
+                # elif rndm < 0.89:
+                #     scale = np.roll(self.weird_grid , self.shift)
+                #     print '---> Awkward!'
                 else:
                     scale = np.roll(self.c_maj_grid, self.shift)
                     print '---> Wszystko!'
@@ -435,4 +443,33 @@ class ScaleWalker(HandWalker):
             self.ticks_left = duration - 1
         else:
             pass
+
+class MetaVolumeWalker(HandWalker):
+    """ Volume dynamics controller """
+    def __init__(self, fingers):
+        """ Konstruktor """
+        # Seems obsolete
+        HandWalker.__init__(self, fingers)
+
+    def play(self, timetick):
+        """ Do your job """
+        if self.is_it_now(timetick):
+            # How long till the next chord strucks
+            duration = self.next_duration(timetick)
+
+            new_volumes = []
+            for finger in self.fingers:
+                if np.random.random() < 0.81:
+                    new_vol = 50 + np.floor(70 * np.random.random())
+                    finger.set_prefered_volume(new_vol)
+                    new_volumes.append(new_vol)
+                else:
+                    # Turn off
+                    finger.set_prefered_volume(-1)
+                    new_volumes.append(-1)
+
+            # Reset cunter
+            self.ticks_left = duration - 1
+
+            print '---> Volumes set: ', new_volumes, ' |', timetick
 

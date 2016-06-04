@@ -19,15 +19,13 @@ def main():
 
     # How many steps will walker walk
     # 2k ~ 60s
-    nof_steps = 4*512
+    nof_steps = 2*512
 
     hand = wh.ExampleHand()
 
+    # Make music
     for tick in range(nof_steps):
         hand.play(tick)
-
-        if tick % 200 is 0:
-            print 'main loop is now at tick:', tick
 
     # Show full piano-roll
     # um.show_piano_roll(hand.get_notes())
@@ -55,8 +53,11 @@ def main():
     print 'Scales saved to: ', scalefile
 
     savepath = prefix + 'yo.pickle'
+    savedick = { 'hand' : hand.get_notes(),
+                 'chord': chord_notes,
+                 'scale': scale_notes }
     with open(savepath, 'wb') as fout:
-        pickle.dump(hand.get_notes(), fout)
+        pickle.dump(savedick, fout)
     print ' Hand notes array saved to: ', savepath
 
     return hand

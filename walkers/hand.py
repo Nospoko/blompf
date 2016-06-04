@@ -53,13 +53,13 @@ class ExampleHand(Hand):
         Hand.__init__(self)
 
         # FIXME this is shit
-        self.uptime_walker = wm.UpTimeWalker(2)
+        self.uptime_walker = wm.UpTimeWalker(3)
         self.uptime_ticks_left = 32
 
         # Add 5 fingers [C E G c c]
         # Those are the zero-notes from which we jump
         # onto the first ones
-        for start in [50, 43, 48, 67, 62]:
+        for start in [70, 41, 48, 79, 62]:
             finger = wf.MerwFinger(start)
             # This might allow chord only walks over the whole piano
             finger.pitch_walker.set_max_step(5)
@@ -72,14 +72,17 @@ class ExampleHand(Hand):
         self.meta_walkers.update({'chord' : chord_walker})
 
         # Chord walking duet
-        b_chord_walker = wm.ChordWalker(self.fingers)
+        # b_chord_walker = wm.ChordWalker(self.fingers)
         # b_chord_walker.time_walker.values = [32+8*it for it in range(6)]
-        self.meta_walkers.update({'chord_b' : b_chord_walker})
+        # self.meta_walkers.update({'chord_b' : b_chord_walker})
 
         scale_walker = wm.ScaleWalker(self.fingers)
         self.meta_walkers.update({'scale' : scale_walker})
         # speed_walker = wm.SpeedWalker(self.fingers)
         # self.meta_walkers.update({'speed' : speed_walker})
+
+        m_volume_walker = wm.MetaVolumeWalker(self.fingers)
+        self.meta_walkers.update({'volume' : m_volume_walker})
 
         self.speed_histo = []
 
@@ -91,26 +94,13 @@ class ExampleHand(Hand):
 
         if self.uptime_ticks_left is 0:
             # Shuffle speed (-1 as fast is set to be mre likely)
-            speeds = [-1, -1, 0, +1]
+            speeds = [-1, 0, +1]
             speed = np.random.choice(speeds)
-            print 'SPEED +++ |', speed
+            print '+++ SPEED |', speed
             self.speed_histo.append(speed)
 
             for fin in self.fingers:
                 fin.set_prefered_speed(speed)
-
-            # Shuffle volumes
-            new_volumes = []
-            for finger in self.fingers:
-                if np.random.random() < 0.3:
-                    finger.set_prefered_volume(-1)
-                    new_volumes.append(-1)
-                else:
-                    new_vol = 50 + np.floor(70 * np.random.random())
-                    finger.set_prefered_volume(new_vol)
-                    new_volumes.append(new_vol)
-
-            print 'Volumes:', new_volumes
 
             # Shuffle piczes
             new_piczes = []
@@ -133,9 +123,10 @@ class ExampleHand(Hand):
                     new_picz = 0 + np.floor(88.0 * np.random.random())
                     # print 'set new picz:', new_picz
                     finger.set_prefered_pitch(new_picz)
+                    finger.hitme()
                     new_piczes.append(new_picz)
 
-            print 'new piczes:', new_piczes
+            print '^^^ new piczes:', new_piczes
 
             # Reset cunter
             self.uptime_ticks_left = self.uptime_walker.next_value() -1
