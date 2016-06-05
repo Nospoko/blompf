@@ -240,25 +240,6 @@ class TimeWalker(BiasedWalker):
         # No sudden time changes
         self.set_max_step(1)
 
-# TODO This should be a abstract walker with time values 
-# related to musical measures (larger scale than single notes)
-class UpTimeWalker(BiasedWalker):
-    """ Rhytm lives here """
-    def __init__(self, first_id):
-        """ nope """
-        # FIXME This walker differes only by values from
-        # the other TimeWalker, ergo it's obsolete
-
-        # Possible note values are always powers of 2
-        # This is in ticks unit
-        values = [8 + 8*it for it in range(3, 7)]
-
-        # Init parent
-        BiasedWalker.__init__(self, values, first_id)
-
-        # No (very) sudden time changes
-        self.set_max_step(3)
-
 # Everything below probably deserves its own file
 class HandWalker(object):
     """ Abstract class for walkers of the hand """
@@ -473,3 +454,58 @@ class MetaVolumeWalker(HandWalker):
 
             print '---> Volumes set: ', new_volumes, ' |', timetick
 
+class SpeedWalker(HandWalker):
+    def play(self, timetick):
+        """ Work """
+        if self.is_it_now(timetick):
+            # How long till the next chord strucks
+            duration = self.next_duration(timetick)
+
+            # Shuffle speed (-1 as fast is set to be mre likely)
+            speeds = [-1, 0, 1]
+
+            new_speeds = []
+
+            for finger in self.fingers:
+                if np.random.random() < 0.81:
+                    speed = np.random.choice(speeds)
+                    finger.set_prefered_speed(speed)
+                    new_speeds.append(speed)
+                else:
+                    # FIXME Why is there no turn off speed setting?
+                    # Do not change speed
+                    new_speeds.append(-10)
+
+            # Reset cunter
+            self.ticks_left = duration - 1
+
+            print '+++ Speed set to: ', new_speeds, " | ", timetick
+
+class PitchTwister(HandWalker):
+    """ HI """
+    def play(self, timetick):
+        """ YO """
+        if self.is_it_now(timetick):
+            # How long till the next chord strucks
+            duration = self.next_duration(timetick)
+
+            new_piczes = []
+
+            for finger in self.fingers:
+                # And prefered pitch value
+                if np.random.random() < 0.15:
+                    finger.set_prefered_pitch(-1)
+                    new_piczes.append(-1)
+                else:
+                    # TODO some meta-preference would be nice
+                    # 88 is the number of keys on our keyboard
+                    new_picz = 0 + np.floor(88.0 * np.random.random())
+                    # print 'set new picz:', new_picz
+                    finger.set_prefered_pitch(new_picz)
+                    finger.hitme()
+                    new_piczes.append(new_picz)
+
+            # Reset cunter
+            self.ticks_left = duration - 1
+
+            print '^^^ new piczes:', new_piczes

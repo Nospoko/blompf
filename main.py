@@ -19,7 +19,7 @@ def main():
 
     # How many steps will walker walk
     # 2k ~ 60s
-    nof_steps = 2*512
+    nof_steps = 1*512
 
     hand = wh.ExampleHand()
 
