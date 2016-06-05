@@ -61,42 +61,35 @@ class ExampleHand(Hand):
             finger.pitch_walker.set_max_step(5)
             self.fingers.append(finger)
 
-        # TODO Is this what you want
-        # Each should have its own TimeWalker
-        # We also might want to move it to the abstract parent
+        # This has its own rhythm
         chord_walker = ChordWalker(self.fingers)
         self.meta_walkers.update({'chord' : chord_walker})
 
-        # Chord walking duet
+        # Chord walking duet ???
         # b_chord_walker = ChordWalker(self.fingers)
         # b_chord_walker.time_walker.values = [32+8*it for it in range(6)]
         # self.meta_walkers.update({'chord_b' : b_chord_walker})
 
+        # TODO consider some kind of signal/slot mechanism?
         scale_walker = ScaleWalker(self.fingers)
         self.meta_walkers.update({'scale' : scale_walker})
-        # speed_walker = SpeedWalker(self.fingers)
-        # self.meta_walkers.update({'speed' : speed_walker})
 
+        # TODO Think of some better name for this fellow
         m_volume_walker = MetaVolumeWalker(self.fingers)
         self.meta_walkers.update({'volume' : m_volume_walker})
 
+        # Currently speed is set for every finger separateley
         speed_walker = SpeedWalker(self.fingers)
         self.meta_walkers.update({'speed' : speed_walker})
 
+        # This is fun
         pitch_twist = PitchTwister(self.fingers)
         self.meta_walkers.update({'pitchtwist' : pitch_twist})
 
-        self.speed_histo = []
-
     def special_tasks(self, timetick):
         """ Whatever the wheather """
-        # FIXME this here for tmp
         for walker in self.meta_walkers.itervalues():
             walker.play(timetick)
-
-    def get_scale_notes(self):
-        """ Notes of the scale """
-        return self.meta_walkers['scale'].get_notes()
 
 class HandWalker(object):
     """ Abstract class for walkers of the hand """
@@ -282,35 +275,6 @@ class ScaleWalker(HandWalker):
         else:
             pass
 
-class MetaVolumeWalker(HandWalker):
-    """ Volume dynamics controller """
-    def __init__(self, fingers):
-        """ Konstruktor """
-        # Seems obsolete
-        HandWalker.__init__(self, fingers)
-
-    def play(self, timetick):
-        """ Do your job """
-        if self.is_it_now(timetick):
-            # How long till the next chord strucks
-            duration = self.next_duration(timetick)
-
-            new_volumes = []
-            for finger in self.fingers:
-                if np.random.random() < 0.81:
-                    new_vol = 50 + np.floor(70 * np.random.random())
-                    finger.set_prefered_volume(new_vol)
-                    new_volumes.append(new_vol)
-                else:
-                    # Turn off
-                    finger.set_prefered_volume(-1)
-                    new_volumes.append(-1)
-
-            # Reset cunter
-            self.ticks_left = duration - 1
-
-            print '---> Volumes set: ', new_volumes, ' |', timetick
-
 class SpeedWalker(HandWalker):
     def play(self, timetick):
         """ Work """
@@ -366,4 +330,33 @@ class PitchTwister(HandWalker):
             self.ticks_left = duration - 1
 
             print '^^^ new piczes:', new_piczes
+
+class MetaVolumeWalker(HandWalker):
+    """ Volume dynamics controller """
+    def __init__(self, fingers):
+        """ Konstruktor """
+        # Seems obsolete
+        HandWalker.__init__(self, fingers)
+
+    def play(self, timetick):
+        """ Do your job """
+        if self.is_it_now(timetick):
+            # How long till the next chord strucks
+            duration = self.next_duration(timetick)
+
+            new_volumes = []
+            for finger in self.fingers:
+                if np.random.random() < 0.81:
+                    new_vol = 50 + np.floor(70 * np.random.random())
+                    finger.set_prefered_volume(new_vol)
+                    new_volumes.append(new_vol)
+                else:
+                    # Turn off
+                    finger.set_prefered_volume(-1)
+                    new_volumes.append(-1)
+
+            # Reset cunter
+            self.ticks_left = duration - 1
+
+            print '---> Volumes set: ', new_volumes, ' |', timetick
 

@@ -142,6 +142,7 @@ class BiasedWalker(Merwer):
         plt.plot(x, y)
         plt.show()
 
+# TODO do this
 class PotentialWalker(Merwer):
     """ Walker with properly defined merw-potential """
     def __init__(self, values, first_id):
@@ -161,21 +162,22 @@ class PotentialWalker(Merwer):
         else:
             return 0
 
-class VolumeWalker(BiasedWalker):
-    """ Volume dedicated """
-    def __init__(self, first_vol):
-        """ el Creador """
-        # MIDI volume goes 0::127
-        values      = range(128)
-        first_id    = first_vol
+class TimeWalker(BiasedWalker):
+    """ Rhytm lives here """
+    def __init__(self, first_id):
+        """ nope """
+        # Possible note values are always powers of 2
+        # This is in ticks unit
+        values = [2**it for it in range(1,9)]
+
+        # TODO is this good
+        values[0] = 8
+
+        # Init parent
         BiasedWalker.__init__(self, values, first_id)
 
-        # By default allow more distinct volume changes
-        self.set_max_step(8)
-
-    def set_volume(self, vol):
-        """ simple """
-        self.set_bias(vol)
+        # No sudden time changes
+        self.set_max_step(1)
 
 class PitchWalker(BiasedWalker):
     """ Specialised for harmony manipulations """
@@ -223,20 +225,19 @@ class PitchWalker(BiasedWalker):
             # TODO Why is this necessary?
             return 0.00000000001
 
-class TimeWalker(BiasedWalker):
-    """ Rhytm lives here """
-    def __init__(self, first_id):
-        """ nope """
-        # Possible note values are always powers of 2
-        # This is in ticks unit
-        values = [2**it for it in range(1,9)]
-
-        # TODO is this good
-        values[0] = 8
-
-        # Init parent
+class VolumeWalker(BiasedWalker):
+    """ Volume dedicated """
+    def __init__(self, first_vol):
+        """ el Creador """
+        # MIDI volume goes 0::127
+        values      = range(128)
+        first_id    = first_vol
         BiasedWalker.__init__(self, values, first_id)
 
-        # No sudden time changes
-        self.set_max_step(1)
+        # By default allow more distinct volume changes
+        self.set_max_step(8)
+
+    def set_volume(self, vol):
+        """ simple """
+        self.set_bias(vol)
 

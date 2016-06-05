@@ -19,7 +19,7 @@ def main():
 
     # How many steps will walker walk
     # 2k ~ 60s
-    nof_steps = 1*512
+    nof_steps = 4*512
 
     hand = wh.ExampleHand()
 
@@ -52,14 +52,17 @@ def main():
     um.matrix_to_midi(scale_notes, scalefile)
     print 'Scales saved to: ', scalefile
 
-    savepath = prefix + 'yo.pickle'
+    # Save played notes and some meta-notes
+    savepath = prefix + 'blompf_data.pickle'
     savedick = { 'hand' : hand.get_notes(),
                  'chord': chord_notes,
                  'scale': scale_notes }
+
     with open(savepath, 'wb') as fout:
         pickle.dump(savedick, fout)
-    print ' Hand notes array saved to: ', savepath
+    print 'Blompf data dict saved to: ', savepath
 
+    # Have fun
     return hand
 
 if __name__ == '__main__':

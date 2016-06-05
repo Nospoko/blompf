@@ -78,45 +78,6 @@ class Finger(object):
 
         return pitch
 
-class ExampleFinger(Finger):
-    """ Exemplary class exploring finger possibilites """
-    def __init__(self, something = 0):
-        """ le Constructor """
-        # Init parent class
-        Finger.__init__(self)
-        self.first = something
-
-    def is_it_now(self, timetick):
-        """ Time is tick """
-        # Play a note every 8 ticks
-        itis = timetick % 8 is 0
-        return itis
-
-    def next_pitch(self, timetick):
-        """ Choose note frequency """
-        # Dupa
-        out = self.first + 20 * np.cos(7.0 * timetick / 200)
-        return out
-
-    def next_duration(self, timetick):
-        """ Choose note length """
-        # Here it is always 4 tick long
-        if timetick % 24 is 0:
-            duration = 8
-        else:
-            duration = 4
-
-        return duration
-
-    def next_volume(self, timetick):
-        """ Choose volume """
-        # Whatever here
-        if timetick % 24 is 0:
-            volume = 120
-        else:
-            volume = 80 + 10 * np.random.random()
-        return volume
-
 class MerwFinger(Finger):
     """ Properly improvising finger """
     def __init__(self, first_picz):
@@ -195,4 +156,43 @@ class MerwFinger(Finger):
         plt.bar(t_ids, t_hist, color='r', alpha=0.5)
 
         plt.show()
+
+class ExampleFinger(Finger):
+    """ Exemplary class exploring finger possibilites """
+    def __init__(self, something = 0):
+        """ le Constructor """
+        # Init parent class
+        Finger.__init__(self)
+        self.first = something
+
+    def is_it_now(self, timetick):
+        """ Time is tick """
+        # Play a note every 8 ticks
+        itis = timetick % 8 is 0
+        return itis
+
+    def next_pitch(self, timetick):
+        """ Choose note frequency """
+        # Dupa
+        out = self.first + 20 * np.cos(7.0 * timetick / 200)
+        return out
+
+    def next_duration(self, timetick):
+        """ Choose note length """
+        # Here it is always 4 tick long
+        if timetick % 24 is 0:
+            duration = 8
+        else:
+            duration = 4
+
+        return duration
+
+    def next_volume(self, timetick):
+        """ Choose volume """
+        # Whatever here
+        if timetick % 24 is 0:
+            volume = 120
+        else:
+            volume = 80 + 10 * np.random.random()
+        return volume
 
