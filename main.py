@@ -19,7 +19,7 @@ def main():
 
     # How many steps will walker walk
     # 2k ~ 60s
-    nof_steps = 4*512
+    nof_steps = 6*512
 
     hand = wh.ExampleHand()
 
@@ -28,16 +28,22 @@ def main():
         hand.play(tick)
 
     # Show full piano-roll
+    handnotes = hand.get_notes()
     # um.show_piano_roll(hand.get_notes())
 
+    # Save everything
     midipath = 'scores/'
 
     handfile = midipath + prefix + 'hand.mid'
-    um.matrix_to_midi(hand.get_notes(), handfile)
+    um.matrix_to_midi(handnotes, handfile)
     print 'Notes saved to: ', handfile
 
     # Show chord-only piano-roll
     chord_notes = hand.meta_walkers['chord'].get_notes()
+    # Extend for compatibility with the hand notes
+    chord_notes[-1][2] = handnotes[-1][1] +\
+                         handnotes[-1][2] -\
+                         chord_notes[-1][1]
     # um.show_piano_roll(chord_notes)
 
     chordfile = midipath + prefix + 'chords.mid'
@@ -46,6 +52,9 @@ def main():
 
     # Show key-only piano-roll
     scale_notes = hand.meta_walkers['scale'].get_notes()
+    scale_notes[-1][2] = handnotes[-1][1] +\
+                         handnotes[-1][2] -\
+                         scale_notes[-1][1]
     # um.show_piano_roll(scale_notes)
 
     scalefile = midipath + prefix + 'scales.mid'
@@ -54,7 +63,7 @@ def main():
 
     # Save played notes and some meta-notes
     savepath = prefix + 'blompf_data.pickle'
-    savedick = { 'hand' : hand.get_notes(),
+    savedick = { 'hand' : handnotes,
                  'chord': chord_notes,
                  'scale': scale_notes }
 
