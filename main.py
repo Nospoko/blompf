@@ -19,7 +19,7 @@ def main():
 
     # How many steps will walker walk
     # 2k ~ 60s
-    nof_steps = 6*512
+    nof_steps = 14*512
 
     hand = wh.ExampleHand()
 
@@ -40,6 +40,7 @@ def main():
 
     # Show chord-only piano-roll
     chord_notes = hand.meta_walkers['chord'].get_notes()
+    # FIXME why aren't they ending properply?
     # Extend for compatibility with the hand notes
     chord_notes[-1][2] = handnotes[-1][1] +\
                          handnotes[-1][2] -\
@@ -52,6 +53,7 @@ def main():
 
     # Show key-only piano-roll
     scale_notes = hand.meta_walkers['scale'].get_notes()
+    # Extend those as well
     scale_notes[-1][2] = handnotes[-1][1] +\
                          handnotes[-1][2] -\
                          scale_notes[-1][1]

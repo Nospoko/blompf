@@ -55,7 +55,7 @@ class ExampleHand(Hand):
         # Add 5 fingers [C E G c c]
         # Those are the zero-notes from which we jump
         # onto the first ones
-        for start in [30, 41, 48, 49, 32]:
+        for start in [30, 41, 48, 79, 32]:
             finger = wf.MerwFinger(start)
             # This might allow chord only walks over the whole piano
             finger.pitch_walker.set_max_step(5)
@@ -184,13 +184,21 @@ class ScaleWalker(HandWalker):
         self.ticks_left = self.next_duration(0)
 
         self.shift = 0
+        # TODO Try to abstract this out somehow
         # Major           [C, -, D, -, E, F, -, G, -, A, -, H]
-        self.c_maj_grid = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]
+        self.full_scale = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]
         self.tonic_grid = [1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0]
+        self.second_chr = [0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0]
+        self.thir_chord = [0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1]
         self.subdo_grid = [1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0]
         self.domin_grid = [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1]
-        self.third_grid = [0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1]
-        self.weird_grid = [0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0]
+        self.sixt_chord = [1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0]
+        self.seven_chor = [0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1]
+
+        # Also with added sext (gigity)
+        # Major          [C, -, D, -, E, F, -, G, -, A, -, H]
+        self.first_sxt = [1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0]
+        self.secon_sxt = [0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1]
         self._grid_cunter = 0
 
         # FIXME This should not be hard-coded in here
@@ -230,21 +238,36 @@ class ScaleWalker(HandWalker):
             # Randomistically
             if True:
                 rndm = np.random.random()
-                if rndm < 0.25:
+                if rndm < 0.1:
                     scale = np.roll(self.domin_grid, self.shift)
-                    print '---> Dominanta!'
-                elif rndm < 0.4:
+                    print '---> Dominant!'
+                elif rndm < 0.2:
+                    scale = np.roll(self.thir_chord, self.shift)
+                    print '---> Third!'
+                elif rndm < 0.3:
                     scale = np.roll(self.tonic_grid, self.shift)
-                    print '---> Tonika!'
-                elif rndm < 0.6:
+                    print '---> Tonic!'
+                elif rndm < 0.4:
                     scale = np.roll(self.subdo_grid, self.shift)
-                    print '---> Subdominanta!'
+                    print '---> Subdominant!'
+                elif rndm < 0.5:
+                    scale = np.roll(self.seven_chor, self.shift)
+                    print '---> Awkward notes'
+                elif rndm < 0.6:
+                    scale = np.roll(self.sixt_chord, self.shift)
+                    print '---> Awkward notes'
                 elif rndm < 0.7:
-                    scale = np.roll(self.weird_grid , self.shift)
-                    print '---> Awkward!'
-                else:
-                    scale = np.roll(self.c_maj_grid, self.shift)
-                    print '---> Wszystko!'
+                    scale = np.roll(self.second_chr, self.shift)
+                    print '---> Second notes'
+                elif rndm < 0.8:
+                    scale = np.roll(self.first_sxt, self.shift)
+                    print '---> First chord with sext'
+                elif rndm < 0.9:
+                    scale = np.roll(self.secon_sxt, self.shift)
+                    print '---> Second chord with sext'
+                else: # < 1.0
+                    scale = np.roll(self.full_scale, self.shift)
+                    print '---> Full scale!'
             else:
                 # Deterministically
                 which = self._grid_cunter % 4
@@ -258,9 +281,6 @@ class ScaleWalker(HandWalker):
                 elif which is 2:
                     scale = np.roll(self.domin_grid, self.shift)
                     print 'Dominanta!'
-                # elif which is 3:
-                #     scale = np.roll(self.third_grid, self.shift)
-                #     print 'Ten trzeci'
                 else:
                     scale = np.roll(self.tonic_grid, self.shift)
                     print 'Tonic!'
