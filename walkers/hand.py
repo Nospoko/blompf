@@ -23,6 +23,9 @@ class Hand(object):
             for note in finger.get_notes():
                 notes.append(note)
 
+        # Return sorted
+        notes.sort(key=lambda x: x[1]+x[2])
+
         return notes
 
     def play(self, timetick):
@@ -55,7 +58,7 @@ class ExampleHand(Hand):
         # Add 5 fingers [C E G c c]
         # Those are the zero-notes from which we jump
         # onto the first ones
-        for start in [30, 41, 48, 79, 32]:
+        for start in [30, 41, 48, 32]:
             finger = wf.MerwFinger(start)
             # This might allow chord only walks over the whole piano
             finger.pitch_walker.set_max_step(5)
@@ -126,6 +129,9 @@ class HandWalker(object):
             new_dur = self.notes[it+1][1] - self.notes[it][1]-0
             self.notes[it][2] = new_dur
 
+        # Return sorted pls
+        self.notes.sort(key=lambda x: x[1]+x[2])
+
         return self.notes
 
     def play(self, timetick):
@@ -178,7 +184,7 @@ class ScaleWalker(HandWalker):
         self.time_walker.current_id += 3
         # TODO Make it a thing
         # Add some twist:
-        self.time_walker.values = [64 for it in range(10)]
+        self.time_walker.values = [128 for it in range(10)]
 
         # Do not start with a scale change
         self.ticks_left = self.next_duration(0)
@@ -199,6 +205,7 @@ class ScaleWalker(HandWalker):
         # Major          [C, -, D, -, E, F, -, G, -, A, -, H]
         self.first_sxt = [1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0]
         self.secon_sxt = [0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1]
+        self.third_sxt = [1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1]
         self._grid_cunter = 0
 
         # FIXME This should not be hard-coded in here
@@ -235,56 +242,40 @@ class ScaleWalker(HandWalker):
 
             # Maybe for each finger separateley?
             # Set new scales
-            # Randomistically
-            if True:
-                rndm = np.random.random()
-                if rndm < 0.1:
-                    scale = np.roll(self.domin_grid, self.shift)
-                    print '---> Dominant!'
-                elif rndm < 0.2:
-                    scale = np.roll(self.thir_chord, self.shift)
-                    print '---> Third!'
-                elif rndm < 0.3:
-                    scale = np.roll(self.tonic_grid, self.shift)
-                    print '---> Tonic!'
-                elif rndm < 0.4:
-                    scale = np.roll(self.subdo_grid, self.shift)
-                    print '---> Subdominant!'
-                elif rndm < 0.5:
-                    scale = np.roll(self.seven_chor, self.shift)
-                    print '---> Awkward notes'
-                elif rndm < 0.6:
-                    scale = np.roll(self.sixt_chord, self.shift)
-                    print '---> Awkward notes'
-                elif rndm < 0.7:
-                    scale = np.roll(self.second_chr, self.shift)
-                    print '---> Second notes'
-                elif rndm < 0.8:
-                    scale = np.roll(self.first_sxt, self.shift)
-                    print '---> First chord with sext'
-                elif rndm < 0.9:
-                    scale = np.roll(self.secon_sxt, self.shift)
-                    print '---> Second chord with sext'
-                else: # < 1.0
-                    scale = np.roll(self.full_scale, self.shift)
-                    print '---> Full scale!'
-            else:
-                # Deterministically
-                which = self._grid_cunter % 4
-                self._grid_cunter += 1
-                if which is 0:
-                    scale = np.roll(self.tonic_grid, self.shift)
-                    print 'Deterministic tonic'
-                elif which is 1:
-                    scale = np.roll(self.subdo_grid, self.shift)
-                    print 'Subdominanta!'
-                elif which is 2:
-                    scale = np.roll(self.domin_grid, self.shift)
-                    print 'Dominanta!'
-                else:
-                    scale = np.roll(self.tonic_grid, self.shift)
-                    print 'Tonic!'
-
+            rndm = np.random.random() * 1.11
+            if rndm < 0.1:
+                scale = np.roll(self.domin_grid, self.shift)
+                print '---> Dominant!'
+            elif rndm < 0.2:
+                scale = np.roll(self.thir_chord, self.shift)
+                print '---> Third!'
+            elif rndm < 0.3:
+                scale = np.roll(self.tonic_grid, self.shift)
+                print '---> Tonic!'
+            elif rndm < 0.4:
+                scale = np.roll(self.subdo_grid, self.shift)
+                print '---> Subdominant!'
+            elif rndm < 0.5:
+                scale = np.roll(self.seven_chor, self.shift)
+                print '---> Awkward notes'
+            elif rndm < 0.6:
+                scale = np.roll(self.sixt_chord, self.shift)
+                print '---> Awkward notes'
+            elif rndm < 0.7:
+                scale = np.roll(self.second_chr, self.shift)
+                print '---> Second notes'
+            elif rndm < 0.8:
+                scale = np.roll(self.first_sxt, self.shift)
+                print '---> First chord with sext'
+            elif rndm < 0.9:
+                scale = np.roll(self.secon_sxt, self.shift)
+                print '---> Second chord with sext'
+            elif rndm < 1.0:
+                scale = np.roll(self.third_sxt, self.shift)
+                print '---> Third chord with sext'
+            else: # < 1.0
+                scale = np.roll(self.full_scale, self.shift)
+                print '---> Full scale!'
 
             for finger in self.fingers:
                 # in each finger
@@ -340,7 +331,7 @@ class PitchTwister(HandWalker):
                 else:
                     # TODO some meta-preference would be nice
                     # 88 is the number of keys on our keyboard
-                    new_picz = 0 + np.floor(88.0 * np.random.random())
+                    new_picz = 20 + np.floor(48.0 * np.random.random())
                     # print 'set new picz:', new_picz
                     finger.set_prefered_pitch(new_picz)
                     finger.hitme()
