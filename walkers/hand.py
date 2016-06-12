@@ -58,10 +58,10 @@ class ExampleHand(Hand):
         # Add 5 fingers [C E G c c]
         # Those are the zero-notes from which we jump
         # onto the first ones
-        for start in [30, 41, 48, 32]:
+        for start in [30, 35, 40, 45, 50]:
             finger = wf.MerwFinger(start)
             # This might allow chord only walks over the whole piano
-            finger.pitch_walker.set_max_step(5)
+            finger.pitch_walker.set_max_step(4)
             self.fingers.append(finger)
 
         # This has its own rhythm
@@ -69,9 +69,9 @@ class ExampleHand(Hand):
         self.meta_walkers.update({'chord' : chord_walker})
 
         # Chord walking duet ???
-        # b_chord_walker = ChordWalker(self.fingers)
-        # b_chord_walker.time_walker.values = [32+8*it for it in range(6)]
-        # self.meta_walkers.update({'chord_b' : b_chord_walker})
+        b_chord_walker = ChordWalker(self.fingers)
+        b_chord_walker.time_walker.values = [32, 64, 96, 64, 32, 64, 96]
+        self.meta_walkers.update({'chord_b' : b_chord_walker})
 
         # TODO consider some kind of signal/slot mechanism?
         scale_walker = ScaleWalker(self.fingers)
@@ -193,6 +193,8 @@ class ScaleWalker(HandWalker):
         # TODO Try to abstract this out somehow
         # Major           [C, -, D, -, E, F, -, G, -, A, -, H]
         self.full_scale = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]
+
+        # TODO Those are all the same chord with a circshift
         self.tonic_grid = [1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0]
         self.second_chr = [0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0]
         self.thir_chord = [0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1]
@@ -206,6 +208,9 @@ class ScaleWalker(HandWalker):
         self.first_sxt = [1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0]
         self.secon_sxt = [0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1]
         self.third_sxt = [1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1]
+        self.fourt_sxt = [1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0]
+        self.fifth_sxt = [0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1]
+        self.sixth_sxt = [1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0]
         self._grid_cunter = 0
 
         # FIXME This should not be hard-coded in here
@@ -242,40 +247,41 @@ class ScaleWalker(HandWalker):
 
             # Maybe for each finger separateley?
             # Set new scales
-            rndm = np.random.random() * 1.11
-            if rndm < 0.1:
-                scale = np.roll(self.domin_grid, self.shift)
-                print '---> Dominant!'
-            elif rndm < 0.2:
-                scale = np.roll(self.thir_chord, self.shift)
-                print '---> Third!'
-            elif rndm < 0.3:
-                scale = np.roll(self.tonic_grid, self.shift)
-                print '---> Tonic!'
-            elif rndm < 0.4:
-                scale = np.roll(self.subdo_grid, self.shift)
-                print '---> Subdominant!'
-            elif rndm < 0.5:
-                scale = np.roll(self.seven_chor, self.shift)
-                print '---> Awkward notes'
-            elif rndm < 0.6:
-                scale = np.roll(self.sixt_chord, self.shift)
-                print '---> Awkward notes'
-            elif rndm < 0.7:
-                scale = np.roll(self.second_chr, self.shift)
-                print '---> Second notes'
-            elif rndm < 0.8:
-                scale = np.roll(self.first_sxt, self.shift)
-                print '---> First chord with sext'
-            elif rndm < 0.9:
-                scale = np.roll(self.secon_sxt, self.shift)
-                print '---> Second chord with sext'
-            elif rndm < 1.0:
-                scale = np.roll(self.third_sxt, self.shift)
-                print '---> Third chord with sext'
-            else: # < 1.0
+            if np.random.random() < 0.5:
                 scale = np.roll(self.full_scale, self.shift)
                 print '---> Full scale!'
+            else:
+                rndm = np.random.random() * 1.11
+                if rndm < 0.1:
+                    scale = np.roll(self.domin_grid, self.shift)
+                    print '---> Dominant!'
+                elif rndm < 0.2:
+                    scale = np.roll(self.sixth_sxt, self.shift)
+                    print '---> Third!'
+                elif rndm < 0.3:
+                    scale = np.roll(self.tonic_grid, self.shift)
+                    print '---> Tonic!'
+                elif rndm < 0.4:
+                    scale = np.roll(self.subdo_grid, self.shift)
+                    print '---> Subdominant!'
+                elif rndm < 0.5:
+                    scale = np.roll(self.fifth_sxt, self.shift)
+                    print '---> Fifth with sext'
+                elif rndm < 0.7:
+                    scale = np.roll(self.first_sxt, self.shift)
+                    print '---> Tonic with sext'
+                elif rndm < 0.8:
+                    scale = np.roll(self.first_sxt, self.shift)
+                    print '---> First chord with sext'
+                elif rndm < 0.9:
+                    scale = np.roll(self.secon_sxt, self.shift)
+                    print '---> Second chord with sext'
+                elif rndm < 1.0:
+                    scale = np.roll(self.third_sxt, self.shift)
+                    print '---> Third chord with sext'
+                else: # < 1.1
+                    scale = np.roll(self.tonic_grid, self.shift)
+                    print '---> Tonic!'
 
             for finger in self.fingers:
                 # in each finger
@@ -331,10 +337,15 @@ class PitchTwister(HandWalker):
                 else:
                     # TODO some meta-preference would be nice
                     # 88 is the number of keys on our keyboard
-                    new_picz = 20 + np.floor(48.0 * np.random.random())
+                    new_picz = 0 + np.floor(88.0 * np.random.random())
                     # print 'set new picz:', new_picz
                     finger.set_prefered_pitch(new_picz)
-                    finger.hitme()
+
+                    # Maybe hit
+                    if np.random.random() > 0.8:
+                        finger.hitme()
+
+                    # Log
                     new_piczes.append(new_picz)
 
             # Reset cunter
