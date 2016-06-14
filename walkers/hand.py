@@ -58,7 +58,7 @@ class ExampleHand(Hand):
         # Add 5 fingers [C E G c c]
         # Those are the zero-notes from which we jump
         # onto the first ones
-        for start in [30, 35, 40, 45, 50]:
+        for start in [60, 35, 40, 45, 50]:
             finger = wf.MerwFinger(start)
             # This might allow chord only walks over the whole piano
             finger.pitch_walker.set_max_step(4)
@@ -66,11 +66,16 @@ class ExampleHand(Hand):
 
         # This has its own rhythm
         chord_walker = ChordWalker(self.fingers)
+        a_rhythms = [12, 12, 12, 24, 4, 4, 36, 16, 36]
+        # a_rhythms = [24, 48, 72, 48, 24, 72, 24, 32]
+        chord_walker.time_walker.values = a_rhythms
         self.meta_walkers.update({'chord' : chord_walker})
 
         # Chord walking duet ???
         b_chord_walker = ChordWalker(self.fingers)
-        b_chord_walker.time_walker.values = [32, 64, 96, 64, 32, 64, 96]
+        b_rhythms = [48, 8, 48, 16, 16, 16, 8, 8, 52]
+        # b_rhythms = [32, 64, 96, 64, 32, 64, 96, 32]
+        b_chord_walker.time_walker.values = b_rhythms
         self.meta_walkers.update({'chord_b' : b_chord_walker})
 
         # TODO consider some kind of signal/slot mechanism?
@@ -87,6 +92,9 @@ class ExampleHand(Hand):
 
         # This is fun
         pitch_twist = PitchTwister(self.fingers)
+        # FIXME why cant this be longer? (next_value error)
+        # TimeWalker hase .size = len(values) which is not updated here
+        pitch_twist.time_walker.values = [42 for it in range(8)]
         self.meta_walkers.update({'pitchtwist' : pitch_twist})
 
     def special_tasks(self, timetick):
@@ -247,41 +255,26 @@ class ScaleWalker(HandWalker):
 
             # Maybe for each finger separateley?
             # Set new scales
-            if np.random.random() < 0.5:
+            if np.random.random() < 0.7:
                 scale = np.roll(self.full_scale, self.shift)
                 print '---> Full scale!'
             else:
                 rndm = np.random.random() * 1.11
-                if rndm < 0.1:
-                    scale = np.roll(self.domin_grid, self.shift)
-                    print '---> Dominant!'
-                elif rndm < 0.2:
-                    scale = np.roll(self.sixth_sxt, self.shift)
-                    print '---> Third!'
-                elif rndm < 0.3:
-                    scale = np.roll(self.tonic_grid, self.shift)
-                    print '---> Tonic!'
+                if rndm < 0.2:
+                    scale = np.roll(self.first_sxt, self.shift)
+                    print '---> Dominant with sext!'
                 elif rndm < 0.4:
-                    scale = np.roll(self.subdo_grid, self.shift)
-                    print '---> Subdominant!'
-                elif rndm < 0.5:
-                    scale = np.roll(self.fifth_sxt, self.shift)
-                    print '---> Fifth with sext'
-                elif rndm < 0.7:
-                    scale = np.roll(self.first_sxt, self.shift)
-                    print '---> Tonic with sext'
-                elif rndm < 0.8:
-                    scale = np.roll(self.first_sxt, self.shift)
-                    print '---> First chord with sext'
-                elif rndm < 0.9:
-                    scale = np.roll(self.secon_sxt, self.shift)
+                    scale = np.roll(self.domin_grid, self.shift)
                     print '---> Second chord with sext'
-                elif rndm < 1.0:
-                    scale = np.roll(self.third_sxt, self.shift)
+                elif rndm < 0.6:
+                    scale = np.roll(self.fifth_sxt, self.shift)
+                    print '---> Fifth chord with sext'
+                elif rndm < 0.8:
+                    scale = np.roll(self.subdo_grid, self.shift)
                     print '---> Third chord with sext'
                 else: # < 1.1
-                    scale = np.roll(self.tonic_grid, self.shift)
-                    print '---> Tonic!'
+                    scale = np.roll(self.fourt_sxt, self.shift)
+                    print '---> Fourth chord with sext!'
 
             for finger in self.fingers:
                 # in each finger
@@ -300,13 +293,14 @@ class SpeedWalker(HandWalker):
             duration = self.next_duration(timetick)
 
             # Shuffle speed (-1 as fast is set to be mre likely)
-            speeds = [-1, 0, 1]
+            speeds = [-1, -1, 0, 1]
 
             new_speeds = []
 
+            # Set the same speed for each finger
+            speed = np.random.choice(speeds)
             for finger in self.fingers:
                 if np.random.random() < 0.81:
-                    speed = np.random.choice(speeds)
                     finger.set_prefered_speed(speed)
                     new_speeds.append(speed)
                 else:
@@ -331,13 +325,13 @@ class PitchTwister(HandWalker):
 
             for finger in self.fingers:
                 # And prefered pitch value
-                if np.random.random() < 0.15:
+                if np.random.random() < 0.45:
                     finger.set_prefered_pitch(-1)
                     new_piczes.append(-1)
                 else:
                     # TODO some meta-preference would be nice
                     # 88 is the number of keys on our keyboard
-                    new_picz = 0 + np.floor(88.0 * np.random.random())
+                    new_picz = 0 + np.floor(68.0 * np.random.random())
                     # print 'set new picz:', new_picz
                     finger.set_prefered_pitch(new_picz)
 

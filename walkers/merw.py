@@ -235,7 +235,7 @@ class VolumeWalker(BiasedWalker):
         BiasedWalker.__init__(self, values, first_id)
 
         # By default allow more distinct volume changes
-        self.set_max_step(8)
+        self.set_max_step(15)
 
     def set_volume(self, vol):
         """ simple """
