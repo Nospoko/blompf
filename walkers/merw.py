@@ -28,6 +28,12 @@ class Merwer(object):
         # Initialize probability matrices
         self.make_S()
 
+    def set_values(self, values):
+        """ And update updatebles """
+        self.values     = values
+        self.size       = len(values)
+        self.make_S()
+
     def make_A(self):
         """ Prepare A-matrix """
         A = np.zeros((self.size, self.size))

@@ -58,7 +58,7 @@ class ExampleHand(Hand):
         # Add 5 fingers [C E G c c]
         # Those are the zero-notes from which we jump
         # onto the first ones
-        for start in [60, 35, 40, 45, 50]:
+        for start in [35, 40, 33, 38]:
             finger = wf.MerwFinger(start)
             # This might allow chord only walks over the whole piano
             finger.pitch_walker.set_max_step(4)
@@ -66,16 +66,16 @@ class ExampleHand(Hand):
 
         # This has its own rhythm
         chord_walker = ChordWalker(self.fingers)
-        a_rhythms = [12, 12, 12, 24, 4, 4, 36, 16, 36]
+        a_rhythms = [32, 24, 12, 12, 12, 16, 16, 16, 16, 16, 40, 40]
         # a_rhythms = [24, 48, 72, 48, 24, 72, 24, 32]
-        chord_walker.time_walker.values = a_rhythms
+        chord_walker.time_walker.set_values(a_rhythms)
         self.meta_walkers.update({'chord' : chord_walker})
 
         # Chord walking duet ???
         b_chord_walker = ChordWalker(self.fingers)
-        b_rhythms = [48, 8, 48, 16, 16, 16, 8, 8, 52]
+        b_rhythms = [24, 24, 24, 24, 32, 32, 48, 48, 16, 16]
         # b_rhythms = [32, 64, 96, 64, 32, 64, 96, 32]
-        b_chord_walker.time_walker.values = b_rhythms
+        b_chord_walker.time_walker.set_values(b_rhythms)
         self.meta_walkers.update({'chord_b' : b_chord_walker})
 
         # TODO consider some kind of signal/slot mechanism?
@@ -168,7 +168,7 @@ class ChordWalker(HandWalker):
             howmany = 0
             for finger in self.fingers:
                 # TODO This should be a parameter
-                if np.random.random() < 0.81:
+                if np.random.random() < 0.6:
                     # Forces finger to play at this timetick
                     finger.hitme()
                     howmany += 1
@@ -331,7 +331,7 @@ class PitchTwister(HandWalker):
                 else:
                     # TODO some meta-preference would be nice
                     # 88 is the number of keys on our keyboard
-                    new_picz = 0 + np.floor(68.0 * np.random.random())
+                    new_picz = 0 + np.floor(48.0 * np.random.random())
                     # print 'set new picz:', new_picz
                     finger.set_prefered_pitch(new_picz)
 
