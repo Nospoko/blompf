@@ -1,4 +1,5 @@
 import numpy as np
+import itertools as itr
 from utils import midi as um
 from walkers import merw as wm
 from walkers import finger as wf
@@ -61,19 +62,19 @@ class ExampleHand(Hand):
         for start in [35, 40, 33, 38]:
             finger = wf.MerwFinger(start)
             # This might allow chord only walks over the whole piano
-            finger.pitch_walker.set_max_step(4)
+            finger.pitch_walker.set_max_step(5)
             self.fingers.append(finger)
 
         # This has its own rhythm
         chord_walker = ChordWalker(self.fingers)
-        a_rhythms = [32, 24, 12, 12, 12, 16, 16, 16, 16, 16, 40, 40]
+        a_rhythms = [16, 16, 32, 32, 48, 48, 64, 64, 64, 8, 8 ,8]
         # a_rhythms = [24, 48, 72, 48, 24, 72, 24, 32]
         chord_walker.time_walker.set_values(a_rhythms)
         self.meta_walkers.update({'chord' : chord_walker})
 
         # Chord walking duet ???
         b_chord_walker = ChordWalker(self.fingers)
-        b_rhythms = [24, 24, 24, 24, 32, 32, 48, 48, 16, 16]
+        b_rhythms = [32, 32, 32, 32, 8, 8, 8, 8]
         # b_rhythms = [32, 64, 96, 64, 32, 64, 96, 32]
         b_chord_walker.time_walker.set_values(b_rhythms)
         self.meta_walkers.update({'chord_b' : b_chord_walker})
@@ -189,14 +190,18 @@ class ScaleWalker(HandWalker):
         """ el Creador """
         HandWalker.__init__(self, fingers)
 
-        self.time_walker.current_id += 3
+        # self.time_walker.current_id += 2
         # TODO Make it a thing
         # Add some twist:
-        self.time_walker.values = [128 for it in range(10)]
+        # time_vals = [128, 64, 128, 64, 256, 32]
+        time_vals = [64 for _ in range(10)]
+        self.time_walker.set_values(time_vals)
 
         # Do not start with a scale change
         self.ticks_left = self.next_duration(0)
 
+        # Fibbonnaccish cycle
+        self.shifts = itr.cycle([1, 1, 2, 3, 5, 8])
         self.shift = 0
         # TODO Try to abstract this out somehow
         # Major           [C, -, D, -, E, F, -, G, -, A, -, H]
@@ -234,9 +239,10 @@ class ScaleWalker(HandWalker):
             # Maybe Shift scale 
             shift = 0
             if np.random.random() < 0.42:
-                # range(4)
-                shifts = range(5)
-                shift = np.random.choice(shifts)
+                # range(5)
+                # shifts = [1, 1, 3, 5, 7]
+                # shift = np.random.choice(shifts)
+                shift = self.shifts.next()
                 print '--- SCALE CHANGE | ', shift
 
             # Cumulate shift
@@ -331,7 +337,7 @@ class PitchTwister(HandWalker):
                 else:
                     # TODO some meta-preference would be nice
                     # 88 is the number of keys on our keyboard
-                    new_picz = 0 + np.floor(48.0 * np.random.random())
+                    new_picz = 10 + np.floor(68.0 * np.random.random())
                     # print 'set new picz:', new_picz
                     finger.set_prefered_pitch(new_picz)
 
