@@ -1,4 +1,5 @@
 import numpy as np
+import itertools as itr
 import scipy.linalg as lg
 from utils import probability as up
 from matplotlib import pyplot as plt
@@ -12,14 +13,20 @@ class Merwer(object):
         self.values     = values
         self.size       = len(self.values)
 
+        # This is the walking space
+        self.id_space = range(self.size)
+
+        # We might want to have an option to turn
+        # the mer-walking off and start cycling through
+        # the values
+        self.is_merw = True
+        self.cyclic_ids = itr.cycle(self.id_space)
+
         # TODO fiddle with that also
         self.max_dist = 2
 
         # This is the walking element
         self.current_id = first_id
-
-        # This is the walking space
-        self.id_space = range(self.size)
 
         # Init histogram container
         self.histogram = np.zeros_like(self.values)
@@ -32,6 +39,13 @@ class Merwer(object):
         """ And update updatebles """
         self.values     = values
         self.size       = len(values)
+        self.id_space   = range(self.size)
+        self.cyclic_ids = itr.cycle(self.id_space)
+
+        # Re-init histogram container
+        self.histogram = np.zeros_like(self.values)
+
+        # Recalculate probabilities
         self.make_S()
 
     def make_A(self):
@@ -76,6 +90,10 @@ class Merwer(object):
         # Rebuild
         self.make_S()
 
+    def set_probabilism(self, isit):
+        """ Toggle random walk / cycling """
+        self.is_merw = isit
+
     def get_histogram(self):
         """ Research helper """
         return self.id_space, self.histogram
@@ -91,12 +109,17 @@ class Merwer(object):
 
     def next_value(self):
         """ Make a merw step """
-        # self.update_S()
-        probabilities = self.S[:, self.current_id]
+        if self.is_merw:
+            # Probabilism
+            # self.update_S()
+            probabilities = self.S[:, self.current_id]
 
-        # Get next ID
-        next_id = up.randomly_draw(self.id_space, probabilities)
-        self.current_id = next_id
+            # Get next ID
+            next_id = up.randomly_draw(self.id_space, probabilities)
+            self.current_id = next_id
+        else:
+            # Determinism
+            self.current_id = self.cyclic_ids.next()
 
         # Update histogram
         self.histogram[self.current_id] += 1

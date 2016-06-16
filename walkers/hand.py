@@ -59,7 +59,7 @@ class ExampleHand(Hand):
         # Add 5 fingers [C E G c c]
         # Those are the zero-notes from which we jump
         # onto the first ones
-        for start in [35, 40, 33, 38]:
+        for start in [65, 40, 53, 38, 72]:
             finger = wf.MerwFinger(start)
             # This might allow chord only walks over the whole piano
             finger.pitch_walker.set_max_step(5)
@@ -67,14 +67,14 @@ class ExampleHand(Hand):
 
         # This has its own rhythm
         chord_walker = ChordWalker(self.fingers)
-        a_rhythms = [16, 16, 32, 32, 48, 48, 64, 64, 64, 8, 8 ,8]
+        a_rhythms = [24, 24, 24, 24, 8, 8, 4, 4]
         # a_rhythms = [24, 48, 72, 48, 24, 72, 24, 32]
         chord_walker.time_walker.set_values(a_rhythms)
         self.meta_walkers.update({'chord' : chord_walker})
 
         # Chord walking duet ???
         b_chord_walker = ChordWalker(self.fingers)
-        b_rhythms = [32, 32, 32, 32, 8, 8, 8, 8]
+        b_rhythms = [16, 16, 16]
         # b_rhythms = [32, 64, 96, 64, 32, 64, 96, 32]
         b_chord_walker.time_walker.set_values(b_rhythms)
         self.meta_walkers.update({'chord_b' : b_chord_walker})
@@ -160,6 +160,9 @@ class ChordWalker(HandWalker):
         # TODO This seems unnecessary
         HandWalker.__init__(self, fingers)
 
+        # Make Chords go deterministically pls
+        self.time_walker.set_probabilism(False)
+
     def play(self, timetick):
         """ Do your job """
         if self.is_it_now(timetick):
@@ -201,7 +204,7 @@ class ScaleWalker(HandWalker):
         self.ticks_left = self.next_duration(0)
 
         # Fibbonnaccish cycle
-        self.shifts = itr.cycle([1, 1, 2, 3, 5, 8])
+        self.shifts = itr.cycle(range(5))
         self.shift = 0
         # TODO Try to abstract this out somehow
         # Major           [C, -, D, -, E, F, -, G, -, A, -, H]
@@ -238,7 +241,7 @@ class ScaleWalker(HandWalker):
 
             # Maybe Shift scale 
             shift = 0
-            if np.random.random() < 0.42:
+            if np.random.random() < 1.42:
                 # range(5)
                 # shifts = [1, 1, 3, 5, 7]
                 # shift = np.random.choice(shifts)
