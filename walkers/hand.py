@@ -67,14 +67,14 @@ class ExampleHand(Hand):
 
         # This has its own rhythm
         chord_walker = ChordWalker(self.fingers)
-        a_rhythms = [24, 24, 24, 24, 8, 8, 4, 4]
+        a_rhythms = [32, 32, 32, 32, 16, 16]
         # a_rhythms = [24, 48, 72, 48, 24, 72, 24, 32]
         chord_walker.time_walker.set_values(a_rhythms)
         self.meta_walkers.update({'chord' : chord_walker})
 
         # Chord walking duet ???
         b_chord_walker = ChordWalker(self.fingers)
-        b_rhythms = [16, 16, 16]
+        b_rhythms = [24, 24, 24, 24, 48, 48, 48]
         # b_rhythms = [32, 64, 96, 64, 32, 64, 96, 32]
         b_chord_walker.time_walker.set_values(b_rhythms)
         self.meta_walkers.update({'chord_b' : b_chord_walker})
@@ -172,7 +172,7 @@ class ChordWalker(HandWalker):
             howmany = 0
             for finger in self.fingers:
                 # TODO This should be a parameter
-                if np.random.random() < 0.6:
+                if np.random.random() < 0.3:
                     # Forces finger to play at this timetick
                     finger.hitme()
                     howmany += 1
@@ -197,14 +197,14 @@ class ScaleWalker(HandWalker):
         # TODO Make it a thing
         # Add some twist:
         # time_vals = [128, 64, 128, 64, 256, 32]
-        time_vals = [64 for _ in range(10)]
+        time_vals = [128 for _ in range(10)]
         self.time_walker.set_values(time_vals)
 
         # Do not start with a scale change
         self.ticks_left = self.next_duration(0)
 
         # Fibbonnaccish cycle
-        self.shifts = itr.cycle(range(5))
+        self.shifts = itr.cycle([0, 0, 0, 0])
         self.shift = 0
         # TODO Try to abstract this out somehow
         # Major           [C, -, D, -, E, F, -, G, -, A, -, H]
@@ -229,8 +229,8 @@ class ScaleWalker(HandWalker):
         self.sixth_sxt = [1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0]
 
         # TODO Factor out
-        chord_prog = [self.first_sxt, self.fifth_sxt,\
-                      self.fourt_sxt, self.fifth_sxt]
+        chord_prog = [self.first_sxt, self.fourt_sxt,\
+                      self.domin_grid, self.tonic_grid]
 
         self.chord_prog = itr.cycle(chord_prog)
 
@@ -246,11 +246,11 @@ class ScaleWalker(HandWalker):
 
             # Maybe Shift scale 
             shift = 0
-            if np.random.random() < 1.42:
+            if np.random.random() < 0.2:
                 # range(5)
                 # shifts = [1, 1, 3, 5, 7]
                 # shift = np.random.choice(shifts)
-                # shift = self.shifts.next()
+                shift = self.shifts.next()
                 print '--- SCALE CHANGE | ', shift
 
             # Cumulate shift
@@ -269,7 +269,7 @@ class ScaleWalker(HandWalker):
 
             # Maybe for each finger separateley?
             # Set new scales
-            if np.random.random() < -0.3:
+            if np.random.random() < 0.1:
                 scale = np.roll(self.full_scale, self.shift)
                 print '---> Full scale!'
             else:
