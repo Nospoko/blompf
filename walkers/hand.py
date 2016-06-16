@@ -227,7 +227,12 @@ class ScaleWalker(HandWalker):
         self.fourt_sxt = [1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0]
         self.fifth_sxt = [0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1]
         self.sixth_sxt = [1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0]
-        self._grid_cunter = 0
+
+        # TODO Factor out
+        chord_prog = [self.first_sxt, self.fifth_sxt,\
+                      self.fourt_sxt, self.fifth_sxt]
+
+        self.chord_prog = itr.cycle(chord_prog)
 
         # FIXME This should not be hard-coded in here
         # But keep track from the beginning
@@ -245,7 +250,7 @@ class ScaleWalker(HandWalker):
                 # range(5)
                 # shifts = [1, 1, 3, 5, 7]
                 # shift = np.random.choice(shifts)
-                shift = self.shifts.next()
+                # shift = self.shifts.next()
                 print '--- SCALE CHANGE | ', shift
 
             # Cumulate shift
@@ -264,26 +269,13 @@ class ScaleWalker(HandWalker):
 
             # Maybe for each finger separateley?
             # Set new scales
-            if np.random.random() < 0.7:
+            if np.random.random() < -0.3:
                 scale = np.roll(self.full_scale, self.shift)
                 print '---> Full scale!'
             else:
-                rndm = np.random.random() * 1.11
-                if rndm < 0.2:
-                    scale = np.roll(self.first_sxt, self.shift)
-                    print '---> Dominant with sext!'
-                elif rndm < 0.4:
-                    scale = np.roll(self.domin_grid, self.shift)
-                    print '---> Second chord with sext'
-                elif rndm < 0.6:
-                    scale = np.roll(self.fifth_sxt, self.shift)
-                    print '---> Fifth chord with sext'
-                elif rndm < 0.8:
-                    scale = np.roll(self.subdo_grid, self.shift)
-                    print '---> Third chord with sext'
-                else: # < 1.1
-                    scale = np.roll(self.fourt_sxt, self.shift)
-                    print '---> Fourth chord with sext!'
+                chord = self.chord_prog.next()
+                scale = np.roll(chord, self.shift)
+                print '---> ', chord
 
             for finger in self.fingers:
                 # in each finger
