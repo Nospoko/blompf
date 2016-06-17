@@ -60,7 +60,7 @@ class ExampleHand(Hand):
         # Add 5 fingers [C E G c c]
         # Those are the zero-notes from which we jump
         # onto the first ones
-        for start in [65, 40, 53, 38, 72]:
+        for start in [60, 64, 48, 40, 69]:
             finger = wf.MerwFinger(start)
             # This might allow chord only walks over the whole piano
             finger.pitch_walker.set_max_step(5)
@@ -69,17 +69,17 @@ class ExampleHand(Hand):
         # This has its own rhythm
         chord_walker = ChordWalker(self.fingers)
         # a_rhythms = [12, 14, 16, 18, 20, 22]
-        a_rhythms = [124, 24, 24, 32, 132, 148, 48, 48, 16, 116, 16]
-        chord_walker.time_walker.set_values(a_rhythms)
+        # a_rhythms = [124, 24, 24, 32, 132, 148, 48, 48, 16, 116, 16]
+        # chord_walker.time_walker.set_values(a_rhythms)
         chord_walker.time_walker.set_probabilism(True)
         self.meta_walkers.update({'chord' : chord_walker})
 
         # Chord walking duet ???
         b_chord_walker = ChordWalker(self.fingers)
-        b_rhythms = [12, 112, 12, 12, 124, 32, 140, 48, 80, 80, 80, 8, 8]
-        # b_rhythms = [32, 64, 96, 64, 32, 64, 96, 32]
+        # b_rhythms = [12, 112, 12, 12, 124, 32, 140, 48, 80, 80, 80, 8, 8]
+        b_rhythms = [32, 32, 32, 32, 64, 32, 32, 32, 32, 96, 32, 64, 32, 64, 32, 96, 32]
         b_chord_walker.time_walker.set_values(b_rhythms)
-        b_chord_walker.time_walker.set_probabilism(True)
+        # b_chord_walker.time_walker.set_probabilism(True)
         self.meta_walkers.update({'chord_b' : b_chord_walker})
 
         # TODO consider some kind of signal/slot mechanism?
@@ -96,8 +96,7 @@ class ExampleHand(Hand):
 
         # This is fun
         pitch_twist = PitchTwister(self.fingers)
-        # FIXME why cant this be longer? (next_value error)
-        # TimeWalker hase .size = len(values) which is not updated here
+	# FIXME what is up with this, negotiate with chord walkers maybe?
         pitch_twist.time_walker.values = [42 for it in range(8)]
         self.meta_walkers.update({'pitchtwist' : pitch_twist})
 
@@ -200,7 +199,7 @@ class ScaleWalker(HandWalker):
         # TODO Make it a thing
         # Add some twist:
         # time_vals = [128, 64, 128, 64, 256, 32]
-        time_vals = [42 for _ in range(10)]
+        time_vals = [48 for _ in range(10)]
         self.time_walker.set_values(time_vals)
 
         # Do not start with a scale change
@@ -238,11 +237,11 @@ class ScaleWalker(HandWalker):
 
         # TODO Add logs pls
         rndm = np.random.random()
-        if rndm < 0.15:
+        if rndm < 0.1:
             grid = self.chord_generator.get_triad(self.chord)
-        elif rndm < 0.3:
+        elif rndm < 0.35:
             grid = self.chord_generator.get_sextic(self.chord)
-        elif rndm < 0.65:
+        elif rndm < 0.85:
             grid = self.chord_generator.get_septimic(self.chord)
         else:
             grid = self.chord_generator.get_nonic(self.chord)
@@ -257,7 +256,7 @@ class ScaleWalker(HandWalker):
 
             # Maybe Shift scale 
             shift = 0
-            if np.random.random() < 0.6:
+            if np.random.random() < 0.1:
                 # range(5)
                 shifts = range(-5, 6)
                 shift = np.random.choice(shifts)
