@@ -69,17 +69,18 @@ class ExampleHand(Hand):
         # This has its own rhythm
         chord_walker = ChordWalker(self.fingers)
         # a_rhythms = [12, 14, 16, 18, 20, 22]
-        a_rhythms = [24, 24, 24, 32, 32, 48, 48, 48, 16, 16, 16]
+        a_rhythms = [124, 24, 24, 32, 132, 148, 48, 48, 16, 116, 16]
         chord_walker.time_walker.set_values(a_rhythms)
-        # chord_walker.time_walker.set_probabilism(True)
+        chord_walker.time_walker.set_probabilism(True)
         self.meta_walkers.update({'chord' : chord_walker})
 
         # Chord walking duet ???
         b_chord_walker = ChordWalker(self.fingers)
-        b_rhythms = [12, 12, 12, 12, 24, 32, 40, 48, 80, 80, 80, 8, 8]
+        b_rhythms = [12, 112, 12, 12, 124, 32, 140, 48, 80, 80, 80, 8, 8]
         # b_rhythms = [32, 64, 96, 64, 32, 64, 96, 32]
         b_chord_walker.time_walker.set_values(b_rhythms)
-        # self.meta_walkers.update({'chord_b' : b_chord_walker})
+        b_chord_walker.time_walker.set_probabilism(True)
+        self.meta_walkers.update({'chord_b' : b_chord_walker})
 
         # TODO consider some kind of signal/slot mechanism?
         scale_walker = ScaleWalker(self.fingers)
@@ -235,12 +236,13 @@ class ScaleWalker(HandWalker):
         possible = self.graph[self.chord]
         self.chord = np.random.choice(possible)
 
+        # TODO Add logs pls
         rndm = np.random.random()
-        if rndm < 0.25:
+        if rndm < 0.15:
             grid = self.chord_generator.get_triad(self.chord)
-        elif rndm < 0.5:
+        elif rndm < 0.3:
             grid = self.chord_generator.get_sextic(self.chord)
-        elif rndm < 0.75:
+        elif rndm < 0.65:
             grid = self.chord_generator.get_septimic(self.chord)
         else:
             grid = self.chord_generator.get_nonic(self.chord)
@@ -255,7 +257,7 @@ class ScaleWalker(HandWalker):
 
             # Maybe Shift scale 
             shift = 0
-            if np.random.random() < 0.4:
+            if np.random.random() < 0.6:
                 # range(5)
                 shifts = range(-5, 6)
                 shift = np.random.choice(shifts)
