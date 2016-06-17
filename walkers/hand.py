@@ -2,6 +2,7 @@ import numpy as np
 import itertools as itr
 from utils import midi as um
 from walkers import merw as wm
+from utils import harmony as uh
 from walkers import finger as wf
 
 class Hand(object):
@@ -67,17 +68,18 @@ class ExampleHand(Hand):
 
         # This has its own rhythm
         chord_walker = ChordWalker(self.fingers)
-        a_rhythms = [32, 32, 32, 32, 16, 16]
-        # a_rhythms = [24, 48, 72, 48, 24, 72, 24, 32]
+        # a_rhythms = [12, 14, 16, 18, 20, 22]
+        a_rhythms = [24, 24, 24, 32, 32, 48, 48, 48, 16, 16, 16]
         chord_walker.time_walker.set_values(a_rhythms)
+        # chord_walker.time_walker.set_probabilism(True)
         self.meta_walkers.update({'chord' : chord_walker})
 
         # Chord walking duet ???
         b_chord_walker = ChordWalker(self.fingers)
-        b_rhythms = [24, 24, 24, 24, 48, 48, 48]
+        b_rhythms = [12, 12, 12, 12, 24, 32, 40, 48, 80, 80, 80, 8, 8]
         # b_rhythms = [32, 64, 96, 64, 32, 64, 96, 32]
         b_chord_walker.time_walker.set_values(b_rhythms)
-        self.meta_walkers.update({'chord_b' : b_chord_walker})
+        # self.meta_walkers.update({'chord_b' : b_chord_walker})
 
         # TODO consider some kind of signal/slot mechanism?
         scale_walker = ScaleWalker(self.fingers)
@@ -110,7 +112,7 @@ class HandWalker(object):
         # TODO add/remove fingers?
         self.fingers = fingers
 
-        self.time_walker = wm.TimeWalker(3)
+        self.time_walker = wm.TimeWalker()
         # Starts with a chord
         self.ticks_left = 0
 
@@ -172,7 +174,7 @@ class ChordWalker(HandWalker):
             howmany = 0
             for finger in self.fingers:
                 # TODO This should be a parameter
-                if np.random.random() < 0.3:
+                if np.random.random() < 0.8:
                     # Forces finger to play at this timetick
                     finger.hitme()
                     howmany += 1
@@ -197,46 +199,53 @@ class ScaleWalker(HandWalker):
         # TODO Make it a thing
         # Add some twist:
         # time_vals = [128, 64, 128, 64, 256, 32]
-        time_vals = [128 for _ in range(10)]
+        time_vals = [42 for _ in range(10)]
         self.time_walker.set_values(time_vals)
 
         # Do not start with a scale change
         self.ticks_left = self.next_duration(0)
 
         # Fibbonnaccish cycle
-        self.shifts = itr.cycle([0, 0, 0, 0])
+        # Make random
+        self.shifts = itr.cycle([5, 5, 5])
         self.shift = 0
         # TODO Try to abstract this out somehow
         # Major           [C, -, D, -, E, F, -, G, -, A, -, H]
         self.full_scale = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]
 
-        # TODO Those are all the same chord with a circshift
-        self.tonic_grid = [1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0]
-        self.second_chr = [0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0]
-        self.thir_chord = [0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1]
-        self.subdo_grid = [1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0]
-        self.domin_grid = [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1]
-        self.sixt_chord = [1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0]
-        self.seven_chor = [0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1]
+        self.chord_generator = uh.ChordGenerator()
+        self.graph = {
+                    1: [4, 5, 3, 2, 6, 7],
+                    2: [5],
+                    3: [1, 4, 6],
+                    4: [5, 1, 7],
+                    5: [1, 6],
+                    6: [4],
+                    7: [1]
+                    }
 
-        # Also with added sext (gigity)
-        # Major          [C, -, D, -, E, F, -, G, -, A, -, H]
-        self.first_sxt = [1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0]
-        self.secon_sxt = [0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1]
-        self.third_sxt = [1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1]
-        self.fourt_sxt = [1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0]
-        self.fifth_sxt = [0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1]
-        self.sixth_sxt = [1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0]
-
-        # TODO Factor out
-        chord_prog = [self.first_sxt, self.fourt_sxt,\
-                      self.domin_grid, self.tonic_grid]
-
-        self.chord_prog = itr.cycle(chord_prog)
+        self.chord = 1
 
         # FIXME This should not be hard-coded in here
         # But keep track from the beginning
         self.notes.append([60, 0, 40, 100])
+
+    def chord_prog(self):
+        """ Make chords progress """
+        possible = self.graph[self.chord]
+        self.chord = np.random.choice(possible)
+
+        rndm = np.random.random()
+        if rndm < 0.25:
+            grid = self.chord_generator.get_triad(self.chord)
+        elif rndm < 0.5:
+            grid = self.chord_generator.get_sextic(self.chord)
+        elif rndm < 0.75:
+            grid = self.chord_generator.get_septimic(self.chord)
+        else:
+            grid = self.chord_generator.get_nonic(self.chord)
+
+        return grid
 
     def play(self, timetick):
         """ ayayay """
@@ -246,11 +255,11 @@ class ScaleWalker(HandWalker):
 
             # Maybe Shift scale 
             shift = 0
-            if np.random.random() < 0.2:
+            if np.random.random() < 0.4:
                 # range(5)
-                # shifts = [1, 1, 3, 5, 7]
-                # shift = np.random.choice(shifts)
-                shift = self.shifts.next()
+                shifts = range(-5, 6)
+                shift = np.random.choice(shifts)
+                # shift = self.shifts.next()
                 print '--- SCALE CHANGE | ', shift
 
             # Cumulate shift
@@ -273,7 +282,7 @@ class ScaleWalker(HandWalker):
                 scale = np.roll(self.full_scale, self.shift)
                 print '---> Full scale!'
             else:
-                chord = self.chord_prog.next()
+                chord = self.chord_prog()
                 scale = np.roll(chord, self.shift)
                 print '---> ', chord
 
@@ -294,7 +303,7 @@ class SpeedWalker(HandWalker):
             duration = self.next_duration(timetick)
 
             # Shuffle speed (-1 as fast is set to be mre likely)
-            speeds = [-1, -1, 0, 1]
+            speeds = [-1, -1, -1, 0, 1]
 
             new_speeds = []
 
@@ -332,12 +341,12 @@ class PitchTwister(HandWalker):
                 else:
                     # TODO some meta-preference would be nice
                     # 88 is the number of keys on our keyboard
-                    new_picz = 10 + np.floor(68.0 * np.random.random())
+                    new_picz = 10 + np.floor(64.0 * np.random.random())
                     # print 'set new picz:', new_picz
                     finger.set_prefered_pitch(new_picz)
 
                     # Maybe hit
-                    if np.random.random() > 0.8:
+                    if np.random.random() > 1.8:
                         finger.hitme()
 
                     # Log

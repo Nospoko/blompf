@@ -193,7 +193,7 @@ class PotentialWalker(Merwer):
 
 class TimeWalker(BiasedWalker):
     """ Rhytm lives here """
-    def __init__(self, first_id):
+    def __init__(self):
         """ nope """
         # Possible note values are always powers of 2
         # This is in ticks unit
@@ -201,6 +201,8 @@ class TimeWalker(BiasedWalker):
 
         # TODO is this good
         values[0] = 8
+
+        first_id = np.random.choice(range(3,6))
 
         # Init parent
         BiasedWalker.__init__(self, values, first_id)

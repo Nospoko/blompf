@@ -89,7 +89,7 @@ class MerwFinger(Finger):
         # FIXME some id-value fuckup
         self.pitch_walker   = wm.PitchWalker(first_picz)
         # Note length are powers of 2 only
-        self.time_walker = wm.TimeWalker(4)
+        self.time_walker = wm.TimeWalker()
 
     def next_duration(self, timetick):
         """ Note length (value) in ticks """
