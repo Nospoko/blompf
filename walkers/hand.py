@@ -200,7 +200,8 @@ class ScaleWalker(HandWalker):
         # TODO Make it a thing
         # Add some twist:
         # time_vals = [128, 64, 128, 64, 256, 32]
-        time_vals = [48 for _ in range(10)]
+        # time_vals = [32 for _ in range(10)]
+	time_vals = [16, 32, 16, 32, 64, 128, 64, 32, 16, 32, 16]
         self.time_walker.set_values(time_vals)
 
         # Do not start with a scale change
@@ -242,7 +243,7 @@ class ScaleWalker(HandWalker):
             grid = self.chord_generator.get_triad(self.chord)
         elif rndm < 0.35:
             grid = self.chord_generator.get_sextic(self.chord)
-        elif rndm < 0.85:
+        elif rndm < 0.7:
             grid = self.chord_generator.get_septimic(self.chord)
         else:
             grid = self.chord_generator.get_nonic(self.chord)
@@ -257,9 +258,9 @@ class ScaleWalker(HandWalker):
 
             # Maybe Shift scale 
             shift = 0
-            if np.random.random() < 0.5:
+            if np.random.random() < 0.2:
                 # range(5)
-                shifts = range(1,12)
+                shifts = [2, 3, 4, 5]
                 shift = np.random.choice(shifts)
                 # shift = self.shifts.next()
                 print '--- SCALE CHANGE | ', shift
