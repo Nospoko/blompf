@@ -57,6 +57,10 @@ class ChordGenerator(object):
         """ Simple triads """
         return self.triads[which]
 
+    def get_nonic(self, which):
+        """ Get chord with added ninth """
+        return self.nonic[which]
+
     def get_sextic(self, which):
         """ With sext """
         return self.sextic[which]
@@ -64,7 +68,3 @@ class ChordGenerator(object):
     def get_septimic(self, which):
         """ With seventh """
         return self.septimic[which]
-
-    def get_nonic(self, which):
-        """ Get chord with added ninth """
-        return self.nonic[which]

@@ -104,6 +104,7 @@ class MerwFinger(Finger):
     def next_volume(self, timetick):
         """ velocity """
         vol = self.volume_walker.next_value()
+        # TODO Adding accents would be possible just here
         return vol
 
     def set_scale(self, scale):
@@ -157,6 +158,7 @@ class MerwFinger(Finger):
 
         plt.show()
 
+# OBSOLETE?
 class ExampleFinger(Finger):
     """ Exemplary class exploring finger possibilites """
     def __init__(self, something = 0):

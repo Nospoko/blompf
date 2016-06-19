@@ -66,6 +66,7 @@ class ExampleHand(Hand):
             finger.pitch_walker.set_max_step(5)
             self.fingers.append(finger)
 
+        # TODO Make one RhythmWalker encapsulating multiple ChordWalkers
         # This has its own rhythm
         chord_walker = ChordWalker(self.fingers)
         # a_rhythms = [12, 14, 16, 18, 20, 22]
@@ -83,7 +84,7 @@ class ExampleHand(Hand):
         self.meta_walkers.update({'chord_b' : b_chord_walker})
 
         # TODO consider some kind of signal/slot mechanism?
-        scale_walker = ScaleWalker(self.fingers)
+        scale_walker    = ScaleWalker(self.fingers)
         self.meta_walkers.update({'scale' : scale_walker})
 
         # TODO Think of some better name for this fellow
@@ -91,11 +92,11 @@ class ExampleHand(Hand):
         self.meta_walkers.update({'volume' : m_volume_walker})
 
         # Currently speed is set for every finger separateley
-        speed_walker = SpeedWalker(self.fingers)
+        speed_walker    = SpeedWalker(self.fingers)
         self.meta_walkers.update({'speed' : speed_walker})
 
         # This is fun
-        pitch_twist = PitchTwister(self.fingers)
+        pitch_twist     = PitchTwister(self.fingers)
 	# FIXME what is up with this, negotiate with chord walkers maybe?
         pitch_twist.time_walker.values = [42 for it in range(8)]
         self.meta_walkers.update({'pitchtwist' : pitch_twist})
@@ -256,26 +257,26 @@ class ScaleWalker(HandWalker):
 
             # Maybe Shift scale 
             shift = 0
-            if np.random.random() < 0.1:
+            if np.random.random() < 0.5:
                 # range(5)
-                shifts = range(-5, 6)
+                shifts = range(1,12)
                 shift = np.random.choice(shifts)
                 # shift = self.shifts.next()
                 print '--- SCALE CHANGE | ', shift
 
+                # Move scale value from previous one
+                scale_pitch = self.notes[-1][0] + shift
+
+                # Prevent going off the keyboard
+                if scale_pitch < 60:
+                    scale_pitch += 12
+                elif scale_pitch >= 72:
+                    scale_pitch -= 12
+                self.notes.append([scale_pitch, timetick, 40, 100])
+
             # Cumulate shift
             self.shift += shift
 
-            # Move scale value from previous one
-            scale_pitch = self.notes[-1][0] + shift
-
-            # Prevent going off the keyboard
-            if scale_pitch < 60:
-                scale_pitch += 12
-            elif scale_pitch >= 72:
-                scale_pitch -= 12
-
-            self.notes.append([scale_pitch, timetick, 40, 100])
 
             # Maybe for each finger separateley?
             # Set new scales
