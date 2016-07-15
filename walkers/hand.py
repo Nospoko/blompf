@@ -70,15 +70,19 @@ class ExampleHand(Hand):
         # This has its own rhythm
         chord_walker = ChordWalker(self.fingers)
         # a_rhythms = [12, 14, 16, 18, 20, 22]
-        # a_rhythms = [124, 24, 24, 32, 132, 148, 48, 48, 16, 116, 16]
-        # chord_walker.time_walker.set_values(a_rhythms)
-        chord_walker.time_walker.set_probabilism(True)
+        a_rhythms = [124, 24, 24, 32, 132, 148, 48, 48, 16, 116, 16]
+        chord_walker.time_walker.set_values(a_rhythms)
+        # chord_walker.time_walker.set_probabilism(True)
         self.meta_walkers.update({'chord' : chord_walker})
 
         # Chord walking duet ???
         b_chord_walker = ChordWalker(self.fingers)
         # b_rhythms = [12, 112, 12, 12, 124, 32, 140, 48, 80, 80, 80, 8, 8]
-        b_rhythms = [32, 32, 32, 32, 64, 32, 32, 32, 32, 96, 32, 64, 32, 64, 32, 96, 32]
+        b_rhythms = [32, 32, 32, 32,
+                     64, 32, 32, 32,
+                     32, 96, 32, 64,
+                     32, 64, 32, 96, 32]
+
         b_chord_walker.time_walker.set_values(b_rhythms)
         # b_chord_walker.time_walker.set_probabilism(True)
         self.meta_walkers.update({'chord_b' : b_chord_walker})
