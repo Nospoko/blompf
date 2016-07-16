@@ -68,3 +68,9 @@ class ChordGenerator(object):
     def get_septimic(self, which):
         """ With seventh """
         return self.septimic[which]
+
+def piano_keys():
+    """ MIDI note numbers for typical 8-octave keybord go 21::108 """
+    values = range(21, 109)
+
+    return values

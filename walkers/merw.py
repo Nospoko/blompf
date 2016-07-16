@@ -1,6 +1,7 @@
 import numpy as np
 import itertools as itr
 import scipy.linalg as lg
+from utils import harmony as uh
 from utils import probability as up
 from matplotlib import pyplot as plt
 
@@ -214,8 +215,8 @@ class PitchWalker(BiasedWalker):
     """ Specialised for harmony manipulations """
     def __init__(self, first_pitch):
         """ el Creador, first pitch should lay on the scale? """
-        # MIDI note numbers for typical 8-octave keybord go 21::108
-        values = range(21, 109)
+        # Load keyboard
+        values = uh.piano_keys()
         # TODO some try - except for value error might be useful
         first_id = values.index(first_pitch)
 

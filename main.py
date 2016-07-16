@@ -6,6 +6,7 @@ from utils import midi as um
 from walkers import hand as wh
 from walkers import merw as wm
 import matplotlib.pyplot as plt
+from utils import harmony as uh
 from walkers import finger as wf
 
 def main():
@@ -65,7 +66,11 @@ def main():
 
     finger_notes = []
     for fi in hand.fingers:
-        finger_notes.append(fi.get_notes())
+        fi_notes = fi.get_notes()
+        fi_notes[-1][2] = hand_notes[-1][1] +\
+                          hand_notes[-1][2] -\
+                          fi_notes[-1][1]
+        finger_notes.append(fi_notes)
 
     # Save played notes and some meta-notes
     savepath = prefix + 'blompf_data.pickle'
