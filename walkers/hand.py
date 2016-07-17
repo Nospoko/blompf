@@ -69,8 +69,8 @@ class ExampleHand(Hand):
         # TODO Make one RhythmWalker encapsulating multiple ChordWalkers
         # This has its own rhythm
         chord_walker = ChordWalker(self.fingers)
-        # a_rhythms = [12, 14, 16, 18, 20, 22]
-        a_rhythms = [124, 24, 24, 32, 132, 148, 48, 48, 16, 116, 16]
+        a_rhythms = [24, 32, 32, 24, 48, 64, 32, 16]
+        # a_rhythms = [124, 24, 24, 32, 132, 148, 48, 48, 16, 116, 16]
         chord_walker.time_walker.set_values(a_rhythms)
         # chord_walker.time_walker.set_probabilism(True)
         self.meta_walkers.update({'chord' : chord_walker})
