@@ -60,16 +60,17 @@ class ExampleHand(Hand):
         # Add 5 fingers [C E G c c]
         # Those are the zero-notes from which we jump
         # onto the first ones
-        for start in [60, 64, 38, 40, 69]:
+        for start in [70, 64, 38, 40, 59]:
             finger = wf.MerwFinger(start)
             # This might allow chord only walks over the whole piano
-            finger.pitch_walker.set_max_step(7)
+            finger.pitch_walker.set_max_step(4)
             self.fingers.append(finger)
 
         # TODO Make one RhythmWalker encapsulating multiple ChordWalkers
         # This has its own rhythm
         chord_walker = ChordWalker(self.fingers)
-        a_rhythms = [32, 4, 32, 32, 4, 64, 32, 64, 4, 32, 32, 8, 32]
+        a_rhythms = [16, 32, 48, 64, 16, 96, 128,
+                     112, 16, 80, 16, 48, 32, 16]
         # a_rhythms = [124, 24, 24, 32, 132, 148, 48, 48, 16, 116, 16]
         chord_walker.time_walker.set_values(a_rhythms)
         chord_walker.time_walker.set_probabilism(True)
@@ -77,10 +78,10 @@ class ExampleHand(Hand):
 
         # Chord walking duet ???
         b_chord_walker = ChordWalker(self.fingers)
-        b_rhythms = [48, 128, 8, 12, 48, 12, 48, 64, 128, 32]
+        b_rhythms = [32, 32, 32, 16, 16, 32, 16, 16]
 
         b_chord_walker.time_walker.set_values(b_rhythms)
-        b_chord_walker.time_walker.set_probabilism(True)
+        # b_chord_walker.time_walker.set_probabilism(True)
         self.meta_walkers.update({'chord_b' : b_chord_walker})
 
         # TODO consider some kind of signal/slot mechanism?
@@ -175,7 +176,7 @@ class ChordWalker(HandWalker):
             howmany = 0
             for finger in self.fingers:
                 # TODO This should be a parameter
-                if np.random.random() < 0.8:
+                if np.random.random() < 0.4:
                     # Forces finger to play at this timetick
                     finger.hitme()
                     howmany += 1
@@ -343,7 +344,10 @@ class PitchTwister(HandWalker):
                 else:
                     # TODO some meta-preference would be nice
                     # 88 is the number of keys on our keyboard
-                    new_picz = 0 + np.floor(64.0 * np.random.random())
+                    sector_low = 0
+                    sector_range = 64
+                    val = np.floor(sector_range * np.random.random())
+                    new_picz = sector_low + val
                     # print 'set new picz:', new_picz
                     finger.set_prefered_pitch(new_picz)
 
