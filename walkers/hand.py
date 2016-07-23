@@ -60,7 +60,7 @@ class ExampleHand(Hand):
         # Add 5 fingers [C E G c c]
         # Those are the zero-notes from which we jump
         # onto the first ones
-        for start in [70, 64, 38, 40, 59]:
+        for start in [30, 44, 38, 40, 49]:
             finger = wf.MerwFinger(start)
             # This might allow chord only walks over the whole piano
             finger.pitch_walker.set_max_step(4)
@@ -69,20 +69,20 @@ class ExampleHand(Hand):
         # TODO Make one RhythmWalker encapsulating multiple ChordWalkers
         # This has its own rhythm
         chord_walker = ChordWalker(self.fingers)
-        a_rhythms = [16, 32, 48, 64, 16, 96, 128,
-                     112, 16, 80, 16, 48, 32, 16]
+        a_rhythms = [16, 8, 16, 8, 16, 8, 16, 4, 8, 16, 128,
+                     8, 8, 4, 12, 8, 8, 4, 24, 8, 8, 12, 24, 128]
         # a_rhythms = [124, 24, 24, 32, 132, 148, 48, 48, 16, 116, 16]
         chord_walker.time_walker.set_values(a_rhythms)
-        chord_walker.time_walker.set_probabilism(True)
+        # chord_walker.time_walker.set_probabilism(True)
         self.meta_walkers.update({'chord' : chord_walker})
 
         # Chord walking duet ???
         b_chord_walker = ChordWalker(self.fingers)
-        b_rhythms = [32, 32, 32, 16, 16, 32, 16, 16]
+        b_rhythms = [32, 32, 32, 16, 16, 32, 16, 16, 112, 112]
 
         b_chord_walker.time_walker.set_values(b_rhythms)
         # b_chord_walker.time_walker.set_probabilism(True)
-        self.meta_walkers.update({'chord_b' : b_chord_walker})
+        # self.meta_walkers.update({'chord_b' : b_chord_walker})
 
         # TODO consider some kind of signal/slot mechanism?
         scale_walker    = ScaleWalker(self.fingers)
@@ -99,7 +99,7 @@ class ExampleHand(Hand):
         # This is fun
         pitch_twist     = PitchTwister(self.fingers)
 	# FIXME what is up with this, negotiate with chord walkers maybe?
-        pitch_twist.time_walker.values = [42 for it in range(8)]
+        pitch_twist.time_walker.values = [32 for it in range(8)]
         self.meta_walkers.update({'pitchtwist' : pitch_twist})
 
     def special_tasks(self, timetick):
@@ -176,7 +176,7 @@ class ChordWalker(HandWalker):
             howmany = 0
             for finger in self.fingers:
                 # TODO This should be a parameter
-                if np.random.random() < 0.4:
+                if np.random.random() < 0.7:
                     # Forces finger to play at this timetick
                     finger.hitme()
                     howmany += 1
@@ -338,21 +338,21 @@ class PitchTwister(HandWalker):
 
             for finger in self.fingers:
                 # And prefered pitch value
-                if np.random.random() < 0.45:
+                if np.random.random() < 0.5:
                     finger.set_prefered_pitch(-1)
                     new_piczes.append(-1)
                 else:
                     # TODO some meta-preference would be nice
                     # 88 is the number of keys on our keyboard
-                    sector_low = 0
-                    sector_range = 64
+                    sector_low = 4
+                    sector_range = 62
                     val = np.floor(sector_range * np.random.random())
                     new_picz = sector_low + val
                     # print 'set new picz:', new_picz
                     finger.set_prefered_pitch(new_picz)
 
                     # Maybe hit
-                    if np.random.random() > 0.8:
+                    if np.random.random() > 1.8:
                         finger.hitme()
 
                     # Log
