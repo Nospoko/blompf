@@ -76,14 +76,6 @@ class ExampleHand(Hand):
         # chord_walker.time_walker.set_probabilism(True)
         self.meta_walkers.update({'chord' : chord_walker})
 
-        # Chord walking duet ???
-        b_chord_walker = ChordWalker(self.fingers)
-        b_rhythms = [32, 32, 32, 16, 16, 32, 16, 16, 112, 112]
-
-        b_chord_walker.time_walker.set_values(b_rhythms)
-        # b_chord_walker.time_walker.set_probabilism(True)
-        # self.meta_walkers.update({'chord_b' : b_chord_walker})
-
         # TODO consider some kind of signal/slot mechanism?
         scale_walker    = ScaleWalker(self.fingers)
         self.meta_walkers.update({'scale' : scale_walker})
@@ -200,9 +192,9 @@ class ScaleWalker(HandWalker):
         # self.time_walker.current_id += 2
         # TODO Make it a thing
         # Add some twist:
-        time_vals = [32 for _ in range(10)]
+        # time_vals = [123 for _ in range(10)]
         # time_vals = [32 for _ in range(10)]
-	# time_vals = [16, 32, 16, 32, 64, 128, 64, 32, 16, 32, 16]
+	time_vals = [128, 32, 128, 32, 64, 128, 64, 32, 16, 32, 128]
         self.time_walker.set_values(time_vals)
 
         # Do not start with a scale change
