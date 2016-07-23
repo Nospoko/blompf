@@ -45,7 +45,7 @@ class Hand(object):
         """ Pieciolinia """
         um.show_piano_roll(self.get_notes())
 
-    def special_tasks(self, timestick):
+    def special_tasks(self, timetick):
         """ All kinds of things """
         for walker in self.meta_walkers.itervalues():
             walker.play(timetick)
@@ -66,11 +66,15 @@ class ExampleHand(Hand):
             finger.pitch_walker.set_max_step(4)
             self.fingers.append(finger)
 
+
+    
+
+        '''
         # TODO Make one RhythmWalker encapsulating multiple ChordWalkers
         # This has its own rhythm
         chord_walker = ChordWalker(self.fingers)
-        a_rhythms = [16, 32, 48, 64, 16, 96, 128,
-                     112, 16, 80, 16, 48, 32, 16]
+        a_rhythms = [16, 16, 16, 16, 16]#[16, 32, 48, 64, 16, 96, 128,
+                     #112, 16, 80, 16, 48, 32, 16]
         # a_rhythms = [124, 24, 24, 32, 132, 148, 48, 48, 16, 116, 16]
         chord_walker.time_walker.set_values(a_rhythms)
         chord_walker.time_walker.set_probabilism(True)
@@ -78,11 +82,36 @@ class ExampleHand(Hand):
 
         # Chord walking duet ???
         b_chord_walker = ChordWalker(self.fingers)
-        b_rhythms = [32, 32, 32, 16, 16, 32, 16, 16]
+        b_rhythms = [32, 32, 32, 32, 32]#[32, 32, 32, 16, 16, 32, 16, 16]
 
         b_chord_walker.time_walker.set_values(b_rhythms)
         # b_chord_walker.time_walker.set_probabilism(True)
         self.meta_walkers.update({'chord_b' : b_chord_walker})
+        '''
+
+        values = [[16, 32, 48, 64, 16, 96, 128,
+                     112, 16, 80, 16, 48, 32, 16],  
+                  [124, 24, 24, 32, 132, 148, 48, 48, 16, 116, 16]]
+        rhythm_walker = wm.RhythmWalker()
+        rhythm_walker.set_values(values)
+        # probabilism/ determinism for subsequent chord_walkers
+        chord_walkers_prob = [True, False]
+        # make sure that len(chord_walkers_prob) = len(values)
+        if len(chord_walkers_prob) != len(values):
+            print "ERROR: len(chord_walkers_prob) != len(values)"
+        
+        # number of chord_walkers
+        self.n_chord_walkers = len(values)
+        
+        for it in range(self.n_chord_walkers):     
+            chord_walker = ChordWalker(self.fingers)            
+            rhythm = rhythm_walker.next_value()
+            chord_walker.time_walker.set_values(rhythm)
+            probability = chord_walkers_prob[it]
+            chord_walker.time_walker.set_probabilism(probability)
+            chord_walker_name = 'chord_' + str(it)
+            self.meta_walkers.update({chord_walker_name : chord_walker})
+        
 
         # TODO consider some kind of signal/slot mechanism?
         scale_walker    = ScaleWalker(self.fingers)
