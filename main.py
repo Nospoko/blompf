@@ -55,18 +55,17 @@ def main():
     '''
 
 
-    for i_chord in range(hand.n_chord_walkers):
-        chord_notes = hand.meta_walkers['chord_' + str(i_chord)].get_notes()
-        # FIXME why aren't they ending properply?
-        # Extend for compatibility with the hand notes
-        chord_notes[-1][2] = hand_notes[-1][1] +\
-                             hand_notes[-1][2] -\
-                             chord_notes[-1][1]
-        # um.show_piano_roll(chord_notes)
+    chord_notes = hand.meta_walkers['rhythm'].get_notes()
+    # FIXME why aren't they ending properply?
+    # Extend for compatibility with the hand notes
+    chord_notes[-1][2] = hand_notes[-1][1] +\
+                         hand_notes[-1][2] -\
+                         chord_notes[-1][1]
+    # um.show_piano_roll(chord_notes)
                              
-        chordfile = midipath + prefix + 'chords_' + str(i_chord) + '.mid'
-        um.matrix_to_midi(chord_notes, chordfile)
-        print 'Chords saved to: ', chordfile
+    chordfile = midipath + prefix + 'chords' + '.mid'
+    um.matrix_to_midi(chord_notes, chordfile)
+    print 'Chords saved to: ', chordfile
 
 
     # Show key-only piano-roll

@@ -211,18 +211,6 @@ class TimeWalker(BiasedWalker):
         # No sudden time changes
         self.set_max_step(1)
 
-class RhythmWalker(BiasedWalker):
-    def __init__(self):
-        values = [[16, 16, 16, 16, 16, 16, 16],
-                  [16, 32, 48, 64, 16, 96, 128,
-                     112, 16, 80, 16, 48, 32, 16],  
-                  [124, 24, 24, 32, 132, 148, 48, 48, 16, 116, 16]]
-                  
-        first_id = np.random.choice(range(len(values)))
-        
-        # Init parent
-        BiasedWalker.__init__(self, values, first_id)
-
 class PitchWalker(BiasedWalker):
     """ Specialised for harmony manipulations """
     def __init__(self, first_pitch):
