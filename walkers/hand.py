@@ -66,8 +66,8 @@ class ExampleHand(Hand):
             finger.pitch_walker.set_max_step(4)
             self.fingers.append(finger)
 
-        rhythm_walker = RhythmWalker(self.fingers)        
-        self.meta_walkers.update({'rhythm' : rhythm_walker})        
+        rhythm_walker = RhythmWalker(self.fingers)
+        self.meta_walkers.update({'rhythm' : rhythm_walker})
 
         # TODO consider some kind of signal/slot mechanism?
         scale_walker    = ScaleWalker(self.fingers)
@@ -178,25 +178,23 @@ class ChordWalker(HandWalker):
 
 class RhythmWalker(HandWalker):
     """ Contorls rhythm changes in the ChordWalker """
-    def __init__(self, fingers):        
+    def __init__(self, fingers):
         # Init chord walker container
         HandWalker.__init__(self, fingers)
 
-        time_vals = [32 for _ in range(10)]
+        time_vals = [128 for _ in range(10)]
         self.time_walker.set_values(time_vals)
 
         # Do not start with a rhythm change
-        self.ticks_left = self.next_duration(0)        
-        
+        self.ticks_left = self.next_duration(0)
+
         self.chord_walker = ChordWalker(self.fingers)
-        self.rhythms = itr.cycle([[16, 32, 48, 64, 16, 96, 128,
-                                   112, 16, 80, 16, 48, 32, 16],  
-                                  [124, 24, 24, 32, 132, 148, 
-                                   48, 48, 16, 116, 16]])
-                                   
-        self.probabilisms = itr.cycle([True, False])
-            
-            
+        self.rhythms = itr.cycle([[8, 8, 8, 8, 8, 32],
+                                  [64, 32, 16, 8],
+                                  [12, 12, 12, 12, 12, 36],
+                                  [16, 16, 16, 16, 16, 48]])
+        self.probabilisms = itr.cycle([False, False])
+
     def play(self, timetick):
         """ Changes rhythm of the ChordWalker and makes it play """
         if self.is_it_now(timetick):
@@ -206,16 +204,15 @@ class RhythmWalker(HandWalker):
             self.chord_walker.time_walker.set_values(rhythm)
             probabilism = self.probabilisms.next()
             self.chord_walker.time_walker.set_probabilism(probabilism)
-            
-            # How long till the next rhythm change
-            duration = self.next_duration(timetick)            
-            self.ticks_left = duration - 1
-            
-        self.chord_walker.play(timetick)            
 
-            
+            # How long till the next rhythm change
+            duration = self.next_duration(timetick)
+            self.ticks_left = duration - 1
+
+        self.chord_walker.play(timetick)
+
     def get_notes(self):
-        notes = self.chord_walker.get_notes()            
+        notes = self.chord_walker.get_notes()
         return notes
 
 class ScaleWalker(HandWalker):
