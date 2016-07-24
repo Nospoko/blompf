@@ -165,11 +165,12 @@ class ChordWalker(HandWalker):
                     # Forces finger to play at this timetick
                     finger.hitme()
                     howmany += 1
-            print 'ooo Chord at {} with {} fingers | time {}'\
-                    .format(timetick, howmany, timetick)
 
-            # Take note
-            self.notes.append([60, timetick, 16, 80])
+            # Take note only if more than one finger was forced
+            if howmany > 1:
+                self.notes.append([60, timetick, 16, 80])
+                print 'ooo Chord at {} with {} fingers | time {}'\
+                        .format(timetick, howmany, timetick)
 
             # Reset cunter
             self.ticks_left = duration - 1
@@ -182,17 +183,27 @@ class RhythmWalker(HandWalker):
         # Init chord walker container
         HandWalker.__init__(self, fingers)
 
-        time_vals = [128 for _ in range(10)]
+        time_vals = [256 for _ in range(10)]
         self.time_walker.set_values(time_vals)
 
         # Do not start with a rhythm change
         self.ticks_left = self.next_duration(0)
 
-        self.chord_walker = ChordWalker(self.fingers)
-        self.rhythms = itr.cycle([[8, 8, 8, 8, 8, 32],
+        # Prepare rhythm-space
+        self.rhythms = itr.cycle([[28, 8, 8, 8, 8, 32],
                                   [64, 32, 16, 8],
-                                  [12, 12, 12, 12, 12, 36],
+                                  [128, 64, 32, 16, 16],
+                                  [12, 16, 12, 12, 12, 42],
                                   [16, 16, 16, 16, 16, 48]])
+
+        # 
+        self.chord_walker = ChordWalker(self.fingers)
+
+        # Start with the first rhythm
+        rhythm = self.rhythms.next()
+        self.chord_walker.time_walker.set_values(rhythm)
+
+        # This can change
         self.probabilisms = itr.cycle([False, False])
 
     def play(self, timetick):
@@ -285,9 +296,9 @@ class ScaleWalker(HandWalker):
             shift = 0
             if np.random.random() < 1.8:
                 # range(5)
-                # shifts = [2, 3, 4, 5]
-                # shift = np.random.choice(shifts)
-                shift = self.shifts.next()
+                shifts = [1, 1, 1, 2, 3]
+                shift = np.random.choice(shifts)
+                # shift = self.shifts.next()
                 print '--- SCALE CHANGE | ', shift
 
                 # Move scale value from previous one
@@ -369,7 +380,7 @@ class PitchTwister(HandWalker):
                     # TODO some meta-preference would be nice
                     # 88 is the number of keys on our keyboard
                     sector_low = 4
-                    sector_range = 62
+                    sector_range = 45
                     val = np.floor(sector_range * np.random.random())
                     new_picz = sector_low + val
                     # print 'set new picz:', new_picz
