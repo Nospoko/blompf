@@ -94,7 +94,8 @@ class Merwer(object):
     def set_probabilism(self, isit):
         """ Toggle random walk / cycling """
         self.is_merw = isit
-
+        
+        
     def get_histogram(self):
         """ Research helper """
         return self.id_space, self.histogram
@@ -272,4 +273,28 @@ class VolumeWalker(BiasedWalker):
     def set_volume(self, vol):
         """ simple """
         self.set_bias(vol)
+        
+class GraphWalker(BiasedWalker):
+    def __init__(self, first_chord, graph)  :
+        # number of vertices
+        self.graph    = graph
+        self.n_vert   = len(graph)
+        
+        # vertices numeration starts from 1
+        values      = range(1, self.n_vert + 1)
+        first_id    = first_chord
+        
+        # Init parent
+        BiasedWalker.__init__(self, values, first_id)
+        
+        # Allow interaction between every pair of indices
+        self.set_max_step(self.n_vert)
+    
+    def A_it_jt(self, it, jt):
+        # vertices numeration starts from 1
+        if jt + 1 in self.graph[it + 1]:
+            # if there is an edge from it to jt
+            return 1
+        else:
+            return 0
 

@@ -88,30 +88,6 @@ class ExampleHand(Hand):
         # b_chord_walker.time_walker.set_probabilism(True)
         self.meta_walkers.update({'chord_b' : b_chord_walker})
         '''
-        '''
-        values = [[16, 32, 48, 64, 16, 96, 128,
-                     112, 16, 80, 16, 48, 32, 16],  
-                  [124, 24, 24, 32, 132, 148, 48, 48, 16, 116, 16]]
-        rhythm_walker = wm.RhythmWalker()
-        rhythm_walker.set_values(values)
-        # probabilism/ determinism for subsequent chord_walkers
-        chord_walkers_prob = [True, False]
-        # make sure that len(chord_walkers_prob) = len(values)
-        if len(chord_walkers_prob) != len(values):
-            print "ERROR: len(chord_walkers_prob) != len(values)"
-        
-        # number of chord_walkers
-        self.n_chord_walkers = len(values)
-        
-        for it in range(self.n_chord_walkers):     
-            chord_walker = ChordWalker(self.fingers)            
-            rhythm = rhythm_walker.next_value()
-            chord_walker.time_walker.set_values(rhythm)
-            probability = chord_walkers_prob[it]
-            chord_walker.time_walker.set_probabilism(probability)
-            chord_walker_name = 'chord_' + str(it)
-            self.meta_walkers.update({chord_walker_name : chord_walker})
-        '''
         
         rhythm_walker = RhythmWalker(self.fingers)        
         self.meta_walkers.update({'rhythm' : rhythm_walker})        
@@ -226,7 +202,6 @@ class ChordWalker(HandWalker):
 class RhythmWalker(HandWalker):
     """ Contorls rhythm changes in the ChordWalker """
     def __init__(self, fingers):        
-        # Init chord walker container
         HandWalker.__init__(self, fingers)
 
         time_vals = [32 for _ in range(10)]
@@ -302,6 +277,8 @@ class ScaleWalker(HandWalker):
                     }
 
         self.chord = 1
+        
+        self.graph_walker = wm.GraphWalker(self.chord, self.graph)
 
         # FIXME This should not be hard-coded in here
         # But keep track from the beginning
@@ -309,9 +286,10 @@ class ScaleWalker(HandWalker):
 
     def chord_prog(self):
         """ Make chords progress """
-        possible = self.graph[self.chord]
-        self.chord = np.random.choice(possible)
-
+        # possible = self.graph[self.chord]
+        # self.chord = np.random.choice(possible)
+        self.chord = self.graph_walker.next_value()
+        
         # TODO Add logs pls
         rndm = np.random.random()
         if rndm < 0.1:
