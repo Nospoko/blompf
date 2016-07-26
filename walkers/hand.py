@@ -183,7 +183,8 @@ class RhythmWalker(HandWalker):
         # Init chord walker container
         HandWalker.__init__(self, fingers)
 
-        time_vals = [256 for _ in range(10)]
+        # time_vals = [256 for _ in range(10)]
+        time_vals = [64 + it * 32 for it in range(8)]
         self.time_walker.set_values(time_vals)
 
         # Do not start with a rhythm change
@@ -192,6 +193,7 @@ class RhythmWalker(HandWalker):
         # Prepare rhythm-space
         self.rhythms = itr.cycle([[28, 8, 8, 8, 8, 32],
                                   [64, 32, 16, 8],
+                                  [40, 60, 20, 30, 50],
                                   [128, 64, 32, 16, 16],
                                   [12, 16, 12, 12, 12, 42],
                                   [16, 16, 16, 16, 16, 48]])
@@ -425,5 +427,6 @@ class MetaVolumeWalker(HandWalker):
             # Reset cunter
             self.ticks_left = duration - 1
 
-            print '---> Volumes set: ', new_volumes, ' |', timetick
+            # This is not so very interesting
+            # print '---> Volumes set: ', new_volumes, ' |', timetick
 
