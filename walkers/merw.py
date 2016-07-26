@@ -74,14 +74,15 @@ class Merwer(object):
 
         # Palic, sadzic, diagonalizowac
         d, V = lg.eigh(self.A, eigvals = (self.size-1, self.size-1))
+
         for it in range(self.size):
             for jt in range(self.size):
-                if V[jt] == 0:
+                if V[it] == 0:
                     # I don't know why this was here
                     # print 'this should never happen'
                     S[it,jt] = 0.
                 else:
-                    S[it,jt] = V[it]/V[jt] * self.A[it,jt]/d
+                    S[it,jt] = V[jt]/V[it] * self.A[it,jt]/d
         self.S = S
 
     def set_max_step(self, howfar):
@@ -94,7 +95,8 @@ class Merwer(object):
     def set_probabilism(self, isit):
         """ Toggle random walk / cycling """
         self.is_merw = isit
-
+        
+        
     def get_histogram(self):
         """ Research helper """
         return self.id_space, self.histogram
@@ -113,7 +115,8 @@ class Merwer(object):
         if self.is_merw:
             # Probabilism
             # self.update_S()
-            probabilities = self.S[:, self.current_id]
+            # probabilities = self.S[:, self.current_id]
+            probabilities = self.S[self.current_id, :]
 
             # Get next ID
             next_id = up.randomly_draw(self.id_space, probabilities)
@@ -272,4 +275,52 @@ class VolumeWalker(BiasedWalker):
     def set_volume(self, vol):
         """ simple """
         self.set_bias(vol)
+
+class GraphWalker(BiasedWalker):
+    def __init__(self, first_chord, graph)  :
+        """ Konstruktor """
+        # number of vertices
+        self.graph    = graph
+        self.n_vert   = len(graph)
+
+        # vertices numeration starts from 1
+        values      = range(1, self.n_vert + 1)
+        first_id    = first_chord
+
+        # Init parent
+        BiasedWalker.__init__(self, values, first_id)
+
+        # Allow interaction between every pair of indices
+        self.set_max_step(self.n_vert)
+
+    def make_S(self):
+        """ Transition probabilities matrix """
+        self.make_A()
+        S = np.zeros_like(self.A)
+
+        # Find eigenvalues and eigenvectors
+        d, V = lg.eig(self.A)
+        # Find the maximum eigenvalue
+        d = np.max(d)
+        imax = np.argmax(d)
+        # and the corresponding eigenvector
+        V = V[:,imax]
+
+        for it in range(self.size):
+            for jt in range(self.size):
+                if V[it] == 0:
+                    S[it,jt] = 0.
+                else:
+                    S[it,jt] = V[jt]/V[it] * self.A[it,jt]/d
+        self.S = S
+
+    def A_it_jt(self, it, jt):
+        """ Graph version of A matrix """
+        # vertices numeration starts from 1
+        if jt + 1 in self.graph[it + 1]:
+
+            # if there is an edge from it to jt
+            return 1
+        else:
+            return 0
 

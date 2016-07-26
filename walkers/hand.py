@@ -180,7 +180,6 @@ class ChordWalker(HandWalker):
 class RhythmWalker(HandWalker):
     """ Contorls rhythm changes in the ChordWalker """
     def __init__(self, fingers):
-        # Init chord walker container
         HandWalker.__init__(self, fingers)
 
         # time_vals = [256 for _ in range(10)]
@@ -215,6 +214,7 @@ class RhythmWalker(HandWalker):
             rhythm = self.rhythms.next()
             print '=== RHYTHM CHANGE | ', rhythm
             self.chord_walker.time_walker.set_values(rhythm)
+
             probabilism = self.probabilisms.next()
             self.chord_walker.time_walker.set_probabilism(probabilism)
 
@@ -266,14 +266,17 @@ class ScaleWalker(HandWalker):
 
         self.chord = 1
 
+        self.graph_walker = wm.GraphWalker(self.chord, self.graph)
+
         # FIXME This should not be hard-coded in here
         # But keep track from the beginning
         self.notes.append([60, 0, 40, 100])
 
     def chord_prog(self):
         """ Make chords progress """
-        possible = self.graph[self.chord]
-        self.chord = np.random.choice(possible)
+        # possible = self.graph[self.chord]
+        # self.chord = np.random.choice(possible)
+        self.chord = self.graph_walker.next_value()
 
         # TODO Add logs pls
         rndm = np.random.random()
