@@ -74,14 +74,15 @@ class Merwer(object):
 
         # Palic, sadzic, diagonalizowac
         d, V = lg.eigh(self.A, eigvals = (self.size-1, self.size-1))
+
         for it in range(self.size):
             for jt in range(self.size):
-                if V[jt] == 0:
+                if V[it] == 0:
                     # I don't know why this was here
                     # print 'this should never happen'
                     S[it,jt] = 0.
                 else:
-                    S[it,jt] = V[it]/V[jt] * self.A[it,jt]/d
+                    S[it,jt] = V[jt]/V[it] * self.A[it,jt]/d
         self.S = S
 
     def set_max_step(self, howfar):
@@ -114,7 +115,8 @@ class Merwer(object):
         if self.is_merw:
             # Probabilism
             # self.update_S()
-            probabilities = self.S[:, self.current_id]
+            # probabilities = self.S[:, self.current_id]
+            probabilities = self.S[self.current_id, :]
 
             # Get next ID
             next_id = up.randomly_draw(self.id_space, probabilities)
@@ -286,9 +288,31 @@ class GraphWalker(BiasedWalker):
         
         # Init parent
         BiasedWalker.__init__(self, values, first_id)
-        
+
         # Allow interaction between every pair of indices
         self.set_max_step(self.n_vert)
+ 
+
+    def make_S(self):
+        """ Transition probabilities matrix """
+        self.make_A()
+        S = np.zeros_like(self.A)
+
+        # Find eigenvalues and eigenvectors
+        d, V = lg.eig(self.A)
+        # Find the maximum eigenvalue
+        d = np.max(d)
+        imax = np.argmax(d)
+        # and the corresponding eigenvector
+        V = V[:,imax]  
+
+        for it in range(self.size):
+            for jt in range(self.size):
+                if V[it] == 0:
+                    S[it,jt] = 0.
+                else:
+                    S[it,jt] = V[jt]/V[it] * self.A[it,jt]/d
+        self.S = S  
     
     def A_it_jt(self, it, jt):
         # vertices numeration starts from 1

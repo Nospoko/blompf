@@ -66,28 +66,6 @@ class ExampleHand(Hand):
             finger.pitch_walker.set_max_step(4)
             self.fingers.append(finger)
 
-
-    
-
-        '''
-        # TODO Make one RhythmWalker encapsulating multiple ChordWalkers
-        # This has its own rhythm
-        chord_walker = ChordWalker(self.fingers)
-        a_rhythms = [16, 16, 16, 16, 16]#[16, 32, 48, 64, 16, 96, 128,
-                     #112, 16, 80, 16, 48, 32, 16]
-        # a_rhythms = [124, 24, 24, 32, 132, 148, 48, 48, 16, 116, 16]
-        chord_walker.time_walker.set_values(a_rhythms)
-        chord_walker.time_walker.set_probabilism(True)
-        self.meta_walkers.update({'chord' : chord_walker})
-
-        # Chord walking duet ???
-        b_chord_walker = ChordWalker(self.fingers)
-        b_rhythms = [32, 32, 32, 32, 32]#[32, 32, 32, 16, 16, 32, 16, 16]
-
-        b_chord_walker.time_walker.set_values(b_rhythms)
-        # b_chord_walker.time_walker.set_probabilism(True)
-        self.meta_walkers.update({'chord_b' : b_chord_walker})
-        '''
         
         rhythm_walker = RhythmWalker(self.fingers)        
         self.meta_walkers.update({'rhythm' : rhythm_walker})        
@@ -289,6 +267,7 @@ class ScaleWalker(HandWalker):
         # possible = self.graph[self.chord]
         # self.chord = np.random.choice(possible)
         self.chord = self.graph_walker.next_value()
+        print "========================="
         
         # TODO Add logs pls
         rndm = np.random.random()
