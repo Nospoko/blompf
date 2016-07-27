@@ -120,7 +120,7 @@ class MerwFinger(Finger):
         # FIXME this is esoteric as fuck
         # Slow
         if slowfastnone == 1:
-            bias = 7
+            bias = self.time_walker.size - 1#7
         # Fast
         if slowfastnone == -1:
             bias = 1

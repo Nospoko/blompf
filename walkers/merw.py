@@ -140,10 +140,11 @@ class Merwer(object):
 
 class BiasedWalker(Merwer):
     """ Walker atracted to some value """
-    def __init__(self, values, first_id):
+    def __init__(self, values, first_id, symmetric):
         """ Konstrutkor """
         # By default set bias to NO BIAS
         self.bias = -1
+        self.symmetric = symmetric
 
         # Init parent
         Merwer.__init__(self, values, first_id)
@@ -151,10 +152,54 @@ class BiasedWalker(Merwer):
     def set_bias(self, prefered):
         """ Sets prefered value, lower than 0 is NO BIAS """
         self.bias       = prefered
-
+        if self.bias >= 0:
+            self.symmetric = False
+            
+        if self.bias < 0:
+            self.symmetric = True
         # Update probabilities
         self.make_S()
+              
+    def make_S(self):
+        """ Transition probabilities matrix """
+        self.make_A()
+        S = np.zeros_like(self.A)
 
+        if self.symmetric == True:
+            # Find the maximum eigenvalue and the corresponding eigenvector
+            d, V = lg.eigh(self.A, eigvals = (self.size-1, self.size-1))
+
+        if self.symmetric == False:           
+            # Find eigenvalues and eigenvectors
+            d, V = lg.eig(self.A)
+            # Find the maximum eigenvalue
+            imax = np.argmax(d)
+            d = np.max(d)
+            # and the corresponding eigenvector
+            V = V[:,imax]   
+            
+        for it in range(self.size):
+            for jt in range(self.size):
+                if V[it] != 0:
+                    S[it,jt] = V[jt]/V[it] * self.A[it,jt]/d
+        self.S = S
+        
+        n = 0
+        for it in range(self.size):
+            if np.abs(np.sum(self.S[it])-1) > 0.01 and np.sum(self.S[it]) != 0.0:
+               n += 1
+               #if self.symmetric == True:
+                #   print np.sum(self.S[it])
+        if n!= 0:
+            print "symmetric: ", self.symmetric
+            print "size: ", self.size
+            print "bias: ", self.bias
+            print "n: ",n
+            print "OH NO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "
+        
+        
+        
+        
     def A_it_jt(self, it, jt = 0):
         """ Aij definition (symmetric - does it need to be?) """
         # FIXME some analytical research could be fruitful here
@@ -165,7 +210,6 @@ class BiasedWalker(Merwer):
         # out = 1.0 - (1.0 * abs(self.bias - it)/self.size)
         pdf = up.tomek_pdf(self.bias)
         out = pdf(it)
-
         return out
 
     def show_bias(self):
@@ -209,10 +253,11 @@ class TimeWalker(BiasedWalker):
         first_id = np.random.choice(range(3,6))
 
         # Init parent
-        BiasedWalker.__init__(self, values, first_id)
+        BiasedWalker.__init__(self, values, first_id, True)
 
         # No sudden time changes
         self.set_max_step(1)
+
 
 class PitchWalker(BiasedWalker):
     """ Specialised for harmony manipulations """
@@ -226,16 +271,30 @@ class PitchWalker(BiasedWalker):
         # Major           [C, -, D, -, E, F, -, G, -, A, -, H]
         self.major_grid = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]
         self.interaction_grid = self.major_grid
-        BiasedWalker.__init__(self, values, first_id)
+        #self.interaction_grid = [1 for _ in range(12)]
+        BiasedWalker.__init__(self, values, first_id, True)
+
 
         self.set_max_step(4)
+
+        '''
+        sym = True
+        for it in range(self.size):
+            for jt in range(self.size):
+                if self.A[it,jt]!=self.A[jt,it]:
+                    sym = False
+                    
+        print "!!!!!!!!!!!!!!!!!!!!!!!!!! ", sym
+        '''
+       
+        
 
     def set_scale(self, grid):
         """ Avaiable notes are defined by this 1/0 grid """
         self.interaction_grid = grid
         # UPDATE NEEDED KURWA
         self.make_S()
-
+        
     # OBSOLETE ?
     def shift_scale(self, shift):
         """ This is importando """
@@ -267,7 +326,7 @@ class VolumeWalker(BiasedWalker):
         # MIDI volume goes 0::127
         values      = range(128)
         first_id    = first_vol
-        BiasedWalker.__init__(self, values, first_id)
+        BiasedWalker.__init__(self, values, first_id, True)
 
         # By default allow more distinct volume changes
         self.set_max_step(15)
@@ -279,40 +338,19 @@ class VolumeWalker(BiasedWalker):
 class GraphWalker(BiasedWalker):
     def __init__(self, first_chord, graph)  :
         # number of vertices
-        self.graph    = graph
-        self.n_vert   = len(graph)
+        self.graph     = graph
+        self.n_vert    = len(graph)
         
         # vertices numeration starts from 1
         values      = range(1, self.n_vert + 1)
         first_id    = first_chord
         
         # Init parent
-        BiasedWalker.__init__(self, values, first_id)
+        BiasedWalker.__init__(self, values, first_id, False)
 
         # Allow interaction between every pair of indices
         self.set_max_step(self.n_vert)
- 
-
-    def make_S(self):
-        """ Transition probabilities matrix """
-        self.make_A()
-        S = np.zeros_like(self.A)
-
-        # Find eigenvalues and eigenvectors
-        d, V = lg.eig(self.A)
-        # Find the maximum eigenvalue
-        d = np.max(d)
-        imax = np.argmax(d)
-        # and the corresponding eigenvector
-        V = V[:,imax]  
-
-        for it in range(self.size):
-            for jt in range(self.size):
-                if V[it] == 0:
-                    S[it,jt] = 0.
-                else:
-                    S[it,jt] = V[jt]/V[it] * self.A[it,jt]/d
-        self.S = S  
+        
     
     def A_it_jt(self, it, jt):
         # vertices numeration starts from 1
