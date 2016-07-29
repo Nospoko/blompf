@@ -111,6 +111,11 @@ class MerwFinger(Finger):
         """ Sets the scale grid """
         self.pitch_walker.set_scale(scale)
 
+        ids = range(self.pitch_walker.size)
+        # temporary solution
+        # guaranteeing that current_id is within the new range
+        self.pitch_walker.current_id = np.random.choice(ids)
+
     def set_prefered_pitch(self, picz):
         """ sets the prefered pitch, bitch, -1 turn off """
         self.pitch_walker.set_bias(picz)

@@ -40,21 +40,6 @@ def main():
     print 'Notes saved to: ', handfile
 
     # Show chord-only piano-roll
-    '''
-    chord_notes = hand.meta_walkers['chord'].get_notes()
-    # FIXME why aren't they ending properply?
-    # Extend for compatibility with the hand notes
-    chord_notes[-1][2] = hand_notes[-1][1] +\
-                         hand_notes[-1][2] -\
-                         chord_notes[-1][1]
-    # um.show_piano_roll(chord_notes)
-
-    chordfile = midipath + prefix + 'chords.mid'
-    um.matrix_to_midi(chord_notes, chordfile)
-    print 'Chords saved to: ', chordfile
-    '''
-
-
     chord_notes = hand.meta_walkers['rhythm'].get_notes()
     # FIXME why aren't they ending properply?
     # Extend for compatibility with the hand notes
@@ -98,6 +83,7 @@ def main():
     with open(savepath, 'wb') as fout:
         pickle.dump(savedick, fout)
     print 'Blompf data dict saved to: ', savepath
+
 
     # Have fun
     return hand

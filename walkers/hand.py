@@ -60,10 +60,12 @@ class ExampleHand(Hand):
         # Add 5 fingers [C E G c c]
         # Those are the zero-notes from which we jump
         # onto the first ones
-        for start in [70, 64, 38, 40, 59]:
+
+        # this notes must be in the grid!!!
+        for start in [71, 64, 38, 40, 59]:
             finger = wf.MerwFinger(start)
             # This might allow chord only walks over the whole piano
-            finger.pitch_walker.set_max_step(4)
+            # finger.pitch_walker.set_max_step(4)
             self.fingers.append(finger)
 
         
@@ -314,7 +316,7 @@ class ScaleWalker(HandWalker):
             # Set new scales
             if np.random.random() < 0.1:
                 scale = np.roll(self.full_scale, self.shift)
-                print '---> Full scale!'
+                print '---> Full scale! ',scale
             else:
                 chord = self.chord_prog()
                 scale = np.roll(chord, self.shift)

@@ -152,6 +152,7 @@ class BiasedWalker(Merwer):
     def set_bias(self, prefered):
         """ Sets prefered value, lower than 0 is NO BIAS """
         self.bias       = prefered
+        
         if self.bias >= 0:
             self.symmetric = False
             
@@ -159,6 +160,7 @@ class BiasedWalker(Merwer):
             self.symmetric = True
         # Update probabilities
         self.make_S()
+
               
     def make_S(self):
         """ Transition probabilities matrix """
@@ -183,21 +185,24 @@ class BiasedWalker(Merwer):
                 if V[it] != 0:
                     S[it,jt] = V[jt]/V[it] * self.A[it,jt]/d
         self.S = S
-        
+
+        ''' for testing
         n = 0
         for it in range(self.size):
-            if np.abs(np.sum(self.S[it])-1) > 0.01 and np.sum(self.S[it]) != 0.0:
+            if np.abs(np.sum(self.S[it])-1) > 0.01and self.bias > 49:
+             #if np.sum(self.S[it]) == 0.0:                
                n += 1
                #if self.symmetric == True:
-                #   print np.sum(self.S[it])
-        if n!= 0:
+               print it, ' ',np.sum(self.S[it])
+               #print self.A[it]
+        if n!=0 and self.bias > 49:# and self.size < 90:
             print "symmetric: ", self.symmetric
             print "size: ", self.size
             print "bias: ", self.bias
             print "n: ",n
             print "OH NO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "
-        
-        
+        '''
+               
         
         
     def A_it_jt(self, it, jt = 0):
@@ -263,62 +268,124 @@ class PitchWalker(BiasedWalker):
     """ Specialised for harmony manipulations """
     def __init__(self, first_pitch):
         """ el Creador, first pitch should lay on the scale? """
-        # Load keyboard
-        values = uh.piano_keys()
-        # TODO some try - except for value error might be useful
-        first_id = values.index(first_pitch)
-
+        # All possible keys
+        self.all_values        = uh.piano_keys()
+        self.global_size       = len(self.all_values)
+        self.global_id_space   = range(self.global_size)
+        
         # Major           [C, -, D, -, E, F, -, G, -, A, -, H]
         self.major_grid = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]
         self.interaction_grid = self.major_grid
-        #self.interaction_grid = [1 for _ in range(12)]
-        BiasedWalker.__init__(self, values, first_id, True)
+        
+        # Keys allowed by the grid
+        values = self.make_values()
+        # TODO some try - except for value error might be useful
+        first_id = values.index(first_pitch)
+        BiasedWalker.__init__(self, values, first_id, True)        
 
-
-        self.set_max_step(4)
-
-        '''
-        sym = True
-        for it in range(self.size):
-            for jt in range(self.size):
-                if self.A[it,jt]!=self.A[jt,it]:
-                    sym = False
-                    
-        print "!!!!!!!!!!!!!!!!!!!!!!!!!! ", sym
-        '''
-       
+        # Reinit histogram container
+        # so that it contains all_values, not just values
+        self.histogram = np.zeros_like(self.all_values)
+        
+        # "global" first_pitch id 
+        # (refering to all_values, not vallues)
+        global_first_id = self.global_id(self.current_id)
+        self.histogram[global_first_id] += 1
         
 
+    def make_values(self):
+        """ Creates a list of values for a given grid """
+        # Init value container
+        values = []
+        # 1st value mod octave
+        first_step = self.all_values[0] % len(self.interaction_grid)
+
+        # Roll the grid so that it starts at the first_step
+        grid_shift = len(self.interaction_grid) - first_step
+        rolled_grid = np.roll(self.interaction_grid, grid_shift)
+   
+        # Iterate cyclically (?) over the rolled_grid     
+        cycle = itr.cycle(rolled_grid)
+        value = self.all_values[0]         # 21
+        last_value = self.all_values[-1]   # 108
+        while value <= last_value:
+            in_grid = cycle.next()
+            # if the value if allowed by the grid
+            if in_grid == 1:
+                values.append(value)
+            value += 1
+            
+        return values        
+        
+    def update(self):
+        self.values     = self.make_values()
+        self.size       = len(self.values)
+        self.id_space   = range(self.size)
+        self.cyclic_ids = itr.cycle(self.id_space)
+        self.make_S() 
+       
     def set_scale(self, grid):
         """ Avaiable notes are defined by this 1/0 grid """
         self.interaction_grid = grid
-        # UPDATE NEEDED KURWA
-        self.make_S()
+        self.update()
         
     # OBSOLETE ?
     def shift_scale(self, shift):
         """ This is importando """
         self.interaction_grid = np.roll(self.interaction_grid, shift)
-        self.make_S()
+        self.update()
+        
+    def global_id(self, local_id):
+        """ Converts id in values ('local') to id in all_values ('global') """
+        value = self.values[local_id]
+        global_id = self.all_values.index(value)
+        return global_id
 
     def A_it_jt(self, it, jt = 0):
-        """ Pitch oriented A matrix definition """
-        # Find on-scale positions of the iterators
-        vit = self.values[it]
-        vjt = self.values[jt]
+        """ Aij definition """
+        pdf = up.tomek_pdf(self.bias)
+        global_it = self.global_id(it)
+        # pdf refers to all the keys, not just allowed ones
+        out = pdf(global_it)
+        return out
+        
+    def get_histogram(self):
+        """ Research helper """
+        return self.global_id_space, self.histogram
 
-        # Modulo octave
-        nit = vit % len(self.interaction_grid)
-        njt = vjt % len(self.interaction_grid)
+    def show_histogram(self):
+        """ Pretty please keep plots pretty """
+        plt.bar(self.all_values, self.histogram, color = 'k', alpha = 0.5)
+        plt.show()
 
-        # Only ones on interaction grid can play together
-        if self.interaction_grid[nit] == self.interaction_grid[njt] == 1:
-            pdf = up.tomek_pdf(self.bias)
-            return pdf(it)
+    def next_value(self):
+        """ Make a merw step """
+        if self.is_merw:
+            # Probabilism
+            probabilities = self.S[self.current_id, :]
+
+            # Get next ID
+            next_id = up.randomly_draw(self.id_space, probabilities)
+            self.current_id = next_id
         else:
-            # TODO Why is this necessary?
-            return 0.00000000001
+            # Determinism
+            self.current_id = self.cyclic_ids.next()
 
+        # Update histogram
+        # Here is the only change wrt parent next_value() function
+        global_current_id = self.global_id(self.current_id)
+        self.histogram[global_current_id] += 1
+
+        # Return value
+        return self.values[self.current_id]
+
+    def show_bias(self):
+        """ Plot atractor """
+        x = np.linspace(min(self.global_id_space), max(self.global_id_space), 1001)
+        y = self.A_it_jt(x)
+        plt.plot(x, y)
+        plt.show()
+       
 class VolumeWalker(BiasedWalker):
     """ Volume dedicated """
     def __init__(self, first_vol):
@@ -350,7 +417,15 @@ class GraphWalker(BiasedWalker):
 
         # Allow interaction between every pair of indices
         self.set_max_step(self.n_vert)
-        
+
+    def make_A(self):
+        """ Prepare adjacency matrix """
+        A = np.zeros((self.size, self.size))
+
+        for it in range(self.size):
+            for jt in range(self.size):
+                    A[it, jt] = self.A_it_jt(it, jt)
+        self.A = A        
     
     def A_it_jt(self, it, jt):
         # vertices numeration starts from 1
@@ -358,5 +433,6 @@ class GraphWalker(BiasedWalker):
             # if there is an edge from it to jt
             return 1
         else:
+            # no edge
             return 0
 
