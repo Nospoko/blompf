@@ -95,8 +95,7 @@ class Merwer(object):
     def set_probabilism(self, isit):
         """ Toggle random walk / cycling """
         self.is_merw = isit
-        
-        
+
     def get_histogram(self):
         """ Research helper """
         return self.id_space, self.histogram
@@ -144,7 +143,7 @@ class BiasedWalker(Merwer):
         """ Konstrutkor """
         # By default set bias to NO BIAS
         self.bias = -1
-        self.symmetric = symmetric
+        self.symmetric = False
 
         # Init parent
         Merwer.__init__(self, values, first_id)
@@ -152,16 +151,17 @@ class BiasedWalker(Merwer):
     def set_bias(self, prefered):
         """ Sets prefered value, lower than 0 is NO BIAS """
         self.bias       = prefered
-        
+
         if self.bias >= 0:
             self.symmetric = False
-            
+
         if self.bias < 0:
             self.symmetric = True
+
+        self.symmetric = False
         # Update probabilities
         self.make_S()
 
-              
     def make_S(self):
         """ Transition probabilities matrix """
         self.make_A()
@@ -171,40 +171,21 @@ class BiasedWalker(Merwer):
             # Find the maximum eigenvalue and the corresponding eigenvector
             d, V = lg.eigh(self.A, eigvals = (self.size-1, self.size-1))
 
-        if self.symmetric == False:           
+        if self.symmetric == False:
             # Find eigenvalues and eigenvectors
             d, V = lg.eig(self.A)
             # Find the maximum eigenvalue
             imax = np.argmax(d)
             d = np.max(d)
             # and the corresponding eigenvector
-            V = V[:,imax]   
-            
+            V = V[:,imax]
+
         for it in range(self.size):
             for jt in range(self.size):
                 if V[it] != 0:
                     S[it,jt] = V[jt]/V[it] * self.A[it,jt]/d
         self.S = S
 
-        ''' for testing
-        n = 0
-        for it in range(self.size):
-            if np.abs(np.sum(self.S[it])-1) > 0.01and self.bias > 49:
-             #if np.sum(self.S[it]) == 0.0:                
-               n += 1
-               #if self.symmetric == True:
-               print it, ' ',np.sum(self.S[it])
-               #print self.A[it]
-        if n!=0 and self.bias > 49:# and self.size < 90:
-            print "symmetric: ", self.symmetric
-            print "size: ", self.size
-            print "bias: ", self.bias
-            print "n: ",n
-            print "OH NO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "
-        '''
-               
-        
-        
     def A_it_jt(self, it, jt = 0):
         """ Aij definition (symmetric - does it need to be?) """
         # FIXME some analytical research could be fruitful here
@@ -263,7 +244,6 @@ class TimeWalker(BiasedWalker):
         # No sudden time changes
         self.set_max_step(1)
 
-
 class PitchWalker(BiasedWalker):
     """ Specialised for harmony manipulations """
     def __init__(self, first_pitch):
@@ -272,26 +252,25 @@ class PitchWalker(BiasedWalker):
         self.all_values        = uh.piano_keys()
         self.global_size       = len(self.all_values)
         self.global_id_space   = range(self.global_size)
-        
+
         # Major           [C, -, D, -, E, F, -, G, -, A, -, H]
         self.major_grid = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]
         self.interaction_grid = self.major_grid
-        
+
         # Keys allowed by the grid
         values = self.make_values()
         # TODO some try - except for value error might be useful
         first_id = values.index(first_pitch)
-        BiasedWalker.__init__(self, values, first_id, True)        
+        BiasedWalker.__init__(self, values, first_id, True)
 
         # Reinit histogram container
         # so that it contains all_values, not just values
         self.histogram = np.zeros_like(self.all_values)
-        
+
         # "global" first_pitch id 
         # (refering to all_values, not vallues)
         global_first_id = self.global_id(self.current_id)
         self.histogram[global_first_id] += 1
-        
 
     def make_values(self):
         """ Creates a list of values for a given grid """
@@ -303,7 +282,7 @@ class PitchWalker(BiasedWalker):
         # Roll the grid so that it starts at the first_step
         grid_shift = len(self.interaction_grid) - first_step
         rolled_grid = np.roll(self.interaction_grid, grid_shift)
-   
+
         # Iterate cyclically (?) over the rolled_grid     
         cycle = itr.cycle(rolled_grid)
         value = self.all_values[0]         # 21
@@ -314,29 +293,29 @@ class PitchWalker(BiasedWalker):
             if in_grid == 1:
                 values.append(value)
             value += 1
-            
-        return values        
-        
+
+        return values
+
     def update(self):
         self.values     = self.make_values()
         self.size       = len(self.values)
         self.id_space   = range(self.size)
         self.cyclic_ids = itr.cycle(self.id_space)
-        self.make_S() 
-       
+        self.make_S()
+
     def set_scale(self, grid):
         """ Avaiable notes are defined by this 1/0 grid """
         self.interaction_grid = grid
         self.update()
-        
+
     # OBSOLETE ?
     def shift_scale(self, shift):
         """ This is importando """
         self.interaction_grid = np.roll(self.interaction_grid, shift)
         self.update()
-        
+
     def global_id(self, local_id):
-        """ Converts id in values ('local') to id in all_values ('global') """
+        """ Global to local idx converter """
         value = self.values[local_id]
         global_id = self.all_values.index(value)
         return global_id
@@ -348,7 +327,7 @@ class PitchWalker(BiasedWalker):
         # pdf refers to all the keys, not just allowed ones
         out = pdf(global_it)
         return out
-        
+
     def get_histogram(self):
         """ Research helper """
         return self.global_id_space, self.histogram
@@ -385,7 +364,7 @@ class PitchWalker(BiasedWalker):
         y = self.A_it_jt(x)
         plt.plot(x, y)
         plt.show()
-       
+
 class VolumeWalker(BiasedWalker):
     """ Volume dedicated """
     def __init__(self, first_vol):
@@ -401,17 +380,17 @@ class VolumeWalker(BiasedWalker):
     def set_volume(self, vol):
         """ simple """
         self.set_bias(vol)
-        
+
 class GraphWalker(BiasedWalker):
     def __init__(self, first_chord, graph)  :
         # number of vertices
         self.graph     = graph
         self.n_vert    = len(graph)
-        
+
         # vertices numeration starts from 1
         values      = range(1, self.n_vert + 1)
         first_id    = first_chord
-        
+
         # Init parent
         BiasedWalker.__init__(self, values, first_id, False)
 
@@ -425,8 +404,8 @@ class GraphWalker(BiasedWalker):
         for it in range(self.size):
             for jt in range(self.size):
                     A[it, jt] = self.A_it_jt(it, jt)
-        self.A = A        
-    
+        self.A = A
+
     def A_it_jt(self, it, jt):
         # vertices numeration starts from 1
         if jt + 1 in self.graph[it + 1]:

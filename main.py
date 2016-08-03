@@ -20,7 +20,7 @@ def main():
 
     # How many steps will walker walk
     # 2k ~ 60s
-    nof_steps = 512*4
+    nof_steps = 512*2
 
     hand = wh.ExampleHand()
 
@@ -47,7 +47,6 @@ def main():
                          hand_notes[-1][2] -\
                          chord_notes[-1][1]
     # um.show_piano_roll(chord_notes)
-                             
     chordfile = midipath + prefix + 'chords' + '.mid'
     um.matrix_to_midi(chord_notes, chordfile)
     print 'Chords saved to: ', chordfile

@@ -109,12 +109,14 @@ class MerwFinger(Finger):
 
     def set_scale(self, scale):
         """ Sets the scale grid """
+        # Get ulamkowy position on the keybord
+        cid = self.pitch_walker.current_id
+        preposition = 1.0*cid / self.pitch_walker.size
         self.pitch_walker.set_scale(scale)
 
-        ids = range(self.pitch_walker.size)
-        # temporary solution
-        # guaranteeing that current_id is within the new range
-        self.pitch_walker.current_id = np.random.choice(ids)
+        # Recalculate position, try to land in the same place
+        postposition = preposition * self.pitch_walker.size
+        self.pitch_walker.current_id = int(postposition)
 
     def set_prefered_pitch(self, picz):
         """ sets the prefered pitch, bitch, -1 turn off """

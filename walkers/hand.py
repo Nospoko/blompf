@@ -62,15 +62,14 @@ class ExampleHand(Hand):
         # onto the first ones
 
         # this notes must be in the grid!!!
-        for start in [71, 64, 38, 40, 59]:
+        for start in [52, 45, 38, 40, 48]:
             finger = wf.MerwFinger(start)
             # This might allow chord only walks over the whole piano
             # finger.pitch_walker.set_max_step(4)
             self.fingers.append(finger)
 
-        
-        rhythm_walker = RhythmWalker(self.fingers)        
-        self.meta_walkers.update({'rhythm' : rhythm_walker})        
+        rhythm_walker = RhythmWalker(self.fingers)
+        self.meta_walkers.update({'rhythm' : rhythm_walker})
 
         # TODO consider some kind of signal/slot mechanism?
         scale_walker    = ScaleWalker(self.fingers)
@@ -181,24 +180,28 @@ class ChordWalker(HandWalker):
 
 class RhythmWalker(HandWalker):
     """ Contorls rhythm changes in the ChordWalker """
-    def __init__(self, fingers):        
+    def __init__(self, fingers):
         HandWalker.__init__(self, fingers)
 
-        time_vals = [32 for _ in range(10)]
+        time_vals = [128 for it in range(8)]
         self.time_walker.set_values(time_vals)
 
         # Do not start with a rhythm change
-        self.ticks_left = self.next_duration(0)        
-        
+        self.ticks_left = self.next_duration(0)
+
         self.chord_walker = ChordWalker(self.fingers)
-        self.rhythms = itr.cycle([[16, 32, 48, 64, 16, 96, 128,
-                                   112, 16, 80, 16, 48, 32, 16],  
-                                  [124, 24, 24, 32, 132, 148, 
-                                   48, 48, 16, 116, 16]])
-                                   
-        self.probabilisms = itr.cycle([True, False])
-            
-            
+        self.rhythms = itr.cycle([[8, 8, 8, 8, 8, 32],
+                                  [64, 32, 16, 8],
+                                  [128, 64, 32, 16, 16],
+                                  [12, 16, 12, 12, 12, 42],
+                                  [16, 16, 16, 16, 16, 48]])
+
+        rhythm = self.rhythms.next()
+        rhythm = self.rhythms.next()
+        self.chord_walker.time_walker.set_values(rhythm)
+
+        self.probabilisms = itr.cycle([False, False])
+
     def play(self, timetick):
         """ Changes rhythm of the ChordWalker and makes it play """
         if self.is_it_now(timetick):
@@ -208,16 +211,15 @@ class RhythmWalker(HandWalker):
             self.chord_walker.time_walker.set_values(rhythm)
             probabilism = self.probabilisms.next()
             self.chord_walker.time_walker.set_probabilism(probabilism)
-            
-            # How long till the next rhythm change
-            duration = self.next_duration(timetick)            
-            self.ticks_left = duration - 1
-            
-        self.chord_walker.play(timetick)            
 
-            
+            # How long till the next rhythm change
+            duration = self.next_duration(timetick)
+            self.ticks_left = duration - 1
+
+        self.chord_walker.play(timetick)
+
     def get_notes(self):
-        notes = self.chord_walker.get_notes()            
+        notes = self.chord_walker.get_notes()
         return notes
 
 class ScaleWalker(HandWalker):
@@ -257,7 +259,7 @@ class ScaleWalker(HandWalker):
                     }
 
         self.chord = 1
-        
+
         self.graph_walker = wm.GraphWalker(self.chord, self.graph)
 
         # FIXME This should not be hard-coded in here
@@ -270,7 +272,7 @@ class ScaleWalker(HandWalker):
         # self.chord = np.random.choice(possible)
         self.chord = self.graph_walker.next_value()
         print "========================="
-        
+
         # TODO Add logs pls
         rndm = np.random.random()
         if rndm < 0.1:
@@ -378,7 +380,7 @@ class PitchTwister(HandWalker):
                     # TODO some meta-preference would be nice
                     # 88 is the number of keys on our keyboard
                     sector_low = 0
-                    sector_range = 64
+                    sector_range = 69
                     val = np.floor(sector_range * np.random.random())
                     new_picz = sector_low + val
                     # print 'set new picz:', new_picz
@@ -423,5 +425,5 @@ class MetaVolumeWalker(HandWalker):
             # Reset cunter
             self.ticks_left = duration - 1
 
-            print '---> Volumes set: ', new_volumes, ' |', timetick
+            # print '---> Volumes set: ', new_volumes, ' |', timetick
 
