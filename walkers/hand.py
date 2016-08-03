@@ -60,10 +60,12 @@ class ExampleHand(Hand):
         # Add 5 fingers [C E G c c]
         # Those are the zero-notes from which we jump
         # onto the first ones
-        for start in [30, 44, 38, 40, 49]:
+
+        # this notes must be in the grid!!!
+        for start in [52, 45, 38, 40, 48]:
             finger = wf.MerwFinger(start)
             # This might allow chord only walks over the whole piano
-            finger.pitch_walker.set_max_step(4)
+            # finger.pitch_walker.set_max_step(4)
             self.fingers.append(finger)
 
         rhythm_walker = RhythmWalker(self.fingers)
@@ -182,29 +184,23 @@ class RhythmWalker(HandWalker):
     def __init__(self, fingers):
         HandWalker.__init__(self, fingers)
 
-        # time_vals = [256 for _ in range(10)]
-        time_vals = [64 + it * 32 for it in range(8)]
+        time_vals = [128 for it in range(8)]
         self.time_walker.set_values(time_vals)
 
         # Do not start with a rhythm change
         self.ticks_left = self.next_duration(0)
 
-        # Prepare rhythm-space
-        self.rhythms = itr.cycle([[28, 8, 8, 8, 8, 32],
+        self.chord_walker = ChordWalker(self.fingers)
+        self.rhythms = itr.cycle([[8, 8, 8, 8, 8, 32],
                                   [64, 32, 16, 8],
-                                  [40, 60, 20, 30, 50],
                                   [128, 64, 32, 16, 16],
                                   [12, 16, 12, 12, 12, 42],
                                   [16, 16, 16, 16, 16, 48]])
 
-        # 
-        self.chord_walker = ChordWalker(self.fingers)
-
-        # Start with the first rhythm
+        rhythm = self.rhythms.next()
         rhythm = self.rhythms.next()
         self.chord_walker.time_walker.set_values(rhythm)
 
-        # This can change
         self.probabilisms = itr.cycle([False, False])
 
     def play(self, timetick):
@@ -277,6 +273,7 @@ class ScaleWalker(HandWalker):
         # possible = self.graph[self.chord]
         # self.chord = np.random.choice(possible)
         self.chord = self.graph_walker.next_value()
+        print "========================="
 
         # TODO Add logs pls
         rndm = np.random.random()
@@ -323,7 +320,7 @@ class ScaleWalker(HandWalker):
             # Set new scales
             if np.random.random() < 0.1:
                 scale = np.roll(self.full_scale, self.shift)
-                print '---> Full scale!'
+                print '---> Full scale! ',scale
             else:
                 chord = self.chord_prog()
                 scale = np.roll(chord, self.shift)
@@ -384,8 +381,8 @@ class PitchTwister(HandWalker):
                 else:
                     # TODO some meta-preference would be nice
                     # 88 is the number of keys on our keyboard
-                    sector_low = 4
-                    sector_range = 45
+                    sector_low = 0
+                    sector_range = 69
                     val = np.floor(sector_range * np.random.random())
                     new_picz = sector_low + val
                     # print 'set new picz:', new_picz
@@ -429,7 +426,4 @@ class MetaVolumeWalker(HandWalker):
 
             # Reset cunter
             self.ticks_left = duration - 1
-
-            # This is not so very interesting
-            # print '---> Volumes set: ', new_volumes, ' |', timetick
 
