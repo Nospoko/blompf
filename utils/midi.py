@@ -4,7 +4,7 @@ from midiutil.MidiFile import MIDIFile
 
 # TODO make transition from ticks to seconds possible
 
-def matrix_to_midi(notes, filename = 'matrix.mid'):
+def matrix_to_midi(notes, filename = 'matrix.mid', tempo = 120):
     """ Simplify midi generation
         note format: PITCH|START|DURATION|VOLUME """
     # Midi file with one track
@@ -16,7 +16,7 @@ def matrix_to_midi(notes, filename = 'matrix.mid'):
 
     # Default
     # FIXME tempo -- time relation is not well defined
-    mf.addTempo(track, time, 120)
+    mf.addTempo(track, time, tempo)
     channel = 0
 
     time_per_tick = 2**-4

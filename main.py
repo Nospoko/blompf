@@ -18,10 +18,16 @@ def main():
 
     print 'Generated prefix: ', prefix
 
-    # How many steps will walker walk
-    # 2k ~ 60s
-    nof_steps = 512 * 2
+    # Adjust time in seconds
+    # This is set also in utils.midi
+    time_per_tick = 2**-5
+    intro_time = 3
+    music_time = 4 * 60 + 20 - intro_time
+    final_tick = int(music_time / time_per_tick)
+    # Remove a little at the end to let it ring
+    nof_steps = final_tick - 32
 
+    # Player
     hand = wh.ExampleHand()
 
     # Make music
@@ -30,6 +36,7 @@ def main():
 
     # Show full piano-roll
     hand_notes = hand.get_notes()
+    hand_notes[-1][2] = final_tick - hand_notes[-1][1]
     # um.show_piano_roll(hand.get_notes())
 
     # Save everything
@@ -43,22 +50,18 @@ def main():
     chord_notes = hand.meta_walkers['rhythm'].get_notes()
     # FIXME why aren't they ending properply?
     # Extend for compatibility with the hand notes
-    chord_notes[-1][2] = hand_notes[-1][1] +\
-                         hand_notes[-1][2] -\
-                         chord_notes[-1][1]
+    chord_notes[-1][2] = final_tick - chord_notes[-1][1]
+
+    print hand_notes[-1][1], hand_notes[-1][2]
     # um.show_piano_roll(chord_notes)
     chordfile = midipath + prefix + 'chords' + '.mid'
     um.matrix_to_midi(chord_notes, chordfile)
     print 'Chords saved to: ', chordfile
 
-
     # Show key-only piano-roll
     scale_notes = hand.meta_walkers['scale'].get_notes()
     # Extend those as well
-    scale_notes[-1][2] = hand_notes[-1][1] +\
-                         hand_notes[-1][2] -\
-                         scale_notes[-1][1]
-    # um.show_piano_roll(scale_notes)
+    scale_notes[-1][2] = final_tick + scale_notes[-1][1]
 
     scalefile = midipath + prefix + 'scales.mid'
     um.matrix_to_midi(scale_notes, scalefile)
@@ -67,22 +70,19 @@ def main():
     finger_notes = []
     for fi in hand.fingers:
         fi_notes = fi.get_notes()
-        fi_notes[-1][2] = hand_notes[-1][1] +\
-                          hand_notes[-1][2] -\
-                          fi_notes[-1][1]
+        fi_notes[-1][2] = final_tick + fi_notes[-1][1]
         finger_notes.append(fi_notes)
 
     # Save played notes and some meta-notes
     savepath = prefix + 'blompf_data.pickle'
-    savedick = { 'hand'     : hand_notes,
+    savedict = { 'hand'     : hand_notes,
                  'chord'    : chord_notes,
                  'scale'    : scale_notes,
                  'fingers'  : finger_notes }
 
     with open(savepath, 'wb') as fout:
-        pickle.dump(savedick, fout)
+        pickle.dump(savedict, fout)
     print 'Blompf data dict saved to: ', savepath
-
 
     # Have fun
     return hand
