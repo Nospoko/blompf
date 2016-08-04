@@ -71,7 +71,7 @@ def main():
     # Show key-only piano-roll
     scale_notes = hand.meta_walkers['scale'].get_notes()
     # Extend those as well
-    scale_notes[-1][2] = final_tick + scale_notes[-1][1]
+    scale_notes[-1][2] = final_tick - scale_notes[-1][1]
 
     scalefile = midipath + prefix + 'scales.mid'
     um.matrix_to_midi(scale_notes, scalefile)
@@ -80,7 +80,7 @@ def main():
     finger_notes = []
     for fi in hand.fingers:
         fi_notes = fi.get_notes()
-        fi_notes[-1][2] = final_tick + fi_notes[-1][1]
+        fi_notes[-1][2] = final_tick - fi_notes[-1][1]
         finger_notes.append(fi_notes)
 
     # Save played notes and some meta-notes
