@@ -11,3 +11,5 @@ matrix*
 scale*
 
 *.wav
+
+logs/*

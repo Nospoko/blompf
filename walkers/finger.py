@@ -1,4 +1,5 @@
 import numpy as np
+import logging as log
 from utils import midi as um
 from walkers import merw as wm
 from matplotlib import pyplot as plt
@@ -14,6 +15,7 @@ class Finger(object):
         self.ticks_left = 0
 
         print 'finger was created'
+        log.info('finger was created')
 
     def clear(self):
         """ Remove all previously played notes """

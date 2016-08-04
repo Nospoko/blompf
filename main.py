@@ -2,12 +2,14 @@ import time
 import pickle
 import string
 import numpy as np
+import logging as log
 from utils import midi as um
 from walkers import hand as wh
 from walkers import merw as wm
 import matplotlib.pyplot as plt
 from utils import harmony as uh
 from walkers import finger as wf
+
 
 def main():
     """ python main.py """
@@ -16,16 +18,24 @@ def main():
     prefix = "".join(list(np.random.choice(list(low), 2)))
     prefix += '_'
 
+    # Start logging
+    logfile = 'logs/' + prefix + '.log'
+    log.basicConfig(format = "[%(asctime)s](%(module)s:"
+                             "%(funcName)s:%(lineno)d) %(message)s",
+                    datefmt   = '%I:%M:%S',
+                    level     = log.DEBUG,
+                    filename  = logfile)
+
     print 'Generated prefix: ', prefix
 
     # Adjust time in seconds
     # This is set also in utils.midi
     time_per_tick = 2**-5
     intro_time = 3
-    music_time = 4 * 60 + 20 - intro_time
+    music_time = 1 * 10 + 0 - intro_time
     final_tick = int(music_time / time_per_tick)
     # Remove a little at the end to let it ring
-    nof_steps = final_tick - 32
+    nof_steps = final_tick - 40
 
     # Player
     hand = wh.ExampleHand()
@@ -83,6 +93,8 @@ def main():
     with open(savepath, 'wb') as fout:
         pickle.dump(savedict, fout)
     print 'Blompf data dict saved to: ', savepath
+
+    log.info("finished {}".format(savepath))
 
     # Have fun
     return hand

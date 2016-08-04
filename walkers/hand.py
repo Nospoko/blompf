@@ -1,4 +1,5 @@
 import numpy as np
+import logging as log
 import itertools as itr
 from utils import midi as um
 from walkers import merw as wm
@@ -171,8 +172,8 @@ class ChordWalker(HandWalker):
             # Take note only if more than one finger was forced
             if howmany > 1:
                 self.notes.append([60, timetick, 16, 80])
-                print 'ooo Chord at {} with {} fingers | time {}'\
-                        .format(timetick, howmany, timetick)
+                log.info('ooo Chord at {} with {} fingers | time {}'\
+                         .format(timetick, howmany, timetick))
 
             # Reset cunter
             self.ticks_left = duration - 1
@@ -209,6 +210,7 @@ class RhythmWalker(HandWalker):
             # Change rhythm
             rhythm = self.rhythms.next()
             print '=== RHYTHM CHANGE | ', rhythm
+            log.info("Rhythm change: {}".format(rhythm))
             self.chord_walker.time_walker.set_values(rhythm)
 
             probabilism = self.probabilisms.next()
@@ -302,6 +304,7 @@ class ScaleWalker(HandWalker):
                 shift = np.random.choice(shifts)
                 # shift = self.shifts.next()
                 print '--- SCALE CHANGE | ', shift
+                log.info("Scale change: {}".format(shift))
 
                 # Move scale value from previous one
                 scale_pitch = self.notes[-1][0] + shift
@@ -325,6 +328,8 @@ class ScaleWalker(HandWalker):
                 chord = self.chord_prog()
                 scale = np.roll(chord, self.shift)
                 print '---> ', chord
+
+            log.info('Set grid: {}'.format(scale))
 
             for finger in self.fingers:
                 # in each finger
@@ -362,6 +367,7 @@ class SpeedWalker(HandWalker):
             self.ticks_left = duration - 1
 
             print '+++ Speed set to: ', new_speeds, " | ", timetick
+            log.info("New speeds: {}".format(new_speeds))
 
 class PitchTwister(HandWalker):
     """ HI """
@@ -399,6 +405,7 @@ class PitchTwister(HandWalker):
             self.ticks_left = duration - 1
 
             print '^^^ new piczes:', new_piczes
+            log.info("Twisting pitches: {}".format(new_piczes))
 
 class MetaVolumeWalker(HandWalker):
     """ Volume dynamics controller """
