@@ -29,14 +29,19 @@ def main():
 
     print 'Generated prefix: ', prefix
 
+    # FIXME Why is this not precise
     # Adjust time in seconds
     # This is set also in utils.midi
     time_per_tick = 2**-5
     intro_time = 3
-    music_time = 4 * 60 + 20 - intro_time
+    music_time = 4 * 60 + 15 - intro_time
     final_tick = int(music_time / time_per_tick)
     # Remove a little at the end to let it ring
     nof_steps = final_tick - 40
+
+    # This ensures the last note is very long and exceeds expected time
+    # so it can be cut in post-production
+    final_tick += 256
 
     # Player
     hand = wh.ExampleHand()

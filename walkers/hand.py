@@ -185,21 +185,21 @@ class RhythmWalker(HandWalker):
     def __init__(self, fingers):
         HandWalker.__init__(self, fingers)
 
-        time_vals = [128 + 24*it for it in range(8)]
+        time_vals = [420 + 24*it for it in range(8)]
         self.time_walker.set_values(time_vals)
 
         # Do not start with a rhythm change
         self.ticks_left = self.next_duration(0)
 
         self.chord_walker = ChordWalker(self.fingers)
-        self.rhythms = itr.cycle([[8, 8, 8, 8, 4, 8, 4],
-                                  [128, 128, 32, 128],
-                                  [4, 8, 12, 8, 16],
-                                  [128, 128, 32, 128],
-                                  [28, 64, 32, 16, 16],
-                                  [128, 128, 32, 128],
-                                  [12, 256, 54, 28, 12, 42],
-                                  [16, 16, 16, 16, 16, 48]])
+        self.rhythms = itr.cycle([[8, 32, 8, 8, 4, 8, 64],
+                                  [256, 32, 256, 128],
+                                  [64, 8, 12, 28, 16, 20],
+                                  [256, 128, 32, 256],
+                                  [20, 40, 20, 40, 60],
+                                  [256, 128, 32, 128],
+                                  [12, 256, 54, 280, 12, 42],
+                                  [300, 16, 24, 16, 16, 48, 36]])
 
         rhythm = self.rhythms.next()
         self.chord_walker.time_walker.set_values(rhythm)
@@ -291,9 +291,12 @@ class ScaleWalker(HandWalker):
         else:
             grid = self.chord_generator.get_nonic(self.chord)
 
-        grid += [0, 0, 1, 0]
+	# TODO Do not change within the generator, make proper non-octave based grids
+	out = grid[:]
 
-        return grid
+	out += [0, 0, 1, 0]
+
+        return out
 
     def play(self, timetick):
         """ ayayay """
@@ -346,6 +349,15 @@ class ScaleWalker(HandWalker):
             pass
 
 class SpeedWalker(HandWalker):
+    """ Walk speeds """
+    def __init__(self, fingers):
+	""" Konstruktor """
+        HandWalker.__init__(self, fingers)
+
+	# We do not want speed to change too often
+        time_vals = [128 + 24*it for it in range(8)]
+        self.time_walker.set_values(time_vals)
+
     def play(self, timetick):
         """ Work """
         if self.is_it_now(timetick):
@@ -353,7 +365,7 @@ class SpeedWalker(HandWalker):
             duration = self.next_duration(timetick)
 
             # Shuffle speed (-1 as fast is set to be mre likely)
-            speeds = [-1, -1, -1, 1, 0, 1]
+            speeds = [-1, 0, 0, 0, 0, 1]
 
             new_speeds = []
 
