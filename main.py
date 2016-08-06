@@ -18,6 +18,7 @@ def main():
     prefix = "".join(list(np.random.choice(list(low), 2)))
     prefix += '_'
 
+    # TODO Hide this somehow
     # Start logging
     logfile = 'logs/' + prefix + '.log'
     log.basicConfig(format = "[%(asctime)s](%(module)s:"
@@ -32,7 +33,7 @@ def main():
     # This is set also in utils.midi
     time_per_tick = 2**-5
     intro_time = 3
-    music_time = 1 * 10 + 0 - intro_time
+    music_time = 4 * 60 + 20 - intro_time
     final_tick = int(music_time / time_per_tick)
     # Remove a little at the end to let it ring
     nof_steps = final_tick - 40

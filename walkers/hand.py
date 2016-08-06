@@ -185,20 +185,22 @@ class RhythmWalker(HandWalker):
     def __init__(self, fingers):
         HandWalker.__init__(self, fingers)
 
-        time_vals = [128 for it in range(8)]
+        time_vals = [128 + 24*it for it in range(8)]
         self.time_walker.set_values(time_vals)
 
         # Do not start with a rhythm change
         self.ticks_left = self.next_duration(0)
 
         self.chord_walker = ChordWalker(self.fingers)
-        self.rhythms = itr.cycle([[8, 8, 8, 8, 8, 32],
-                                  [64, 32, 16, 8],
-                                  [128, 64, 32, 16, 16],
-                                  [12, 16, 12, 12, 12, 42],
+        self.rhythms = itr.cycle([[8, 8, 8, 8, 4, 8, 4],
+                                  [128, 128, 32, 128],
+                                  [4, 8, 12, 8, 16],
+                                  [128, 128, 32, 128],
+                                  [28, 64, 32, 16, 16],
+                                  [128, 128, 32, 128],
+                                  [12, 256, 54, 28, 12, 42],
                                   [16, 16, 16, 16, 16, 48]])
 
-        rhythm = self.rhythms.next()
         rhythm = self.rhythms.next()
         self.chord_walker.time_walker.set_values(rhythm)
 
@@ -250,6 +252,7 @@ class ScaleWalker(HandWalker):
         # TODO Try to abstract this out somehow
         # Major           [C, -, D, -, E, F, -, G, -, A, -, H]
         self.full_scale = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]
+        self.full_scale = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
 
         self.chord_generator = uh.ChordGenerator()
         self.graph = {
@@ -288,6 +291,8 @@ class ScaleWalker(HandWalker):
         else:
             grid = self.chord_generator.get_nonic(self.chord)
 
+        grid += [0, 0, 1, 0]
+
         return grid
 
     def play(self, timetick):
@@ -321,9 +326,9 @@ class ScaleWalker(HandWalker):
 
             # Maybe for each finger separateley?
             # Set new scales
-            if np.random.random() < 0.1:
+            if np.random.random() < 0.35:
                 scale = np.roll(self.full_scale, self.shift)
-                print '---> Full scale! ',scale
+                print '---> Full scale! ', scale
             else:
                 chord = self.chord_prog()
                 scale = np.roll(chord, self.shift)
@@ -348,7 +353,7 @@ class SpeedWalker(HandWalker):
             duration = self.next_duration(timetick)
 
             # Shuffle speed (-1 as fast is set to be mre likely)
-            speeds = [-1, -1, 0, 1]
+            speeds = [-1, -1, -1, 1, 0, 1]
 
             new_speeds = []
 
@@ -388,7 +393,7 @@ class PitchTwister(HandWalker):
                     # TODO some meta-preference would be nice
                     # 88 is the number of keys on our keyboard
                     sector_low = 0
-                    sector_range = 69
+                    sector_range = 50
                     val = np.floor(sector_range * np.random.random())
                     new_picz = sector_low + val
                     # print 'set new picz:', new_picz
