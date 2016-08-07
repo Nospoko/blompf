@@ -92,6 +92,11 @@ class MerwFinger(Finger):
         self.pitch_walker   = wm.PitchWalker(first_picz)
         # Note length are powers of 2 only
         self.time_walker = wm.TimeWalker()
+	t_values = self.time_walker.values
+	
+	t_values.append(128 + 64)
+	t_values.append(256 + 64)
+	self.time_walker.set_values(t_values)
 
     def next_duration(self, timetick):
         """ Note length (value) in ticks """

@@ -233,7 +233,7 @@ class TimeWalker(BiasedWalker):
         # This is in ticks unit
         values = [2**it for it in range(1,9)]
 
-        # TODO is this good
+        # TODO is this good, trying to make more pause-like moments
         values[0] = 8
 
         first_id = np.random.choice(range(3,6))

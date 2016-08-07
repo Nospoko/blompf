@@ -237,9 +237,7 @@ class ScaleWalker(HandWalker):
         # self.time_walker.current_id += 2
         # TODO Make it a thing
         # Add some twist:
-        # time_vals = [123 for _ in range(10)]
-        # time_vals = [32 for _ in range(10)]
-	time_vals = [128, 32, 128, 32, 64, 128, 64, 32, 16, 32, 128]
+        time_vals = [128 + 42 * it for it in range(10)]
         self.time_walker.set_values(time_vals)
 
         # Do not start with a scale change
@@ -365,7 +363,7 @@ class SpeedWalker(HandWalker):
             duration = self.next_duration(timetick)
 
             # Shuffle speed (-1 as fast is set to be mre likely)
-            speeds = [-1, 0, 0, 0, 0, 1]
+            speeds = [-1,-1, 0, 1]
 
             new_speeds = []
 
