@@ -26,7 +26,7 @@ class Hand(object):
             for note in finger.get_notes():
                 notes.append(note)
 
-        # Return sorted
+        # Return sorted (by end or by start of last??)
         notes.sort(key=lambda x: x[1]+x[2])
 
         return notes
