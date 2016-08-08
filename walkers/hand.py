@@ -63,7 +63,7 @@ class ExampleHand(Hand):
         # onto the first ones
 
         # this notes must be in the grid!!!
-        for start in [52, 45, 38, 40, 48]:
+        for start in [43, 45, 38, 40, 48]:
             finger = wf.MerwFinger(start)
             # This might allow chord only walks over the whole piano
             # finger.pitch_walker.set_max_step(4)
@@ -237,7 +237,7 @@ class ScaleWalker(HandWalker):
         # self.time_walker.current_id += 2
         # TODO Make it a thing
         # Add some twist:
-        time_vals = [128 + 42 * it for it in range(10)]
+        time_vals = [128 + 22 * it for it in range(10)]
         self.time_walker.set_values(time_vals)
 
         # Do not start with a scale change
