@@ -63,7 +63,7 @@ class ExampleHand(Hand):
         # onto the first ones
 
         # this notes must be in the grid!!!
-        for start in [43, 45, 38, 40, 48]:
+        for start in [43, 45, 38, 40, 40]:
             finger = wf.MerwFinger(start)
             # This might allow chord only walks over the whole piano
             # finger.pitch_walker.set_max_step(4)
@@ -185,23 +185,24 @@ class RhythmWalker(HandWalker):
     def __init__(self, fingers):
         HandWalker.__init__(self, fingers)
 
-        time_vals = [420 + 24*it for it in range(8)]
+        time_vals = [320 + 24*it for it in range(8)]
         self.time_walker.set_values(time_vals)
 
         # Do not start with a rhythm change
         self.ticks_left = self.next_duration(0)
 
         self.chord_walker = ChordWalker(self.fingers)
-        self.rhythms = itr.cycle([[8, 32, 8, 8, 4, 8, 64],
+        self.rhythms = itr.cycle([[8, 32, 8, 8, 8, 64],
                                   [256, 32, 256, 128],
-                                  [64, 8, 12, 28, 16, 20],
+                                  [64, 8, 16, 24, 16, 32],
                                   [256, 128, 32, 256],
-                                  [20, 40, 20, 40, 60],
-                                  [256, 128, 32, 128],
-                                  [12, 256, 54, 280, 12, 42],
-                                  [300, 16, 24, 16, 16, 48, 36]])
+                                  [16, 256, 56, 272, 16, 40],
+                                  [300, 16, 24, 16, 16, 48, 32]])
 
         rhythm = self.rhythms.next()
+        rhythm = self.rhythms.next()
+        rhythm = self.rhythms.next()
+        # rhythm = self.rhythms.next()
         self.chord_walker.time_walker.set_values(rhythm)
 
         self.probabilisms = itr.cycle([False, False])
@@ -250,7 +251,7 @@ class ScaleWalker(HandWalker):
         # TODO Try to abstract this out somehow
         # Major           [C, -, D, -, E, F, -, G, -, A, -, H]
         self.full_scale = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]
-        self.full_scale = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
+        # self.full_scale = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
 
         self.chord_generator = uh.ChordGenerator()
         self.graph = {
@@ -280,9 +281,9 @@ class ScaleWalker(HandWalker):
 
         # TODO Add logs pls
         rndm = np.random.random()
-        if rndm < 0.1:
+        if rndm < 0.06:
             grid = self.chord_generator.get_triad(self.chord)
-        elif rndm < 0.35:
+        elif rndm < 0.25:
             grid = self.chord_generator.get_sextic(self.chord)
         elif rndm < 0.7:
             grid = self.chord_generator.get_septimic(self.chord)
@@ -292,7 +293,7 @@ class ScaleWalker(HandWalker):
 	# TODO Do not change within the generator, make proper non-octave based grids
 	out = grid[:]
 
-	out += [0, 0, 1, 0]
+	# out += [0, 0, 1, 0]
 
         return out
 
