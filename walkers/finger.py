@@ -6,13 +6,20 @@ from matplotlib import pyplot as plt
 
 class Finger(object):
     """ Abstracts a separate human finger's piano abilities """
-    def __init__(self):
+    def __init__(self, bar_length, number):
         """ yo """
         # Init note container
         self.notes = []
 
         # Start with a note
         self.ticks_left = 0
+        
+        # Variables for metre control
+        self.bar_length = bar_length 
+        self.where_in_bar = 0
+        self.too_long = False
+        
+        self.number = number        
 
         print 'finger was created'
         log.info('finger was created')
@@ -39,17 +46,31 @@ class Finger(object):
 
     def make_note(self, timetick):
         """ Generates a new note played by this finger """
+
+        '''
+        if self.number == 1:
+            print "#################### start:", self.where_in_bar
+        '''
         note_start  = timetick
         # All of those must be implemented
         pitch       = self.next_pitch(timetick)
         duration    = self.next_duration(timetick)
         volume      = self.next_volume(timetick)
-
+        
+        '''
+        if self.number == 1:
+            print "#################### duration:", duration
+            print "#################### stop:", self.where_in_bar
+            print "###############################"
+        '''            
+            
         # Create note
         self.notes.append([pitch, note_start, duration, volume])
 
         # Reset cunter (-1 acounts for something FIXME)
         self.ticks_left = duration - 1
+        
+          
 
     def hitme(self):
         """ Force this finger to play as soon """
@@ -82,9 +103,9 @@ class Finger(object):
 
 class MerwFinger(Finger):
     """ Properly improvising finger """
-    def __init__(self, first_picz):
+    def __init__(self, first_picz, bar_length, number):
         """ yonstructor """
-        Finger.__init__(self)
+        Finger.__init__(self, bar_length, number)
         # Init merwish walkers
         first_vol           = 70
         self.volume_walker  = wm.VolumeWalker(first_vol)
@@ -93,9 +114,20 @@ class MerwFinger(Finger):
         # Note length are powers of 2 only
         self.time_walker = wm.TimeWalker()
 
+
     def next_duration(self, timetick):
         """ Note length (value) in ticks """
         dur = self.time_walker.next_value()
+        
+        # if the note ends in the next bar 
+        where = self.where_in_bar
+        bar = self.bar_length
+        if where + dur > bar and where%bar != 0:
+            dur = bar - where
+                    
+        self.where_in_bar += dur       
+        self.where_in_bar %= bar
+        
         return dur
 
     def next_pitch(self, timetick):
@@ -106,7 +138,12 @@ class MerwFinger(Finger):
     def next_volume(self, timetick):
         """ velocity """
         vol = self.volume_walker.next_value()
-        # TODO Adding accents would be possible just here
+        # accent at the begging of each bar
+        if self.where_in_bar == 0:   
+            # temporary choice             
+            vol += 10
+            if vol > 127:
+                vol = 127
         return vol
 
     def set_scale(self, scale):

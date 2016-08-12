@@ -17,6 +17,7 @@ class Hand(object):
         # (Altough currently this feature is not used)
         # Each of the meta walkers must have a .play(timetick) method
         self.meta_walkers   = {}
+        
 
     def get_notes(self):
         """ Concetanated notes from each finger """
@@ -53,7 +54,7 @@ class Hand(object):
 
 class ExampleHand(Hand):
     """ Wrapper for multiple fingers """
-    def __init__(self):
+    def __init__(self, metre_up, metre_down):
         """ el creador """
         # Init parent
         Hand.__init__(self)
@@ -62,9 +63,16 @@ class ExampleHand(Hand):
         # Those are the zero-notes from which we jump
         # onto the first ones
 
-        # this notes must be in the grid!!!
+        # Define the metre (5/4)
+        self.metre_up   = metre_up
+        self.metre_down = metre_down
+        
+        whole_note = 2**6
+        bar_length = int((self.metre_up/self.metre_down)*whole_note)
+        number = 1
         for start in [52, 45, 38, 40, 48]:
-            finger = wf.MerwFinger(start)
+            finger = wf.MerwFinger(start, bar_length, number)
+            number += 1
             # This might allow chord only walks over the whole piano
             # finger.pitch_walker.set_max_step(4)
             self.fingers.append(finger)
@@ -197,9 +205,10 @@ class RhythmWalker(HandWalker):
                                   [128, 64, 32, 16, 16],
                                   [12, 16, 12, 12, 12, 42],
                                   [16, 16, 16, 16, 16, 48]])
-
+        
+        
         rhythm = self.rhythms.next()
-        rhythm = self.rhythms.next()
+        #rhythm = self.rhythms.next()
         self.chord_walker.time_walker.set_values(rhythm)
 
         self.probabilisms = itr.cycle([False, False])
@@ -388,7 +397,7 @@ class PitchTwister(HandWalker):
                     # TODO some meta-preference would be nice
                     # 88 is the number of keys on our keyboard
                     sector_low = 0
-                    sector_range = 69
+                    sector_range = 40 # 69
                     val = np.floor(sector_range * np.random.random())
                     new_picz = sector_low + val
                     # print 'set new picz:', new_picz
@@ -423,13 +432,14 @@ class MetaVolumeWalker(HandWalker):
             new_volumes = []
             for finger in self.fingers:
                 if np.random.random() < 0.81:
-                    new_vol = 50 + np.floor(70 * np.random.random())
+                    new_vol = 50 + np.floor(70 * np.random.random()) 
                     finger.set_prefered_volume(new_vol)
                     new_volumes.append(new_vol)
                 else:
                     # Turn off
                     finger.set_prefered_volume(-1)
                     new_volumes.append(-1)
+
 
             # Reset cunter
             self.ticks_left = duration - 1

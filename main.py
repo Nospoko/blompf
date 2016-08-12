@@ -32,13 +32,24 @@ def main():
     # This is set also in utils.midi
     time_per_tick = 2**-5
     intro_time = 3
-    music_time = 1 * 10 + 0 - intro_time
+    music_time = 1 * 60 + 0 - intro_time
     final_tick = int(music_time / time_per_tick)
     # Remove a little at the end to let it ring
     nof_steps = final_tick - 40
 
+    # Define metre (5/4)
+    metre_up   = 5.
+    metre_down = 4.
+    whole_note = 2**6
+    bar_length = int((metre_up/metre_down)*whole_note)
+    
+    # Time left after the end of the last bar
+    after_eof_bar = nof_steps % bar_length
+    # Shorten the piece so that it ends along with a bar
+    nof_steps -= after_eof_bar
+
     # Player
-    hand = wh.ExampleHand()
+    hand = wh.ExampleHand(metre_up, metre_down)
 
     # Make music
     for tick in range(nof_steps):
