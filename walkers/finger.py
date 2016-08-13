@@ -15,9 +15,7 @@ class Finger(object):
         self.ticks_left = 0
         
         # Variables for metre control
-        self.bar_length = bar_length 
-        self.where_in_bar = 0
-        self.too_long = False
+        self.bar_length   = bar_length 
         
         self.number = number        
 
@@ -47,36 +45,35 @@ class Finger(object):
     def make_note(self, timetick):
         """ Generates a new note played by this finger """
 
-        '''
-        if self.number == 1:
-            print "#################### start:", self.where_in_bar
-        '''
+
         note_start  = timetick
         # All of those must be implemented
         pitch       = self.next_pitch(timetick)
         duration    = self.next_duration(timetick)
         volume      = self.next_volume(timetick)
-        
-        '''
-        if self.number == 1:
-            print "#################### duration:", duration
-            print "#################### stop:", self.where_in_bar
-            print "###############################"
-        '''            
+                   
             
         # Create note
         self.notes.append([pitch, note_start, duration, volume])
 
+        '''
+        if self.number == 1:
+            print "################ start: ",timetick
+            print "################ duration: ",duration
+            print "################ overlap: ",self.where_in_bar 
+        '''
+        
         # Reset cunter (-1 acounts for something FIXME)
         self.ticks_left = duration - 1
-        
-          
+     
 
+     
     def hitme(self):
         """ Force this finger to play as soon """
         # Last note should in that case end earlier than expected
         if len(self.notes) > 0:
             self.notes[-1][2] -= self.ticks_left
+              
         self.ticks_left = 0
 
     def is_it_now(self, timetick):
@@ -118,17 +115,8 @@ class MerwFinger(Finger):
     def next_duration(self, timetick):
         """ Note length (value) in ticks """
         dur = self.time_walker.next_value()
-        
-        # if the note ends in the next bar 
-        where = self.where_in_bar
-        bar = self.bar_length
-        if where + dur > bar and where%bar != 0:
-            dur = bar - where
-                    
-        self.where_in_bar += dur       
-        self.where_in_bar %= bar
-        
         return dur
+                
 
     def next_pitch(self, timetick):
         """ melody """
@@ -138,12 +126,14 @@ class MerwFinger(Finger):
     def next_volume(self, timetick):
         """ velocity """
         vol = self.volume_walker.next_value()
-        # accent at the begging of each bar
-        if self.where_in_bar == 0:   
+        
+        # accent at the begging of a bar                
+        if timetick % self.bar_length == 0:            
             # temporary choice             
-            vol += 10
+            vol += 15
             if vol > 127:
                 vol = 127
+                        
         return vol
 
     def set_scale(self, scale):
