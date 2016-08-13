@@ -50,7 +50,7 @@ def main():
     nof_steps -= after_eof_bar
 
     # Player
-    hand = wh.ExampleHand(metre_up, metre_down)
+    hand = wh.ExampleHand(bar_length)
 
     # Make music
     for tick in range(nof_steps):

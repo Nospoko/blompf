@@ -54,7 +54,7 @@ class Hand(object):
 
 class ExampleHand(Hand):
     """ Wrapper for multiple fingers """
-    def __init__(self, metre_up, metre_down):
+    def __init__(self, bar_length):
         """ el creador """
         # Init parent
         Hand.__init__(self)
@@ -63,12 +63,9 @@ class ExampleHand(Hand):
         # Those are the zero-notes from which we jump
         # onto the first ones
 
-        # Define the metre (5/4)
-        self.metre_up   = metre_up
-        self.metre_down = metre_down
+        self.bar_length   = bar_length
         
-        whole_note = 2**6
-        bar_length = int((self.metre_up/self.metre_down)*whole_note)
+       
         number = 1
         for start in [52, 45, 38, 40, 48]:
             finger = wf.MerwFinger(start, bar_length, number)
@@ -97,6 +94,10 @@ class ExampleHand(Hand):
 	# FIXME what is up with this, negotiate with chord walkers maybe?
         pitch_twist.time_walker.values = [32 for it in range(8)]
         self.meta_walkers.update({'pitchtwist' : pitch_twist})
+
+        metre_walker    = MetreWalker(self.fingers, bar_length)
+        self.meta_walkers.update({'speed' : metre_walker})
+
 
     def special_tasks(self, timetick):
         """ Whatever the wheather """
@@ -246,7 +247,7 @@ class ScaleWalker(HandWalker):
         # Add some twist:
         # time_vals = [123 for _ in range(10)]
         # time_vals = [32 for _ in range(10)]
-	time_vals = [128, 32, 128, 32, 64, 128, 64, 32, 16, 32, 128]
+        time_vals = [128, 32, 128, 32, 64, 128, 64, 32, 16, 32, 128]
         self.time_walker.set_values(time_vals)
 
         # Do not start with a scale change
@@ -415,6 +416,44 @@ class PitchTwister(HandWalker):
 
             print '^^^ new piczes:', new_piczes
             log.info("Twisting pitches: {}".format(new_piczes))
+
+class MetreWalker(HandWalker):
+    """ Starts each bar with a bass note """
+    def __init__(self, fingers, bar_length):
+        """ Konstruktor """
+        # Seems obsolete
+        HandWalker.__init__(self, fingers)
+        
+        self.bar_length = bar_length
+        
+    def play(self, timetick):
+        """ Do your job """
+        # if we are at the end of a bar
+        if timetick != 0 and timetick % self.bar_length == 0:
+            # find the finger with the lowest pitch
+            lowest_pitch  = 128
+            lowest_finger = self.fingers[0]
+
+            for finger in self.fingers:
+                pitch = finger.notes[-1][0]
+                if pitch < lowest_pitch:
+                    lowest_pitch  = pitch
+                    lowest_finger = finger
+            '''                  
+            start      = lowest_finger.notes[-1][1]
+            duration   = lowest_finger.notes[-1][2]        
+            end        = start + duration            
+            
+            if lowest_finger.number == 1:
+                print "$$$$$$$$$$$$$$$ timetick",timetick
+                print "$$$$$$$$$$$$$$$ start: ",start
+                print "$$$$$$$$$$$$$$$ end: ",end
+                print "$$$$$$$$$$$$$$$ ticks_left: ", lowest_finger.ticks_left            
+
+            '''        
+            # Force the lowest finger to play in the beggining of a bar
+            lowest_finger.hitme()
+
 
 class MetaVolumeWalker(HandWalker):
     """ Volume dynamics controller """
