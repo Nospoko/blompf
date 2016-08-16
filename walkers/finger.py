@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 
 class Finger(object):
     """ Abstracts a separate human finger's piano abilities """
-    def __init__(self, bar_length, number):
+    def __init__(self, bar_length, bar_unit):
         """ yo """
         # Init note container
         self.notes = []
@@ -15,9 +15,8 @@ class Finger(object):
         self.ticks_left = 0
         
         # Variables for metre control
-        self.bar_length   = bar_length 
-        
-        self.number = number        
+        self.bar_length   = bar_length            
+        self.bar_unit     = bar_unit
 
         print 'finger was created'
         log.info('finger was created')
@@ -45,7 +44,6 @@ class Finger(object):
     def make_note(self, timetick):
         """ Generates a new note played by this finger """
 
-
         note_start  = timetick
         # All of those must be implemented
         pitch       = self.next_pitch(timetick)
@@ -55,13 +53,6 @@ class Finger(object):
             
         # Create note
         self.notes.append([pitch, note_start, duration, volume])
-
-        '''
-        if self.number == 1:
-            print "################ start: ",timetick
-            print "################ duration: ",duration
-            print "################ overlap: ",self.where_in_bar 
-        '''
         
         # Reset cunter (-1 acounts for something FIXME)
         self.ticks_left = duration - 1
@@ -100,9 +91,9 @@ class Finger(object):
 
 class MerwFinger(Finger):
     """ Properly improvising finger """
-    def __init__(self, first_picz, bar_length, number):
+    def __init__(self, first_picz, bar_length, bar_unit):
         """ yonstructor """
-        Finger.__init__(self, bar_length, number)
+        Finger.__init__(self, bar_length, bar_unit)
         # Init merwish walkers
         first_vol           = 70
         self.volume_walker  = wm.VolumeWalker(first_vol)
@@ -128,12 +119,18 @@ class MerwFinger(Finger):
         vol = self.volume_walker.next_value()
         
         # accent at the begging of a bar                
-        if timetick % self.bar_length == 0:            
-            # temporary choice             
-            vol += 15
+        if timetick !=0 and timetick % self.bar_length == 0:            
+            # temporary choice
+            vol = self.notes[-1][3] + 15
             if vol > 127:
                 vol = 127
-                        
+  
+        # accent at 3
+        if timetick % self.bar_length == 3*self.bar_unit:
+            vol = self.notes[-1][3] + 10
+            if vol > 127:
+                vol = 127    
+   
         return vol
 
     def set_scale(self, scale):

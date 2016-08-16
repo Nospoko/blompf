@@ -28,6 +28,13 @@ def main():
 
     print 'Generated prefix: ', prefix
 
+    # Define metre (5/4)
+    metre_up   = 5.
+    metre_down = 4.
+    whole_note = 2**6
+    bar_unit   = int((1./metre_down)*whole_note)
+    bar_length = int((metre_up/metre_down)*whole_note)
+
     # Adjust time in seconds
     # This is set also in utils.midi
     time_per_tick = 2**-5
@@ -35,22 +42,17 @@ def main():
     music_time = 1 * 60 + 0 - intro_time
 
     final_tick = int(music_time / time_per_tick)
-    # Remove a little at the end to let it ring
-    nof_steps = final_tick - 40
-
-    # Define metre (5/4)
-    metre_up   = 5.
-    metre_down = 4.
-    whole_note = 2**6
-    bar_length = int((metre_up/metre_down)*whole_note)
     
     # Time left after the end of the last bar
-    after_eof_bar = nof_steps % bar_length
+    after_eof_bar = final_tick % bar_length
     # Shorten the piece so that it ends along with a bar
-    nof_steps -= after_eof_bar
-
+    final_tick -= after_eof_bar    
+    
+    # Remove a little at the end to let it ring
+    nof_steps = final_tick - 40
+     
     # Player
-    hand = wh.ExampleHand(bar_length)
+    hand = wh.ExampleHand(bar_length, bar_unit)
 
     # Make music
     for tick in range(nof_steps):
@@ -58,7 +60,6 @@ def main():
 
     # Show full piano-roll
     hand_notes = hand.get_notes()
-    hand_notes[-1][2] = final_tick - hand_notes[-1][1]
     # um.show_piano_roll(hand.get_notes())
 
     # Save everything
@@ -74,7 +75,6 @@ def main():
     # Extend for compatibility with the hand notes
     chord_notes[-1][2] = final_tick - chord_notes[-1][1]
 
-    print hand_notes[-1][1], hand_notes[-1][2]
     # um.show_piano_roll(chord_notes)
     chordfile = midipath + prefix + 'chords' + '.mid'
     um.matrix_to_midi(chord_notes, chordfile)
@@ -94,6 +94,8 @@ def main():
         fi_notes = fi.get_notes()
         fi_notes[-1][2] = final_tick - fi_notes[-1][1]
         finger_notes.append(fi_notes)
+
+    print hand_notes[-1][1], hand_notes[-1][2]
 
     # Save played notes and some meta-notes
     savepath = prefix + 'blompf_data.pickle'

@@ -179,12 +179,16 @@ class BiasedWalker(Merwer):
             d = np.max(d)
             # and the corresponding eigenvector
             V = V[:,imax]
+            
 
         for it in range(self.size):
             for jt in range(self.size):
-                if V[it] != 0:
+                if V[it] != 0:                         
                     S[it,jt] = V[jt]/V[it] * self.A[it,jt]/d
+                    
         self.S = S
+        
+        
 
     def A_it_jt(self, it, jt = 0):
         """ Aij definition (symmetric - does it need to be?) """
@@ -248,6 +252,7 @@ class PitchWalker(BiasedWalker):
     """ Specialised for harmony manipulations """
     def __init__(self, first_pitch):
         """ el Creador, first pitch should lay on the scale? """
+
         # All possible keys
         self.all_values        = uh.piano_keys()
         self.global_size       = len(self.all_values)
