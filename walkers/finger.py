@@ -13,9 +13,9 @@ class Finger(object):
 
         # Start with a note
         self.ticks_left = 0
-        
+
         # Variables for metre control
-        self.bar_length   = bar_length            
+        self.bar_length   = bar_length
         self.bar_unit     = bar_unit
 
         print 'finger was created'
@@ -49,22 +49,19 @@ class Finger(object):
         pitch       = self.next_pitch(timetick)
         duration    = self.next_duration(timetick)
         volume      = self.next_volume(timetick)
-                   
-            
+
         # Create note
         self.notes.append([pitch, note_start, duration, volume])
-        
+
         # Reset cunter (-1 acounts for something FIXME)
         self.ticks_left = duration - 1
-     
 
-     
     def hitme(self):
         """ Force this finger to play as soon """
         # Last note should in that case end earlier than expected
         if len(self.notes) > 0:
             self.notes[-1][2] -= self.ticks_left
-              
+
         self.ticks_left = 0
 
     def is_it_now(self, timetick):
@@ -107,7 +104,6 @@ class MerwFinger(Finger):
         """ Note length (value) in ticks """
         dur = self.time_walker.next_value()
         return dur
-                
 
     def next_pitch(self, timetick):
         """ melody """
@@ -117,20 +113,20 @@ class MerwFinger(Finger):
     def next_volume(self, timetick):
         """ velocity """
         vol = self.volume_walker.next_value()
-        
+
         # accent at the begging of a bar                
-        if timetick !=0 and timetick % self.bar_length == 0:            
+        if timetick !=0 and timetick % self.bar_length == 0:
             # temporary choice
-            vol = self.notes[-1][3] + 15
+            vol = self.notes[-1][3] + 18
             if vol > 127:
                 vol = 127
-  
+
         # accent at 3
         if timetick % self.bar_length == 3*self.bar_unit:
-            vol = self.notes[-1][3] + 10
+            vol = self.notes[-1][3] + 16
             if vol > 127:
-                vol = 127    
-   
+                vol = 127
+
         return vol
 
     def set_scale(self, scale):

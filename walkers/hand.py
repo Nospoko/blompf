@@ -86,8 +86,6 @@ class ExampleHand(Hand):
 
         # This is fun
         pitch_twist     = PitchTwister(self.fingers)
-	# FIXME what is up with this, negotiate with chord walkers maybe?
-        pitch_twist.time_walker.values = [32 for it in range(8)]
         self.meta_walkers.update({'pitchtwist' : pitch_twist})
 
         metre_walker    = MetreWalker(self.fingers, bar_length, bar_unit)
@@ -196,10 +194,9 @@ class RhythmWalker(HandWalker):
         self.ticks_left = self.next_duration(0)
 
         self.chord_walker = ChordWalker(self.fingers)
-        self.rhythms = itr.cycle([[8, 8, 8, 8, 8, 32],
-                                  [64, 32, 16, 8],
+        self.rhythms = itr.cycle([[256, 256, 256, 256],
+                                  [64, 32, 16, 40],
                                   [128, 64, 32, 16, 16],
-                                  [12, 16, 12, 12, 12, 42],
                                   [16, 16, 16, 16, 16, 48]])
         
         
@@ -240,9 +237,9 @@ class ScaleWalker(HandWalker):
         # self.time_walker.current_id += 2
         # TODO Make it a thing
         # Add some twist:
-        # time_vals = [123 for _ in range(10)]
+        time_vals = [128 for _ in range(10)]
         # time_vals = [32 for _ in range(10)]
-        time_vals = [128, 32, 128, 32, 64, 128, 64, 32, 16, 32, 128]
+        # time_vals = [128, 32, 128, 32, 64, 128, 64, 32, 16, 32, 128]
         self.time_walker.set_values(time_vals)
 
         # Do not start with a scale change
@@ -250,7 +247,7 @@ class ScaleWalker(HandWalker):
 
         # Fibbonnaccish cycle
         # Make random
-        self.shifts = itr.cycle([1, 2, 5, 6, 4])
+        self.shifts = itr.cycle([1, 1, 2, 3, 5, 3, 2])
         self.shift = 0
         # TODO Try to abstract this out somehow
         # Major           [C, -, D, -, E, F, -, G, -, A, -, H]
@@ -305,9 +302,9 @@ class ScaleWalker(HandWalker):
             shift = 0
             if np.random.random() < 1.8:
                 # range(5)
-                shifts = [1, 1, 1, 2, 3]
-                shift = np.random.choice(shifts)
-                # shift = self.shifts.next()
+                # shifts = [1, 1, 1, 2, 3]
+                # shift = np.random.choice(shifts)
+                shift = self.shifts.next()
                 print '--- SCALE CHANGE | ', shift
                 log.info("Scale change: {}".format(shift))
 
@@ -376,6 +373,14 @@ class SpeedWalker(HandWalker):
 
 class PitchTwister(HandWalker):
     """ HI """
+    def __init__(self, fingers):
+        """ el Creador """
+        HandWalker.__init__(self, fingers)
+        time_vals = [128 for _ in range(10)]
+        # time_vals = [32 for _ in range(10)]
+        # time_vals = [128, 32, 128, 32, 64, 128, 64, 32, 16, 32, 128]
+        self.time_walker.set_values(time_vals)
+
     def play(self, timetick):
         """ YO """
         if self.is_it_now(timetick):
@@ -421,13 +426,13 @@ class MetreWalker(HandWalker):
         
         self.bar_length = bar_length
         self.bar_unit   = bar_unit
-        
+
     def play(self, timetick):
         """ Do your job """
         # if we are at the end of a bar or at 3
         if (timetick != 0 and timetick % self.bar_length == 0) \
         or timetick % self.bar_length == 3*self.bar_unit:
-            
+
             # find the finger with the lowest pitch
             lowest_pitch  = 128
             lowest_finger = self.fingers[0]
@@ -441,13 +446,16 @@ class MetreWalker(HandWalker):
             # Force the lowest finger to play
             lowest_finger.hitme()
 
-
 class MetaVolumeWalker(HandWalker):
     """ Volume dynamics controller """
     def __init__(self, fingers):
         """ Konstruktor """
         # Seems obsolete
         HandWalker.__init__(self, fingers)
+        time_vals = [128 for _ in range(10)]
+        # time_vals = [32 for _ in range(10)]
+        # time_vals = [128, 32, 128, 32, 64, 128, 64, 32, 16, 32, 128]
+        self.time_walker.set_values(time_vals)
 
     def play(self, timetick):
         """ Do your job """
@@ -458,7 +466,7 @@ class MetaVolumeWalker(HandWalker):
             new_volumes = []
             for finger in self.fingers:
                 if np.random.random() < 0.81:
-                    new_vol = 50 + np.floor(70 * np.random.random())
+                    new_vol = 30 + np.floor(90 * np.random.random())
                     finger.set_prefered_volume(new_vol)
                     new_volumes.append(new_vol)
                 else:

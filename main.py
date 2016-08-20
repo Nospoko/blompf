@@ -29,7 +29,7 @@ def main():
     print 'Generated prefix: ', prefix
 
     # Define metre (5/4)
-    metre_up   = 5.
+    metre_up   = 3.
     metre_down = 4.
     whole_note = 2**6
     bar_unit   = int((1./metre_down)*whole_note)
@@ -39,18 +39,18 @@ def main():
     # This is set also in utils.midi
     time_per_tick = 2**-5
     intro_time = 3
-    music_time = 1 * 60 + 0 - intro_time
+    music_time = 3 * 60 + 0 - intro_time
 
     final_tick = int(music_time / time_per_tick)
-    
+
     # Time left after the end of the last bar
     after_eof_bar = final_tick % bar_length
     # Shorten the piece so that it ends along with a bar
-    final_tick -= after_eof_bar    
-    
+    final_tick -= after_eof_bar
+
     # Remove a little at the end to let it ring
     nof_steps = final_tick - 40
-     
+
     # Player
     hand = wh.ExampleHand(bar_length, bar_unit)
 
