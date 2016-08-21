@@ -29,7 +29,7 @@ def main():
     print 'Generated prefix: ', prefix
 
     # Define metre (5/4)
-    metre_up   = 3.
+    metre_up   = 5.
     metre_down = 4.
     whole_note = 2**6
     bar_unit   = int((1./metre_down)*whole_note)
@@ -39,7 +39,7 @@ def main():
     # This is set also in utils.midi
     time_per_tick = 2**-5
     intro_time = 3
-    music_time = 3 * 60 + 0 - intro_time
+    music_time = 4 * 60 + 20 - intro_time
 
     final_tick = int(music_time / time_per_tick)
 
